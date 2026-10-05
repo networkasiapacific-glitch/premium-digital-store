@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Store with Live Admin Controls</title>
+    <title>Premium Digital Store</title>
     <script src="https://telegram.org"></script>
     <style>
         :root { 
@@ -14,64 +14,65 @@
             --accent-blue: #2481cc; 
             --price-color: #2ec4b6; 
             --star-color: #ffb703; 
-            --danger-red: #d90429;
             --admin-bg: #1c2a38;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 160px; font-size: 14px; }
         
-        /* Hidden Admin Panel Area */
+        /* 🔒 OWNER-ONLY EXCLUSIVE PORTAL */
         .admin-panel { background-color: var(--admin-bg); border-bottom: 2px dashed var(--accent-blue); padding: 15px; margin-bottom: 10px; display: none; }
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--star-color); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .admin-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
         .admin-row label { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; }
         .admin-input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .admin-input-group input[type="text"] { flex: 2; min-width: 120px; padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
-        .admin-input-group input[type="number"] { flex: 1; min-width: 70px; padding: 6px; border-radius: 4px; border: 1px solid var(--price-color); background: #0f171e; color: #fff; text-align: center; font-size: 0.85rem; }
+        .admin-input-group input { padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
         
-        /* Customer Store View */
+        /* STORE UI LAYOUT */
         .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; text-align: center; cursor: pointer; }
-        .header-banner h1 { font-size: 1.2rem; }
+        .header-banner h1 { font-size: 1.2rem; margin-bottom: 4px; }
         .header-banner p { font-size: 0.8rem; color: rgba(255,255,255,0.8); }
         .section-title { padding: 15px 16px 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); font-weight: bold; }
-        
         .product-list { display: flex; flex-direction: column; gap: 10px; padding: 10px 16px; }
         .product-card { background-color: var(--card-bg); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
-        .product-image-container { width: 75px; height: 75px; border-radius: 8px; background: #223142; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        /* BOX IMAGE LEFT SIDE */
+        .product-image-container { width: 75px; height: 75px; border-radius: 8px; background: #223142; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
         .product-image { width: 100%; height: 100%; object-fit: cover; }
-        .no-image { font-size: 0.65rem; color: var(--text-sub); text-align: center; padding: 4px; }
+        .no-image { font-size: 0.65rem; color: var(--text-sub); text-align: center; padding: 4px; line-height: 1.2; }
         
         .product-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .product-title { font-size: 0.9rem; font-weight: bold; line-height: 1.3; }
         .price-display { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
         
+        /* OPERATIONAL COUNTER BUTTONS */
         .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-counter.minus { background: #34495e; }
         .qty-label { font-size: 0.95rem; font-weight: bold; min-width: 16px; text-align: center; }
         
+        /* BOTTOM MENU CHECKOUT */
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); z-index: 1000; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sub); }
         .summary-item-total span { display: block; text-align: right; }
         .summary-item-total span:last-child { font-size: 1.05rem; font-weight: bold; color: var(--price-color); }
         .checkout-btn { background-color: #2ec4b6; color: #000000; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; text-align: center; }
         .checkout-btn:disabled { background-color: #2c3b47; color: var(--text-sub); cursor: not-allowed; }
+        .secure-notice { text-align: center; font-size: 0.7rem; color: #4bde43; margin-top: 2px; }
     </style>
 </head>
 <body>
 
-    <!-- ⚙️ STORE MANAGER PANEL (FULLY ENGLISH) -->
+    <!-- ⚙️ STORE MANAGER PANEL (ENGLISH WORKSPACE) -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-title">
             <span>⚙️ Live Store Admin Manager</span>
             <small style="color:var(--text-sub); font-weight:normal;">(Change text & prices here)</small>
         </div>
         <div id="adminControlsContainer"></div>
-        <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:var(--accent-blue); color:white; border:none; padding:8px; border-radius:4px; margin-top:10px; font-weight:bold; cursor:pointer;">💾 Hide Admin Controls</button>
+        <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:var(--accent-blue); color:white; border:none; padding:10px; border-radius:6px; margin-top:10px; font-weight:bold; cursor:pointer;">💾 Save & Close Admin Panel</button>
     </div>
 
-    <!-- MAIN VIEW -->
+    <!-- MAIN CUSTOMER APPLICATION VIEW -->
     <div class="header-banner" onclick="handleHeaderClick()">
         <h1>Premium Digital Store</h1>
         <p>Instant access via Secure Checkout</p>
@@ -80,7 +81,7 @@
     <div class="section-title">✨ Available Products</div>
     <div class="product-list" id="storeProductList"></div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER WIDGET -->
     <div class="footer-bar">
         <div class="summary-row">
             <div>Items Selected: <span id="totalItemsCount" style="font-weight:bold; color:#fff;">0 Items</span></div>
@@ -90,10 +91,11 @@
             </div>
         </div>
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
+        <div class="secure-notice">🔒 Powered by Telegram Secure Payments</div>
     </div>
 
     <script>
-        // Data List of 10 Ebooks
+        // Full database set of 13 professional digital modules
         const productData = [
             { id: "p1", name: "Premium Strategy Guide", image: "", price: 5.00, qty: 0 },
             { id: "p2", name: "Mastery Telegram", image: "", price: 5.00, qty: 0 },
@@ -102,25 +104,28 @@
             { id: "p5", name: "Advanced Automation Hub", image: "", price: 5.00, qty: 0 },
             { id: "p6", name: "Financial Freedom Roadmap", image: "", price: 5.00, qty: 0 },
             { id: "p7", name: "AI Content Formula", image: "", price: 5.00, qty: 0 },
-            { id: "p8", name: "Facebook Traffic & Lead Generation Guide", image: "", price: 5.00, qty: 0 },
-            { id: "p9", name: "TikTok Shorts & E-Commerce Automation", image: "", price: 5.00, qty: 0 },
-            { id: "p10", name: "WeChat Social Commerce Mastery", image: "", price: 5.00, qty: 0 }
+            { id: "p8", name: "Facebook Traffic & Business Growth Guide", image: "", price: 5.00, qty: 0 },
+            { id: "p9", name: "TikTok Shorts & Store E-Commerce Automation", image: "", price: 5.00, qty: 0 },
+            { id: "p10", name: "YouTube Automation Channel Monetization Blueprint", image: "", price: 5.00, qty: 0 },
+            { id: "p11", name: "WeChat Social Commerce Business Strategy", image: "", price: 5.00, qty: 0 },
+            { id: "p12", name: "Instagram Reels Organic Growth Systems", image: "", price: 5.00, qty: 0 },
+            { id: "p13", name: "General Digital Business Mastery Playbook", image: "", price: 5.00, qty: 0 }
         ];
 
         let clickCount = 0;
         let tg = window.Telegram ? window.Telegram.WebApp : null;
         if(tg) { tg.expand(); }
 
+        // Owner lock activation loop
         function handleHeaderClick() {
             clickCount++;
             if (clickCount >= 5) {
                 clickCount = 0;
-                let pin = prompt("Enter Admin Security PIN:");
-                if (pin === "1234") {
+                if (prompt("Enter Security PIN:") === "1234") {
                     document.getElementById('adminPanel').style.display = 'block';
                     window.scrollTo(0, 0);
                 } else {
-                    alert("Access Denied: Wrong Security PIN!");
+                    alert("Access Denied: Invalid Security PIN!");
                 }
             }
         }
@@ -128,9 +133,7 @@
         function initStore() {
             const adminContainer = document.getElementById('adminControlsContainer');
             const storeContainer = document.getElementById('storeProductList');
-            
-            adminContainer.innerHTML = '';
-            storeContainer.innerHTML = '';
+            adminContainer.innerHTML = ''; storeContainer.innerHTML = '';
 
             productData.forEach((product, index) => {
                 const adminRow = document.createElement('div');
@@ -138,118 +141,42 @@
                 adminRow.innerHTML = `
                     <label>Product ${index + 1} Settings</label>
                     <div class="admin-input-group">
-                        <input type="text" value="${product.name}" oninput="updateProductName('${product.id}', this.value)" placeholder="Product Name">
-                        <input type="number" step="0.01" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)" placeholder="Price">
-                        <input type="text" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="Image URL">
-                    </div>
-                `;
+                        <input type="text" style="flex:2; min-width:120px;" value="${product.name}" oninput="updateProductName('${product.id}', this.value)">
+                        <input type="number" step="0.01" style="width:70px;" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)">
+                        <input type="text" style="flex:1; min-width:100px;" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="Image URL">
+                    </div>`;
                 adminContainer.appendChild(adminRow);
 
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.id = `card-${product.id}`;
-                
-                const imageHTML = product.image ? 
-                    `<img src="${product.image}" class="product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : '';
-                
-                productCard.innerHTML = `
-                    <div class="product-image-container">
-                        ${imageHTML}
-🖼️
-No Image
-
-
-${product.name}
-SGD ${product.price.toFixed(2)}
-
-
--
-${product.qty}
-+
-
-`;
+const imageHTML = product.image ? <img src="${product.image}" class="product-image" onerror="this.style.display='none';"> : '';
+productCard.innerHTML =  <div class="product-image-container">${imageHTML}<div class="no-image">No Image<br>Available</div></div> <div class="product-details"> <div class="product-title" id="title-display-${product.id}">${product.name}</div> <div class="price-display" id="price-display-${product.id}">SGD ${product.price.toFixed(2)}</div> </div> <div class="counter-group"> <button class="btn-counter minus" onclick="changeQty('${product.id}', -1)">-</button> <span class="qty-label" id="qty-display-${product.id}">${product.qty}</span> <button class="btn-counter plus" onclick="changeQty('${product.id}', 1)">+</button> </div>;
 storeContainer.appendChild(productCard);
 });
 calculateBill();
 }
-function updateProductName(id, newName) {
-const product = productData.find(p => p.id === id);
-if(product) {
-product.name = newName;
-document.getElementById(title-display-${id}).innerText = newName;
-}
-}
-function updateProductPrice(id, newPrice) {
-const product = productData.find(p => p.id === id);
-if(product) {
-const parsedPrice = parseFloat(newPrice) || 0;
-product.price = parsedPrice;
-document.getElementById(price-display-${id}).innerText = SGD ${parsedPrice.toFixed(2)};
-calculateBill();
-}
-}
-function updateProductImage(id, newImageUrl) {
-const product = productData.find(p => p.id === id);
-if(product) {
-product.image = newImageUrl;
-const card = document.getElementById(card-${id});
-const imgContainer = card.querySelector('.product-image-container');
-if(newImageUrl) {
-imgContainer.innerHTML = <img src="${newImageUrl}" class="product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> <div class="no-image" style="display:none;">🖼️<br>No Image</div>;
-} else {
-imgContainer.innerHTML = <div class="no-image" style="display:block;">🖼️<br>No Image</div>;
-}
-}
-}
+function updateProductName(id, newName) { productData.find(p => p.id === id).name = newName; document.getElementById(title-display-${id}).innerText = newName; }
+function updateProductPrice(id, newPrice) { const p = productData.find(p => p.id === id); p.price = parseFloat(newPrice) || 0; document.getElementById(price-display-${id}).innerText = SGD ${p.price.toFixed(2)}; calculateBill(); }
+function updateProductImage(id, newImageUrl) { productData.find(p => p.id === id).image = newImageUrl; initStore(); }
 function changeQty(id, change) {
-const product = productData.find(p => p.id === id);
-if(product) {
-let newQty = product.qty + change;
-if(newQty >= 0) {
-product.qty = newQty;
-document.getElementById(qty-display-${id}).innerText = newQty;
-calculateBill();
-}
-}
+const p = productData.find(p => p.id === id);
+if(p && p.qty + change >= 0) { p.qty += change; document.getElementById(qty-display-${id}).innerText = p.qty; calculateBill(); }
 }
 function calculateBill() {
-let totalItems = 0;
-let totalPrice = 0;
-let orderItems = [];
-productData.forEach(product => {
-if(product.qty > 0) {
-totalItems += product.qty;
-totalPrice += (product.qty * product.price);
-orderItems.push({
-name: product.name,
-quantity: product.qty,
-unit_price: product.price,
-subtotal: (product.qty * product.price)
+let items = 0, price = 0, list = [];
+productData.forEach(p => {
+if(p.qty > 0) { items += p.qty; price += (p.qty * p.price); list.push({ name: p.name, quantity: p.qty }); }
 });
-}
-});
-document.getElementById('totalItemsCount').innerText = ${totalItems} Item${totalItems === 1 ? '' : 's'};
-document.getElementById('totalPriceDisplay').innerText = SGD ${totalPrice.toFixed(2)};
+document.getElementById('totalItemsCount').innerText = ${items} Items;
+document.getElementById('totalPriceDisplay').innerText = SGD ${price.toFixed(2)};
 const checkoutBtn = document.getElementById('checkoutBtn');
-if(totalItems > 0) {
-checkoutBtn.disabled = false;
-checkoutBtn.innerText = PROCEED TO PAYMENT (SGD ${totalPrice.toFixed(2)});
-} else {
-checkoutBtn.disabled = true;
-checkoutBtn.innerText = PROCEED TO PAYMENT;
-}
-window.currentOrderData = {
-items: orderItems,
-net_total_sgd: totalPrice.toFixed(2),
-total_quantity: totalItems
-};
+checkoutBtn.disabled = items === 0;
+checkoutBtn.innerText = items > 0 ? PROCEED TO PAYMENT (${items}) : PROCEED TO PAYMENT;
+window.currentOrderData = { items: list, net_total_sgd: price.toFixed(2) };
 }
 function redirectPayment() {
-if (tg && window.currentOrderData) {
-tg.sendData(JSON.stringify(window.currentOrderData));
-tg.close();
-} else {
-alert("Order Data Prepared:\n" + JSON.stringify(window.currentOrderData, null, 2));
+if (tg && window.currentOrderData) { tg.sendData(JSON.stringify(window.currentOrderData)); tg.close(); }
+else { alert(JSON.stringify(window.currentOrderData)); }
 }
-}
-window.onload = initStore;
+window.onload = initStore
