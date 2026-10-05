@@ -6,20 +6,23 @@
     <title>Premium Digital Store</title>
     <script src="https://telegram.org"></script>
     <style>
-        :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #7a8a96; --accent-blue: #248bbf; }
+        :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #7a8a96; --accent-blue: #248bbf; --accent-green: #00bfa5; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; font-size: 14px; }
         .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 25px; text-align: center; }
         .section-title { padding: 15px 5%; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); }
         .product-list { display: flex; flex-direction: column; gap: 10px; padding: 0 5%; }
-        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #202b36; }
         .product-details { display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .product-title { font-size: 0.95rem; font-weight: bold; }
         .price-display { font-size: 0.9rem; font-weight: bold; color: var(--accent-blue); }
-        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; font-weight: bold; width: fit-content; margin-top: 2px; }
+        .badge-active { background-color: rgba(0, 191, 165, 0.2); color: var(--accent-green); }
+        .badge-preview { background-color: rgba(122, 138, 150, 0.2); color: var(--text-sub); }
+        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
         .counter-group { display: flex; align-items: center; gap: 12px; }
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #202b36; }
-        .checkout-btn { background-color: #248bbf; color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; }
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; display: flex; border-top: 1px solid #202b36; }
+        .checkout-btn { background-color: #248bbf; color: #ffffff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; font-size: 1rem; }
         .checkout-btn:disabled { background-color: #23303d; color: var(--text-sub); cursor: not-allowed; }
     </style>
 </head>
@@ -28,27 +31,21 @@
         <h2>Premium Digital Store</h2>
         <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Instant access via Secure Checkout</p>
     </div>
-    <div class="section-title">🔥 Available Products</div>
+    <div class="section-title">🔥 6 New Digital Guides</div>
     <div class="product-list" id="storeProductList"></div>
     <div class="footer-bar">
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
     </div>
 
     <script>
+        // THE NEW 6 DIGITAL PRODUCTS LIST (TikTok is Active, 5 others are Showcase Only)
         const productData = [
-            { id: "p1", name: "Premium Strategy Guide", price: 5.00, qty: 0 },
-            { id: "p2", name: "Mastery Telegram", price: 5.00, qty: 0 },
-            { id: "p3", name: "Digital Marketing 2027", price: 5.00, qty: 0 },
-            { id: "p4", name: "E-Commerce Success Keys", price: 5.00, qty: 0 },
-            { id: "p5", name: "Advanced Automation Hub", price: 5.00, qty: 0 },
-            { id: "p6", name: "Financial Freedom Roadmap", price: 5.00, qty: 0 },
-            { id: "p7", name: "AI Content Formula", price: 5.00, qty: 0 },
-            { id: "p8", name: "Facebook Traffic Blueprint", price: 5.00, qty: 0 },
-            { id: "p9", name: "TikTok Shorts Store ECommerce Automation", price: 5.00, qty: 0 },
-            { id: "p10", name: "YouTube Automation Suite", price: 5.00, qty: 0 },
-            { id: "p11", name: "WeChat Social Commerce", price: 5.00, qty: 0 },
-            { id: "p12", name: "Instagram Reels Strategy", price: 5.00, qty: 0 },
-            { id: "p13", name: "General Digital Business", price: 5.00, qty: 0 }
+            { id: "p1", name: "TikTok Automation Guide", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p2", name: "Facebook Marketing Guide", price: 5.00, qty: 0, status: "SHOWCASE" },
+            { id: "p3", name: "YouTube Monetization Guide", price: 5.00, qty: 0, status: "SHOWCASE" },
+            { id: "p4", name: "WeChat Business Guide", price: 5.00, qty: 0, status: "SHOWCASE" },
+            { id: "p5", name: "Instagram Growth Guide", price: 5.00, qty: 0, status: "SHOWCASE" },
+            { id: "p6", name: "Digital Business Foundations", price: 5.00, qty: 0, status: "SHOWCASE" }
         ];
 
         const tg = window.Telegram.WebApp;
@@ -60,14 +57,19 @@
             productData.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                
+                const badgeClass = product.status === 'ACTIVE' ? 'badge-active' : 'badge-preview';
+                const badgeText = product.status === 'ACTIVE' ? 'AVAILABLE' : 'PREVIEW ONLY';
+                
                 card.innerHTML = `
                     <div class="product-details">
                         <div class="product-title">${product.name}</div>
                         <div class="price-display">SGD ${product.price.toFixed(2)}</div>
+                        <div class="badge ${badgeClass}">${badgeText}</div>
                     </div>
                     <div class="counter-group">
                         <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
-                        <span id="qty-${product.id}">0</span>
+                        <span id="qty-${product.id}" style="font-size: 1.1rem; font-weight: bold; min-width: 15px; text-align: center;">0</span>
                         <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
                     </div>
                 `;
@@ -96,26 +98,12 @@
 
         function redirectPayment() {
             const selectedItems = productData.filter(p => p.qty > 0);
-            
-            // Check if customer selected TikTok product
-            const hasTikTok = selectedItems.some(item => item.name.includes("TikTok"));
-            
-            if (hasTikTok) {
-                const orderPayload = {
-                    status: "PAID",
-                    items: selectedItems
-                };
-                tg.sendData(JSON.stringify(orderPayload));
-                tg.close();
-            } else {
-                // If other products are selected, send a structure that triggers the SHOWCASE message
-                const orderPayload = {
-                    status: "PAID",
-                    items: selectedItems
-                };
-                tg.sendData(JSON.stringify(orderPayload));
-                tg.close();
-            }
+            const orderPayload = {
+                status: "PAID",
+                items: selectedItems
+            };
+            tg.sendData(JSON.stringify(orderPayload));
+            tg.close();
         }
 
         window.onload = initStore;
