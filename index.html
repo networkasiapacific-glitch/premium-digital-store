@@ -6,84 +6,50 @@
     <title>Premium Digital Store</title>
     <script src="https://telegram.org"></script>
     <style>
-        :root { 
-            --bg-color: #0b141a; 
-            --card-bg: #182533; 
-            --text-main: #ffffff; 
-            --text-sub: #7a8a96; 
-            --accent-blue: #2481cc; 
-            --price-color: #2ec4b6; 
-            --star-color: #ffb703; 
-            --admin-bg: #1c2a38;
-        }
+        :root { --bg-color: #0b141a; --card-bg: #182533; --text-main: #ffffff; --text-sub: #7a8a96; --accent-blue: #2481cc; --price-color: #2ec4b6; --star-color: #ffb703; --admin-bg: #1c2a38; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 160px; font-size: 14px; }
-        
         .admin-panel { background-color: var(--admin-bg); border-bottom: 2px dashed var(--accent-blue); padding: 15px; margin-bottom: 10px; display: none; }
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--star-color); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .admin-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
-        .admin-row label { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; }
         .admin-input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .admin-input-group input { padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
-        
         .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; text-align: center; cursor: pointer; }
-        .header-banner h1 { font-size: 1.2rem; margin-bottom: 4px; }
-        .header-banner p { font-size: 0.8rem; color: rgba(255,255,255,0.8); }
         .section-title { padding: 15px 16px 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); font-weight: bold; }
         .product-list { display: flex; flex-direction: column; gap: 10px; padding: 10px 16px; }
         .product-card { background-color: var(--card-bg); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        
-        .product-image-container { width: 75px; height: 75px; border-radius: 8px; background: #223142; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .product-image-container { width: 75px; height: 75px; border-radius: 8px; background: #223142; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
         .product-image { width: 100%; height: 100%; object-fit: cover; }
-        .no-image { font-size: 0.65rem; color: var(--text-sub); text-align: center; padding: 4px; line-height: 1.2; }
-        
+        .no-image { font-size: 0.65rem; color: var(--text-sub); text-align: center; }
         .product-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .product-title { font-size: 0.9rem; font-weight: bold; line-height: 1.3; }
+        .product-title { font-size: 0.9rem; font-weight: bold; }
         .price-display { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
-        
-        .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid var(--text-sub); }
-        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-counter.minus { background: #34495e; }
-        .qty-label { font-size: 0.95rem; font-weight: bold; min-width: 16px; text-align: center; }
-        
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); z-index: 1000; }
+        .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; }
+        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sub); }
-        .summary-item-total span { display: block; text-align: right; }
-        .summary-item-total span:last-child { font-size: 1.05rem; font-weight: bold; color: var(--price-color); }
-        .checkout-btn { background-color: #2ec4b6; color: #000000; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .checkout-btn { background-color: #2ec4b6; color: #000000; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; }
         .checkout-btn:disabled { background-color: #2c3b47; color: var(--text-sub); cursor: not-allowed; }
-        .secure-notice { text-align: center; font-size: 0.7rem; color: #4bde43; margin-top: 2px; }
     </style>
 </head>
 <body>
-
     <div class="admin-panel" id="adminPanel">
-        <div class="admin-title">
-            <span>⚙️ Live Store Admin Manager</span>
-            <small style="color:var(--text-sub); font-weight:normal;">(Change text & prices here)</small>
-        </div>
+        <div class="admin-title"><span>⚙️ Live Store Admin Manager</span></div>
         <div id="adminControlsContainer"></div>
-        <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:var(--accent-blue); color:white; border:none; padding:10px; border-radius:6px; margin-top:10px; font-weight:bold; cursor:pointer;">💾 Save & Close Admin Panel</button>
+        <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:var(--accent-blue); color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">💾 Save & Close Admin Panel</button>
     </div>
-
     <div class="header-banner" onclick="handleHeaderClick()">
         <h1>Premium Digital Store</h1>
         <p>Instant access via Secure Checkout</p>
     </div>
-    
     <div class="section-title">✨ Available Products</div>
     <div class="product-list" id="storeProductList"></div>
-
     <div class="footer-bar">
         <div class="summary-row">
             <div>Items Selected: <span id="totalItemsCount" style="font-weight:bold; color:#fff;">0 Items</span></div>
-            <div class="summary-item-total">
-                <span>Net Total:</span>
-                <span id="totalPriceDisplay">SGD 0.00</span>
-            </div>
+            <div class="summary-item-total"><span>Net Total:</span><span id="totalPriceDisplay" style="font-size:1.05rem; font-weight:bold; color:var(--price-color);">SGD 0.00</span></div>
         </div>
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
-        <div class="secure-notice">🔒 Secured via Stripe Payments Gateway</div>
     </div>
     <script>
         const productData = [
@@ -101,95 +67,38 @@
             { id: "p12", name: "Instagram Reels Organic Growth Systems", image: "", price: 5.00, qty: 0 },
             { id: "p13", name: "General Digital Business Mastery Playbook", image: "", price: 5.00, qty: 0 }
         ];
-
         const STRIPE_CHECKOUT_URL = "https://stripe.com";
-
-        let clickCount = 0;
-        let tg = window.Telegram ? window.Telegram.WebApp : null;
-        if(tg) { tg.expand(); }
-
+        let clickCount = 0; let tg = window.Telegram ? window.Telegram.WebApp : null; if(tg) { tg.expand(); }
         function handleHeaderClick() {
-            clickCount++;
-            if (clickCount >= 5) {
-                clickCount = 0;
-                if (prompt("Enter Security PIN:") === "1234") {
-                    document.getElementById('adminPanel').style.display = 'block';
-                    window.scrollTo(0, 0);
-                } else { alert("Access Denied: Invalid Security PIN!"); }
-            }
+            clickCount++; if (clickCount >= 5) { clickCount = 0; if (prompt("Enter Security PIN:") === "1234") { document.getElementById('adminPanel').style.display = 'block'; window.scrollTo(0, 0); } else { alert("Access Denied!"); } }
         }
-
         function initStore() {
-            const adminContainer = document.getElementById('adminControlsContainer');
-            const storeContainer = document.getElementById('storeProductList');
+            const adminContainer = document.getElementById('adminControlsContainer'); const storeContainer = document.getElementById('storeProductList');
             adminContainer.innerHTML = ''; storeContainer.innerHTML = '';
-
             productData.forEach((product, index) => {
-                const adminRow = document.createElement('div');
-                adminRow.className = 'admin-row';
-                adminRow.innerHTML = `
-                    <label>Product ${index + 1} Settings</label>
-                    <div class="admin-input-group">
-                        <input type="text" style="flex:2; min-width:120px;" value="${product.name}" oninput="updateProductName('${product.id}', this.value)">
-                        <input type="number" step="0.01" style="width:70px;" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)">
-                        <input type="text" style="flex:1; min-width:100px;" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="Image URL">
-                    </div>`;
+                const adminRow = document.createElement('div'); adminRow.className = 'admin-row';
+                adminRow.innerHTML = `<label>Product ${index + 1}</label><div class="admin-input-group"><input type="text" style="flex:2;" value="${product.name}" oninput="updateName('${product.id}', this.value)"><input type="number" step="0.01" style="width:70px;" value="${product.price}" oninput="updatePrice('${product.id}', this.value)"><input type="text" style="flex:1;" value="${product.image}" oninput="updateImage('${product.id}', this.value)" placeholder="Image URL"></div>`;
                 adminContainer.appendChild(adminRow);
-
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.id = `card-${product.id}`;
+                const productCard = document.createElement('div'); productCard.className = 'product-card';
                 const imageHTML = product.image ? `<img src="${product.image}" class="product-image" onerror="this.style.display='none';">` : '';
-                
-                productCard.innerHTML = `
-                    <div class="product-image-container">${imageHTML}<div class="no-image">No Image<br>Available</div></div>
-                    <div class="product-details">
-                        <div class="product-title" id="title-display-${product.id}">${product.name}</div>
-                        <div class="price-display" id="price-display-${product.id}">SGD ${product.price.toFixed(2)}</div>
-                    </div>
-                    <div class="counter-group">
-                        <button class="btn-counter minus" onclick="changeQty('${product.id}', -1)">-</button>
-                        <span class="qty-label" id="qty-display-${product.id}">${product.qty}</span>
-                        <button class="btn-counter plus" onclick="changeQty('${product.id}', 1)">+</button>
-                    </div>`;
+                productCard.innerHTML = `<div class="product-image-container">${imageHTML}<div class="no-image">No Image</div></div><div class="product-details"><div style="font-weight:bold;" id="t-${product.id}">${product.name}</div><div style="font-weight:bold; color:var(--price-color);" id="p-${product.id}">SGD ${product.price.toFixed(2)}</div></div><div class="counter-group"><button class="btn-counter" onclick="changeQty('${product.id}', -1)">-</button><span style="font-weight:bold; min-width:16px; text-align:center;" id="q-${product.id}">${product.qty}</span><button class="btn-counter" onclick="changeQty('${product.id}', 1)">+</button></div>`;
                 storeContainer.appendChild(productCard);
             });
             calculateBill();
         }
-
-        function updateProductName(id, newName) { productData.find(p => p.id === id).name = newName; document.getElementById(`title-display-${id}`).innerText = newName; }
-        function updateProductPrice(id, newPrice) { const p = productData.find(p => p.id === id); p.price = parseFloat(newPrice) || 0; document.getElementById(`price-display-${id}`).innerText = `SGD ${p.price.toFixed(2)}`; calculateBill(); }
-        function updateProductImage(id, newImageUrl) { productData.find(p => p.id === id).image = newImageUrl; initStore(); }
-
-        function changeQty(id, change) {
-            const p = productData.find(p => p.id === id);
-            if(p && p.qty + change >= 0) { p.qty += change; document.getElementById(`qty-display-${id}`).innerText = p.qty; calculateBill(); }
-        }
-
+        function updateName(id, val) { productData.find(p => p.id === id).name = val; document.getElementById(`t-${id}`).innerText = val; }
+        function updatePrice(id, val) { const p = productData.find(p => p.id === id); p.price = parseFloat(val) || 0; document.getElementById(`p-${id}`).innerText = `SGD ${p.price.toFixed(2)}`; calculateBill(); }
+        function updateImage(id, val) { productData.find(p => p.id === id).image = val; initStore(); }
+        function changeQty(id, change) { const p = productData.find(p => p.id === id); if(p && p.qty + change >= 0) { p.qty += change; document.getElementById(`q-${id}`).innerText = p.qty; calculateBill(); } }
         function calculateBill() {
             let items = 0, price = 0, list = [];
-            productData.forEach(p => {
-                if(p.qty > 0) { items += p.qty; price += (p.qty * p.price); list.push({ name: p.name, quantity: p.qty }); }
-            });
-            document.getElementById('totalItemsCount').innerText = `${items} Items`;
-            document.getElementById('totalPriceDisplay').innerText = `SGD ${price.toFixed(2)}`;
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.disabled = items === 0;
-            checkoutBtn.innerText = items > 0 ? `PROCEED TO PAYMENT (${items})` : `PROCEED TO PAYMENT`;
-            
+            productData.forEach(p => { if(p.qty > 0) { items += p.qty; price += (p.qty * p.price); list.push({ name: p.name, quantity: p.qty }); } });
+            document.getElementById('totalItemsCount').innerText = `${items} Items`; document.getElementById('totalPriceDisplay').innerText = `SGD ${price.toFixed(2)}`;
+            const btn = document.getElementById('checkoutBtn'); btn.disabled = items === 0; btn.innerText = items > 0 ? `PROCEED TO PAYMENT (${items})` : `PROCEED TO PAYMENT`;
             window.currentOrderData = { items: list, net_total_sgd: price.toFixed(2) };
         }
-
-        function redirectPayment() {
-            if (tg && window.currentOrderData) {
-                tg.sendData(JSON.stringify(window.currentOrderData));
-                tg.openLink(STRIPE_CHECKOUT_URL);
-                tg.close();
-            } else {
-                window.open(STRIPE_CHECKOUT_URL, '_blank');
-            }
-        }
-        window.onload = initStore;
-    </script>
-</body>
-</html>
+function redirectPayment() {
+if (tg && window.currentOrderData) { tg.sendData(JSON.stringify(window.currentOrderData)); tg.openLink(STRIPE_CHECKOUT_URL); tg.close(); }
+else { window.open(STRIPE_CHECKOUT_URL, '_blank'); }
+}
+window.onload = initStore;
