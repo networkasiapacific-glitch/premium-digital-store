@@ -20,17 +20,17 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 160px; font-size: 14px; }
         
-        /* Admin Dashboard Section */
-        .admin-panel { background-color: var(--admin-bg); border-bottom: 2px dashed var(--accent-blue); padding: 15px; margin-bottom: 10px; }
+        /* Hidden Admin Panel Area */
+        .admin-panel { background-color: var(--admin-bg); border-bottom: 2px dashed var(--accent-blue); padding: 15px; margin-bottom: 10px; display: none; }
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--star-color); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .admin-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
         .admin-row label { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; }
-        .admin-input-group { display: flex; gap: 8px; align-items: center; }
-        .admin-input-group input[type="text"] { flex: 1; padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
-        .admin-input-group input[type="number"] { width: 80px; padding: 6px; border-radius: 4px; border: 1px solid var(--price-color); background: #0f171e; color: #fff; text-align: center; font-size: 0.85rem; }
+        .admin-input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .admin-input-group input[type="text"] { flex: 2; min-width: 120px; padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
+        .admin-input-group input[type="number"] { flex: 1; min-width: 70px; padding: 6px; border-radius: 4px; border: 1px solid var(--price-color); background: #0f171e; color: #fff; text-align: center; font-size: 0.85rem; }
         
-        /* Main Application UI */
-        .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; text-align: center; }
+        /* Customer Store View */
+        .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; text-align: center; cursor: pointer; }
         .header-banner h1 { font-size: 1.2rem; }
         .header-banner p { font-size: 0.8rem; color: rgba(255,255,255,0.8); }
         .section-title { padding: 15px 16px 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); font-weight: bold; }
@@ -46,13 +46,11 @@
         .product-title { font-size: 0.9rem; font-weight: bold; line-height: 1.3; }
         .price-display { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
         
-        /* Quantity Counter Buttons */
         .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-counter.minus { background: #34495e; }
         .qty-label { font-size: 0.95rem; font-weight: bold; min-width: 16px; text-align: center; }
         
-        /* Bottom Fixed Checkout Bar */
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); z-index: 1000; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sub); }
         .summary-item-total span { display: block; text-align: right; }
@@ -63,17 +61,18 @@
 </head>
 <body>
 
-    <!-- 🛠️ DASHBOARD PENGURUSAN ADMIN (BOLEH DIEDIT MANUAL) -->
+    <!-- ⚙️ STORE MANAGER PANEL (FULLY ENGLISH) -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-title">
             <span>⚙️ Live Store Admin Manager</span>
-            <small style="color:var(--text-sub); font-weight:normal;">(Tukar teks & harga di sini)</small>
+            <small style="color:var(--text-sub); font-weight:normal;">(Change text & prices here)</small>
         </div>
         <div id="adminControlsContainer"></div>
+        <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:var(--accent-blue); color:white; border:none; padding:8px; border-radius:4px; margin-top:10px; font-weight:bold; cursor:pointer;">💾 Hide Admin Controls</button>
     </div>
 
-    <!-- TAMPILAN KEDAI UNTUK PELANGGAN -->
-    <div class="header-banner">
+    <!-- MAIN VIEW -->
+    <div class="header-banner" onclick="handleHeaderClick()">
         <h1>Premium Digital Store</h1>
         <p>Instant access via Secure Checkout</p>
     </div>
@@ -81,7 +80,7 @@
     <div class="section-title">✨ Available Products</div>
     <div class="product-list" id="storeProductList"></div>
 
-    <!-- FOOTER TRANSAKSI -->
+    <!-- FOOTER -->
     <div class="footer-bar">
         <div class="summary-row">
             <div>Items Selected: <span id="totalItemsCount" style="font-weight:bold; color:#fff;">0 Items</span></div>
@@ -94,22 +93,38 @@
     </div>
 
     <script>
-        // 1. Pangkalan Data Asal Produk (Boleh edit pautan imej di sini)
+        // Data List of 10 Ebooks
         const productData = [
-            { id: "p1", name: "Premium Strategy Guide", image: "", price: 23.00, qty: 0 },
+            { id: "p1", name: "Premium Strategy Guide", image: "", price: 5.00, qty: 0 },
             { id: "p2", name: "Mastery Telegram", image: "", price: 5.00, qty: 0 },
             { id: "p3", name: "Digital Marketing 2027", image: "", price: 5.00, qty: 0 },
             { id: "p4", name: "E-Commerce Success Keys", image: "", price: 5.00, qty: 0 },
             { id: "p5", name: "Advanced Automation Hub", image: "", price: 5.00, qty: 0 },
             { id: "p6", name: "Financial Freedom Roadmap", image: "", price: 5.00, qty: 0 },
-            { id: "p7", name: "AI Content Formula", image: "", price: 5.00, qty: 0 }
+            { id: "p7", name: "AI Content Formula", image: "", price: 5.00, qty: 0 },
+            { id: "p8", name: "Facebook Traffic & Lead Generation Guide", image: "", price: 5.00, qty: 0 },
+            { id: "p9", name: "TikTok Shorts & E-Commerce Automation", image: "", price: 5.00, qty: 0 },
+            { id: "p10", name: "WeChat Social Commerce Mastery", image: "", price: 5.00, qty: 0 }
         ];
 
-        // Memulakan Telegram WebApp API
+        let clickCount = 0;
         let tg = window.Telegram ? window.Telegram.WebApp : null;
         if(tg) { tg.expand(); }
 
-        // 2. Fungsi Menjana Tampilan Kedai & Dashboard Admin Serentak
+        function handleHeaderClick() {
+            clickCount++;
+            if (clickCount >= 5) {
+                clickCount = 0;
+                let pin = prompt("Enter Admin Security PIN:");
+                if (pin === "1234") {
+                    document.getElementById('adminPanel').style.display = 'block';
+                    window.scrollTo(0, 0);
+                } else {
+                    alert("Access Denied: Wrong Security PIN!");
+                }
+            }
+        }
+
         function initStore() {
             const adminContainer = document.getElementById('adminControlsContainer');
             const storeContainer = document.getElementById('storeProductList');
@@ -118,47 +133,45 @@
             storeContainer.innerHTML = '';
 
             productData.forEach((product, index) => {
-                // Bina input kawalan admin bagi setiap produk
                 const adminRow = document.createElement('div');
                 adminRow.className = 'admin-row';
                 adminRow.innerHTML = `
                     <label>Product ${index + 1} Settings</label>
                     <div class="admin-input-group">
-                        <input type="text" value="${product.name}" oninput="updateProductName('${product.id}', this.value)" placeholder="Nama Produk">
-                        <input type="number" step="0.01" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)" placeholder="Harga">
-                        <input type="text" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="URL Gambar (Opsional)">
+                        <input type="text" value="${product.name}" oninput="updateProductName('${product.id}', this.value)" placeholder="Product Name">
+                        <input type="number" step="0.01" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)" placeholder="Price">
+                        <input type="text" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="Image URL">
                     </div>
                 `;
                 adminContainer.appendChild(adminRow);
 
-                // Bina kad paparan produk untuk pelanggan
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.id = `card-${product.id}`;
                 
-                // Urusan logik paparan imej
                 const imageHTML = product.image ? 
                     `<img src="${product.image}" class="product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : '';
                 
                 productCard.innerHTML = `
                     <div class="product-image-container">
                         ${imageHTML}
-                        <div class="no-image" style="${product.image ? 'display:none;' : 'display:block;'}">🖼️<br>No Image</div>
-                    </div>
-                    <div class="product-details">
-                        <div class="product-title" id="title-display-${product.id}">${product.name}</div>
-                        <div class="price-display" id="price-display-${product.id}">SGD ${product.price.toFixed(2)}</div>
-                    </div>
-                    <div class="counter-group">
-                        <button class="btn-counter minus" onclick="changeQty('${product.id}', -1)">-</button>
-                        <span class="qty-label" id="qty-display-${product.id}">${product.qty}</span>
-                        <button class="btn-counter plus" onclick="changeQty('${product.id}', 1)">+</button>
+🖼️
+No Image
+
+
+${product.name}
+SGD ${product.price.toFixed(2)}
+
+
+-
+${product.qty}
++
+
 `;
 storeContainer.appendChild(productCard);
 });
 calculateBill();
 }
-// 3. Fungsi Kemas Kini Data Secara Live daripada Input Dashboard Admin
 function updateProductName(id, newName) {
 const product = productData.find(p => p.id === id);
 if(product) {
@@ -169,7 +182,6 @@ document.getElementById(title-display-${id}).innerText = newName;
 function updateProductPrice(id, newPrice) {
 const product = productData.find(p => p.id === id);
 if(product) {
-// Jika input kosong atau padam, set nilai ke 0 buat sementara waktu bagi mengelakkan error NaN
 const parsedPrice = parseFloat(newPrice) || 0;
 product.price = parsedPrice;
 document.getElementById(price-display-${id}).innerText = SGD ${parsedPrice.toFixed(2)};
@@ -189,19 +201,17 @@ imgContainer.innerHTML = <div class="no-image" style="display:block;">🖼️<br
 }
 }
 }
-// 4. Fungsi Mengawal Kuantiti Item (+ / -)
 function changeQty(id, change) {
 const product = productData.find(p => p.id === id);
 if(product) {
 let newQty = product.qty + change;
-if(newQty >= 0) { // Menghalang angka kuantiti menjadi negatif
+if(newQty >= 0) {
 product.qty = newQty;
 document.getElementById(qty-display-${id}).innerText = newQty;
 calculateBill();
 }
 }
 }
-// 5. Fungsi Mengira Jumlah Keseluruhan Keranjang Belanja
 function calculateBill() {
 let totalItems = 0;
 let totalPrice = 0;
@@ -234,14 +244,12 @@ net_total_sgd: totalPrice.toFixed(2),
 total_quantity: totalItems
 };
 }
-// 6. Fungsi Menghantar Data Pesanan ke Bot Telegram
 function redirectPayment() {
 if (tg && window.currentOrderData) {
 tg.sendData(JSON.stringify(window.currentOrderData));
 tg.close();
 } else {
-alert("Order Data Ready!\n" + JSON.stringify(window.currentOrderData, null, 2));
+alert("Order Data Prepared:\n" + JSON.stringify(window.currentOrderData, null, 2));
 }
 }
-// Mulakan aplikasi sebaik sahaja kod dimuatkan
 window.onload = initStore;
