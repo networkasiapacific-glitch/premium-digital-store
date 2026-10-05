@@ -3,59 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Store</title>
+    <title>Premium Store with Live Admin Controls</title>
     <script src="https://telegram.org"></script>
     <style>
-        :root { --bg-color: #0b141a; --card-blue: #182533; --card-cyan: #0f2d3a; --card-green-dark: #122b1c; --card-green-light: #223c15; --text-main: #ffffff; --text-sub: #7a8a96; --accent-blue: #2481cc; --price-color: #2ec4b6; --star-color: #ffb703; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-user-select: none; user-select: none; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 140px; }
-        .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .header-banner h1 { font-size: 1.3rem; margin-bottom: 4px; }
-        .header-banner p { font-size: 0.85rem; color: rgba(255,255,255,0.8); }
-        .policy-banner { background-color: #2b1b1b; border-left: 4px solid #d90429; padding: 10px 16px; margin: 12px 16px 4px; border-radius: 4px; font-size: 0.78rem; color: #f8d7da; line-height: 1.4; font-weight: 500; }
-        .section-title { padding: 15px 16px 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-blue); font-weight: bold; }
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 16px; }
-        .product-card { border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; position: relative; min-height: 190px; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
-        .card-blue { background-color: var(--card-blue); }
-        .card-cyan { background-color: var(--card-cyan); }
-        .card-green-dark { background-color: var(--card-green-dark); }
-        .card-green-light { background-color: var(--card-green-light); }
-        .badge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); text-transform: uppercase; color: var(--text-sub); }
-        .rating { font-size: 0.75rem; color: var(--star-color); display: flex; align-items: center; gap: 2px; }
-        .product-title { font-size: 0.90rem; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .price-label { font-size: 0.75rem; color: var(--text-sub); }
-        .price-value { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
-        .select-btn { width: 100%; background-color: var(--accent-blue); color: white; border: none; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .product-card.selected { outline: 2px solid var(--price-color); }
-        .product-card.selected .select-btn { background-color: #d90429; }
+        :root { 
+            --bg-color: #0b141a; 
+            --card-bg: #182533; 
+            --text-main: #ffffff; 
+            --text-sub: #7a8a96; 
+            --accent-blue: #2481cc; 
+            --price-color: #2ec4b6; 
+            --star-color: #ffb703; 
+            --danger-red: #d90429;
+            --admin-bg: #1c2a38;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 160px; font-size: 14px; }
+        
+        /* Admin Dashboard Section */
+        .admin-panel { background-color: var(--admin-bg); border-bottom: 2px dashed var(--accent-blue); padding: 15px; margin-bottom: 10px; }
+        .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--star-color); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
+        .admin-row label { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; }
+        .admin-input-group { display: flex; gap: 8px; align-items: center; }
+        .admin-input-group input[type="text"] { flex: 1; padding: 6px; border-radius: 4px; border: 1px solid var(--accent-blue); background: #0f171e; color: #fff; font-size: 0.85rem; }
+        .admin-input-group input[type="number"] { width: 80px; padding: 6px; border-radius: 4px; border: 1px solid var(--price-color); background: #0f171e; color: #fff; text-align: center; font-size: 0.85rem; }
+        
+        /* Main Application UI */
+        .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; text-align: center; }
+        .header-banner h1 { font-size: 1.2rem; }
+        .header-banner p { font-size: 0.8rem; color: rgba(255,255,255,0.8); }
+        .section-title { padding: 15px 16px 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); font-weight: bold; }
+        
+        .product-list { display: flex; flex-direction: column; gap: 10px; padding: 10px 16px; }
+        .product-card { background-color: var(--card-bg); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .product-image-container { width: 75px; height: 75px; border-radius: 8px; background: #223142; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; }
+        .no-image { font-size: 0.65rem; color: var(--text-sub); text-align: center; padding: 4px; }
+        
+        .product-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .product-title { font-size: 0.9rem; font-weight: bold; line-height: 1.3; }
+        .price-display { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
+        
+        /* Quantity Counter Buttons */
+        .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-counter.minus { background: #34495e; }
+        .qty-label { font-size: 0.95rem; font-weight: bold; min-width: 16px; text-align: center; }
+        
+        /* Bottom Fixed Checkout Bar */
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); z-index: 1000; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sub); }
-        .summary-item span, .summary-item-total span { display: block; text-align: center; }
-        .summary-item span:last-child, .summary-item-total span:last-child { font-size: 0.95rem; font-weight: bold; color: var(--text-main); margin-top: 2px; }
-        .summary-item-total span:last-child { color: var(--price-color); }
+        .summary-item-total span { display: block; text-align: right; }
+        .summary-item-total span:last-child { font-size: 1.05rem; font-weight: bold; color: var(--price-color); }
         .checkout-btn { background-color: #2ec4b6; color: #000000; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; text-align: center; }
         .checkout-btn:disabled { background-color: #2c3b47; color: var(--text-sub); cursor: not-allowed; }
-        .secure-payment { text-align: center; font-size: 0.7rem; color: #4bde43; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
     </style>
 </head>
 <body>
-    <div class="header-banner"><h1>Premium Digital Store</h1><p>Instant access via Secure Checkout</p></div>
-    <div class="policy-banner">⚠️ <strong>Notice:</strong> All completed digital product purchases are considered final, fully processed, and are strictly non-refundable under any circumstances.</div>
-    <div class="section-title">✨ Available Products (7 Items)</div>
-    <div class="grid-container">
-        <div class="product-card card-blue" id="p1" onclick="toggleSelect('p1', 5.00, 'Premium Strategy Guide')"><div class="badge-row"><span class="tag">Ebook 1</span><span class="rating">★ 4.9</span></div><div><div class="product-title">Premium Strategy Guide</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p1">🛒 Select Item</button></div>
-        <div class="product-card card-cyan" id="p2" onclick="toggleSelect('p2', 5.00, 'Mastery Telegram')"><div class="badge-row"><span class="tag">Ebook 2</span><span class="rating">★ 5.0</span></div><div><div class="product-title">Mastery Telegram</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p2">🛒 Select Item</button></div>
-        <div class="product-card card-green-dark" id="p3" onclick="toggleSelect('p3', 5.00, 'Pemasaran Digital 2027')"><div class="badge-row"><span class="tag">Ebook 3</span><span class="rating">★ 4.8</span></div><div><div class="product-title">Pemasaran Digital 2027</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p3">🛒 Select Item</button></div>
-        <div class="product-card card-green-light" id="p4" onclick="toggleSelect('p4', 5.00, 'Kunci Kejayaan E-Dagang')"><div class="badge-row"><span class="tag">Ebook 4</span><span class="rating">★ 4.7</span></div><div><div class="product-title">Kunci Kejayaan E-Dagang</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p4">🛒 Select Item</button></div>
-        <div class="product-card card-blue" id="p5" onclick="toggleSelect('p5', 5.00, 'Advanced Automation Hub')"><div class="badge-row"><span class="tag">Ebook 5</span><span class="rating">★ 4.9</span></div><div><div class="product-title">Advanced Automation Hub</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p5">🛒 Select Item</button></div>
-        <div class="product-card card-cyan" id="p6" onclick="toggleSelect('p6', 5.00, 'Financial Freedom Roadmap')"><div class="badge-row"><span class="tag">Ebook 6</span><span class="rating">★ 4.8</span></div><div><div class="product-title">Financial Freedom Roadmap</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p6">🛒 Select Item</button></div>
-        <div class="product-card card-green-dark" id="p7" onclick="toggleSelect('p7', 5.00, 'AI Content Formula')"><div class="badge-row"><span class="tag">Ebook 7</span><span class="rating">★ 5.0</span></div><div><div class="product-title">AI Content Formula</div></div><div class="price-row"><span class="price-label">Price</span><span class="price-value">SGD 5.00</span></div><button class="select-btn" id="btn-p7">🛒 Select Item</button></div>
+
+    <!-- 🛠️ DASHBOARD PENGURUSAN ADMIN (BOLEH DIEDIT MANUAL) -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-title">
+            <span>⚙️ Live Store Admin Manager</span>
+            <small style="color:var(--text-sub); font-weight:normal;">(Tukar teks & harga di sini)</small>
+        </div>
+        <div id="adminControlsContainer"></div>
     </div>
-    <div class="footer-bar"><div class="summary-row"><div class="summary-item"><span>Items Selected</span><span id="total-items">0 Items</span></div><div class="summary-item"><span>Multiplier K</span><span>x 2.50</span></div><div class="summary-item-total"><span>Net Total</span><span id="total-price">SGD 0.00</span></div></div><button class="checkout-btn" id="main-checkout-btn" disabled onclick="redirectToStripe()">PROCEED TO PAYMENT</button><div class="secure-payment">🔒 Powered by Stripe & Telegram Cloud</div></div>
+
+    <!-- TAMPILAN KEDAI UNTUK PELANGGAN -->
+    <div class="header-banner">
+        <h1>Premium Digital Store</h1>
+        <p>Instant access via Secure Checkout</p>
+    </div>
+    
+    <div class="section-title">✨ Available Products</div>
+    <div class="product-list" id="storeProductList"></div>
+
+    <!-- FOOTER TRANSAKSI -->
+    <div class="footer-bar">
+        <div class="summary-row">
+            <div>Items Selected: <span id="totalItemsCount" style="font-weight:bold; color:#fff;">0 Items</span></div>
+            <div class="summary-item-total">
+                <span>Net Total:</span>
+                <span id="totalPriceDisplay">SGD 0.00</span>
+            </div>
+        </div>
+        <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
+    </div>
+
     <script>
-        const tg = window.Telegram.WebApp; tg.expand(); let selectedProducts = {}; const multiplier = 2.50; const STRIPE_URL = "https://stripe.com";
-        function toggleSelect(id, price, name) { const card = document.getElementById(id); const btn = document.getElementById('btn-' + id); if (selectedProducts[id]) { delete selectedProducts[id]; card.classList.remove('selected'); btn.innerHTML = '🛒 Select Item'; btn.style.backgroundColor = '#2481cc'; } else { selectedProducts[id] = { price: price, name: name }; card.classList.add('selected'); btn.innerHTML = '❌ Remove'; btn.style.backgroundColor = '#d90429'; } updateSummary(); }
-        function updateSummary() { let itemCount = Object.keys(selectedProducts).length; let baseTotal = 0; for (let key in selectedProducts) { baseTotal += selectedProducts[key].price; } let finalTotal = baseTotal * multiplier; document.getElementById('total-items').innerText = itemCount + (itemCount === 1 ? ' Item' : ' Items'); document.getElementById('total-price').innerText = 'SGD ' + finalTotal.toFixed(2); const checkoutBtn = document.getElementById('main-checkout-btn'); if (itemCount > 0) { checkoutBtn.disabled = false; checkoutBtn.innerText = 'PROCEED TO PAYMENT (' + itemCount + ')'; } else { checkoutBtn.disabled = true; checkoutBtn.innerText = 'PROCEED TO PAYMENT'; } }
-function redirectToStripe() { let itemNames = []; let totalCost = 0; for (let key in selectedProducts) { itemNames.push(selectedProducts[key].name); totalCost += selectedProducts[key].price; } let finalNetPrice = totalCost * multiplier; const orderData = { items: itemNames, multiplier: multiplier, total_sgd: finalNetPrice.toFixed(2), action: "REDIRECTED_TO_STRIPE" }; tg.sendData(JSON.stringify(orderData)); tg.openLink(STRIPE_URL); tg.close(); }
+        // 1. Pangkalan Data Asal Produk (Boleh edit pautan imej di sini)
+        const productData = [
+            { id: "p1", name: "Premium Strategy Guide", image: "", price: 23.00, qty: 0 },
+            { id: "p2", name: "Mastery Telegram", image: "", price: 5.00, qty: 0 },
+            { id: "p3", name: "Digital Marketing 2027", image: "", price: 5.00, qty: 0 },
+            { id: "p4", name: "E-Commerce Success Keys", image: "", price: 5.00, qty: 0 },
+            { id: "p5", name: "Advanced Automation Hub", image: "", price: 5.00, qty: 0 },
+            { id: "p6", name: "Financial Freedom Roadmap", image: "", price: 5.00, qty: 0 },
+            { id: "p7", name: "AI Content Formula", image: "", price: 5.00, qty: 0 }
+        ];
+
+        // Memulakan Telegram WebApp API
+        let tg = window.Telegram ? window.Telegram.WebApp : null;
+        if(tg) { tg.expand(); }
+
+        // 2. Fungsi Menjana Tampilan Kedai & Dashboard Admin Serentak
+        function initStore() {
+            const adminContainer = document.getElementById('adminControlsContainer');
+            const storeContainer = document.getElementById('storeProductList');
+            
+            adminContainer.innerHTML = '';
+            storeContainer.innerHTML = '';
+
+            productData.forEach((product, index) => {
+                // Bina input kawalan admin bagi setiap produk
+                const adminRow = document.createElement('div');
+                adminRow.className = 'admin-row';
+                adminRow.innerHTML = `
+                    <label>Product ${index + 1} Settings</label>
+                    <div class="admin-input-group">
+                        <input type="text" value="${product.name}" oninput="updateProductName('${product.id}', this.value)" placeholder="Nama Produk">
+                        <input type="number" step="0.01" value="${product.price}" oninput="updateProductPrice('${product.id}', this.value)" placeholder="Harga">
+                        <input type="text" value="${product.image}" oninput="updateProductImage('${product.id}', this.value)" placeholder="URL Gambar (Opsional)">
+                    </div>
+                `;
+                adminContainer.appendChild(adminRow);
+
+                // Bina kad paparan produk untuk pelanggan
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.id = `card-${product.id}`;
+                
+                // Urusan logik paparan imej
+                const imageHTML = product.image ? 
+                    `<img src="${product.image}" class="product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : '';
+                
+                productCard.innerHTML = `
+                    <div class="product-image-container">
+                        ${imageHTML}
+                        <div class="no-image" style="${product.image ? 'display:none;' : 'display:block;'}">🖼️<br>No Image</div>
+                    </div>
+                    <div class="product-details">
+                        <div class="product-title" id="title-display-${product.id}">${product.name}</div>
+                        <div class="price-display" id="price-display-${product.id}">SGD ${product.price.toFixed(2)}</div>
+                    </div>
+                    <div class="counter-group">
+                        <button class="btn-counter minus" onclick="changeQty('${product.id}', -1)">-</button>
+                        <span class="qty-label" id="qty-display-${product.id}">${product.qty}</span>
+                        <button class="btn-counter plus" onclick="changeQty('${product.id}', 1)">+</button>
+`;
+storeContainer.appendChild(productCard);
+});
+calculateBill();
+}
+// 3. Fungsi Kemas Kini Data Secara Live daripada Input Dashboard Admin
+function updateProductName(id, newName) {
+const product = productData.find(p => p.id === id);
+if(product) {
+product.name = newName;
+document.getElementById(title-display-${id}).innerText = newName;
+}
+}
+function updateProductPrice(id, newPrice) {
+const product = productData.find(p => p.id === id);
+if(product) {
+// Jika input kosong atau padam, set nilai ke 0 buat sementara waktu bagi mengelakkan error NaN
+const parsedPrice = parseFloat(newPrice) || 0;
+product.price = parsedPrice;
+document.getElementById(price-display-${id}).innerText = SGD ${parsedPrice.toFixed(2)};
+calculateBill();
+}
+}
+function updateProductImage(id, newImageUrl) {
+const product = productData.find(p => p.id === id);
+if(product) {
+product.image = newImageUrl;
+const card = document.getElementById(card-${id});
+const imgContainer = card.querySelector('.product-image-container');
+if(newImageUrl) {
+imgContainer.innerHTML = <img src="${newImageUrl}" class="product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> <div class="no-image" style="display:none;">🖼️<br>No Image</div>;
+} else {
+imgContainer.innerHTML = <div class="no-image" style="display:block;">🖼️<br>No Image</div>;
+}
+}
+}
+// 4. Fungsi Mengawal Kuantiti Item (+ / -)
+function changeQty(id, change) {
+const product = productData.find(p => p.id === id);
+if(product) {
+let newQty = product.qty + change;
+if(newQty >= 0) { // Menghalang angka kuantiti menjadi negatif
+product.qty = newQty;
+document.getElementById(qty-display-${id}).innerText = newQty;
+calculateBill();
+}
+}
+}
+// 5. Fungsi Mengira Jumlah Keseluruhan Keranjang Belanja
+function calculateBill() {
+let totalItems = 0;
+let totalPrice = 0;
+let orderItems = [];
+productData.forEach(product => {
+if(product.qty > 0) {
+totalItems += product.qty;
+totalPrice += (product.qty * product.price);
+orderItems.push({
+name: product.name,
+quantity: product.qty,
+unit_price: product.price,
+subtotal: (product.qty * product.price)
+});
+}
+});
+document.getElementById('totalItemsCount').innerText = ${totalItems} Item${totalItems === 1 ? '' : 's'};
+document.getElementById('totalPriceDisplay').innerText = SGD ${totalPrice.toFixed(2)};
+const checkoutBtn = document.getElementById('checkoutBtn');
+if(totalItems > 0) {
+checkoutBtn.disabled = false;
+checkoutBtn.innerText = PROCEED TO PAYMENT (SGD ${totalPrice.toFixed(2)});
+} else {
+checkoutBtn.disabled = true;
+checkoutBtn.innerText = PROCEED TO PAYMENT;
+}
+window.currentOrderData = {
+items: orderItems,
+net_total_sgd: totalPrice.toFixed(2),
+total_quantity: totalItems
+};
+}
+// 6. Fungsi Menghantar Data Pesanan ke Bot Telegram
+function redirectPayment() {
+if (tg && window.currentOrderData) {
+tg.sendData(JSON.stringify(window.currentOrderData));
+tg.close();
+} else {
+alert("Order Data Ready!\n" + JSON.stringify(window.currentOrderData, null, 2));
+}
+}
+// Mulakan aplikasi sebaik sahaja kod dimuatkan
+window.onload = initStore;
