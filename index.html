@@ -120,8 +120,7 @@
             <div class="summary-item-total"><span>Net Total</span><span id="total-price">SGD 0.00</span></div>
         </div>
         <button class="checkout-btn" id="main-checkout-btn" disabled onclick="redirectToStripe()">PROCEED TO PAYMENT</button>
-        <div class="secure-payment">🔒 Powered by Stripe & Telegram Cloud</div>
-const tg = window.Telegram.WebApp; tg.expand();
+        <div class="secure-payment">🔒 Powered by Stripe & Telegram Cloud</div>const tg = window.Telegram.WebApp; tg.expand();
 let selectedProducts = {}; const multiplier = 2.50;
 const STRIPE_URL = "stripe.com";
 function toggleSelect(id, price, name) {
