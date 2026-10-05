@@ -41,7 +41,7 @@
         .product-title { font-size: 0.9rem; font-weight: bold; line-height: 1.3; }
         .price-display { font-size: 0.95rem; font-weight: bold; color: var(--price-color); }
         
-        .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .counter-group { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; border: 1px solid var(--text-sub); }
         .btn-counter { background: var(--accent-blue); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-counter.minus { background: #34495e; }
         .qty-label { font-size: 0.95rem; font-weight: bold; min-width: 16px; text-align: center; }
@@ -85,7 +85,6 @@
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
         <div class="secure-notice">🔒 Secured via Stripe Payments Gateway</div>
     </div>
-
     <script>
         const productData = [
             { id: "p1", name: "Premium Strategy Guide", image: "", price: 5.00, qty: 0 },
@@ -145,44 +144,52 @@
                 productCard.innerHTML = `
                     <div class="product-image-container">${imageHTML}<div class="no-image">No Image<br>Available</div></div>
                     <div class="product-details">
-${product.name}
-SGD ${product.price.toFixed(2)}
+                        <div class="product-title" id="title-display-${product.id}">${product.name}</div>
+                        <div class="price-display" id="price-display-${product.id}">SGD ${product.price.toFixed(2)}</div>
+                    </div>
+                    <div class="counter-group">
+                        <button class="btn-counter minus" onclick="changeQty('${product.id}', -1)">-</button>
+                        <span class="qty-label" id="qty-display-${product.id}">${product.qty}</span>
+                        <button class="btn-counter plus" onclick="changeQty('${product.id}', 1)">+</button>
+                    </div>`;
+                storeContainer.appendChild(productCard);
+            });
+            calculateBill();
+        }
 
+        function updateProductName(id, newName) { productData.find(p => p.id === id).name = newName; document.getElementById(`title-display-${id}`).innerText = newName; }
+        function updateProductPrice(id, newPrice) { const p = productData.find(p => p.id === id); p.price = parseFloat(newPrice) || 0; document.getElementById(`price-display-${id}`).innerText = `SGD ${p.price.toFixed(2)}`; calculateBill(); }
+        function updateProductImage(id, newImageUrl) { productData.find(p => p.id === id).image = newImageUrl; initStore(); }
 
--
-${product.qty}
-+
-`;
-storeContainer.appendChild(productCard);
-});
-calculateBill();
-}
-function updateProductName(id, newName) { productData.find(p => p.id === id).name = newName; document.getElementById(title-display-${id}).innerText = newName; }
-function updateProductPrice(id, newPrice) { const p = productData.find(p => p.id === id); p.price = parseFloat(newPrice) || 0; document.getElementById(price-display-${id}).innerText = SGD ${p.price.toFixed(2)}; calculateBill(); }
-function updateProductImage(id, newImageUrl) { productData.find(p => p.id === id).image = newImageUrl; initStore(); }
-function changeQty(id, change) {
-const p = productData.find(p => p.id === id);
-if(p && p.qty + change >= 0) { p.qty += change; document.getElementById(qty-display-${id}).innerText = p.qty; calculateBill(); }
-}
-function calculateBill() {
-let items = 0, price = 0, list = [];
-productData.forEach(p => {
-if(p.qty > 0) { items += p.qty; price += (p.qty * p.price); list.push({ name: p.name, quantity: p.qty }); }
-});
-document.getElementById('totalItemsCount').innerText = ${items} Items;
-document.getElementById('totalPriceDisplay').innerText = SGD ${price.toFixed(2)};
-const checkoutBtn = document.getElementById('checkoutBtn');
-checkoutBtn.disabled = items === 0;
-checkoutBtn.innerText = items > 0 ? PROCEED TO PAYMENT (${items}) : PROCEED TO PAYMENT;
-window.currentOrderData = { items: list, net_total_sgd: price.toFixed(2) };
-}
-function redirectPayment() {
-if (tg && window.currentOrderData) {
-tg.sendData(JSON.stringify(window.currentOrderData));
-tg.openLink(STRIPE_CHECKOUT_URL);
-tg.close();
-} else {
-window.open(STRIPE_CHECKOUT_URL, '_blank');
-}
-}
-window.onload = initStore;
+        function changeQty(id, change) {
+            const p = productData.find(p => p.id === id);
+            if(p && p.qty + change >= 0) { p.qty += change; document.getElementById(`qty-display-${id}`).innerText = p.qty; calculateBill(); }
+        }
+
+        function calculateBill() {
+            let items = 0, price = 0, list = [];
+            productData.forEach(p => {
+                if(p.qty > 0) { items += p.qty; price += (p.qty * p.price); list.push({ name: p.name, quantity: p.qty }); }
+            });
+            document.getElementById('totalItemsCount').innerText = `${items} Items`;
+            document.getElementById('totalPriceDisplay').innerText = `SGD ${price.toFixed(2)}`;
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.disabled = items === 0;
+            checkoutBtn.innerText = items > 0 ? `PROCEED TO PAYMENT (${items})` : `PROCEED TO PAYMENT`;
+            
+            window.currentOrderData = { items: list, net_total_sgd: price.toFixed(2) };
+        }
+
+        function redirectPayment() {
+            if (tg && window.currentOrderData) {
+                tg.sendData(JSON.stringify(window.currentOrderData));
+                tg.openLink(STRIPE_CHECKOUT_URL);
+                tg.close();
+            } else {
+                window.open(STRIPE_CHECKOUT_URL, '_blank');
+            }
+        }
+        window.onload = initStore;
+    </script>
+</body>
+</html>
