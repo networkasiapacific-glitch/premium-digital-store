@@ -57,30 +57,33 @@
         tg.expand();
 
         function initStore() {
-            const container = document.getElementById('storeProductList');
-            container.innerHTML = '';
-            productData.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                const badgeClass = product.status === 'ACTIVE' ? 'badge-active' : 'badge-preview';
-                const badgeText = product.status === 'ACTIVE' ? 'AVAILABLE' : 'PREVIEW ONLY';
-                
-                card.innerHTML = `
-                    <div class="product-details">
-                        <div class="product-title">${product.name}</div>
-                        <div class="price-display">SGD ${product.price.toFixed(2)}</div>
-                        <div class="badge ${badgeClass}">${badgeText}</div>
-                    </div>
-                    <div class="counter-group">
-                        <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
-                        <span id="qty-${product.id}" style="font-size: 1.1rem; font-weight: bold; min-width: 15px; text-align: center;">0</span>
-                        <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+    // Mencoba mencari kontainer storeProductList atau products-container secara otomatis
+    const container = document.getElementById('storeProductList') || document.getElementById('products-container') || document.querySelector('.products-list');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    productData.forEach((product, index) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        const badgeClass = product.status === 'ACTIVE' ? 'badge-active' : 'badge-preview';
+        const badgeText = product.status === 'ACTIVE' ? 'AVAILABLE' : 'PREVIEW ONLY';
+        
+        card.innerHTML = `
+            <div class="product-details">
+                <div class="product-title">${product.name}</div>
+                <div class="product-price">SGD ${product.price.toFixed(2)}</div>
+                <div class="badge ${badgeClass}">${badgeText}</div>
+            </div>
+            <div class="counter-group">
+                <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
+                <span id="qty-${product.id}" class="qty-display">${product.qty}</span>
+                <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
         function changeQty(index, amount) {
             productData[index].qty = Math.max(0, productData[index].qty + amount);
