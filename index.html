@@ -37,7 +37,7 @@
     </div>
 
     <script>
-        const productData = [
+const productData = [
   { id: "p1", name: "TikTok Automation Strategy", price: 5.00, qty: 0, status: "ACTIVE" },
   { id: "p2", name: "Digital Marketing 2027", price: 5.00, qty: 0, status: "ACTIVE" },
   { id: "p3", name: "E-Commerce Success Keys", price: 5.00, qty: 0, status: "ACTIVE" },
@@ -52,12 +52,12 @@
   { id: "p12", name: "Viral Traffic System", price: 5.00, qty: 0, status: "ACTIVE" },
   { id: "p13", name: "30-Day Video Action Plan", price: 5.00, qty: 0, status: "ACTIVE" }
 ];
-        const tg = window.Telegram.WebApp;
-        tg.expand();
 
-        function initStore() {
-    // Mencoba mencari kontainer storeProductList atau products-container secara otomatis
-    const container = document.getElementById('storeProductList') || document.getElementById('products-container') || document.querySelector('.products-list');
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+function initStore() {
+    const container = document.getElementById('storeProductList');
     if (!container) return;
     container.innerHTML = '';
     
@@ -84,36 +84,34 @@
     });
 }
 
-        function changeQty(index, amount) {
-            productData[index].qty = Math.max(0, productData[index].qty + amount);
-            document.getElementById(`qty-${productData[index].id}`).innerText = productData[index].qty;
-            calculateTotal();
-        }
+function changeQty(index, amount) {
+    productData[index].qty = Math.max(0, productData[index].qty + amount);
+    document.getElementById(`qty-${productData[index].id}`).innerText = productData[index].qty;
+    calculateTotal();
+}
 
-        function calculateTotal() {
-            let totalItems = 0;
-            productData.forEach(p => totalItems += p.qty);
-            const btn = document.getElementById('checkoutBtn');
-            if (totalItems > 0) {
-                btn.disabled = false;
-                btn.innerText = `PROCEED TO PAYMENT (${totalItems} Items)`;
-            } else {
-                btn.disabled = true;
-                btn.innerText = 'PROCEED TO PAYMENT';
-            }
-        }
+function calculateTotal() {
+    let totalItems = 0;
+    productData.forEach(p => { totalItems += p.qty; });
+    const btn = document.getElementById('checkoutBtn');
+    if (totalItems > 0) {
+        btn.disabled = false;
+        btn.innerText = `PROCEED TO PAYMENT (${totalItems} Items)`;
+    } else {
+        btn.disabled = true;
+        btn.innerText = 'PROCEED TO PAYMENT';
+    }
+}
 
-        function redirectPayment() {
-            const selectedItems = productData.filter(p => p.qty > 0);
-            const orderPayload = {
-                status: "PAID",
-                items: selectedItems
-            };
-            tg.sendData(JSON.stringify(orderPayload));
-            tg.close();
-        }
+function redirectPayment() {
+    const selectedItems = productData.filter(p => p.qty > 0);
+    const orderPayload = {
+        status: "PAID",
+        items: selectedItems
+    };
+    tg.sendData(JSON.stringify(orderPayload));
+    tg.close();
+}
 
-        window.onload = initStore;
-    </script>
-</body>
-</html>
+window.onload = initStore;
+</script>
