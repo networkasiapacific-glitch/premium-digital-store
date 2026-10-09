@@ -60,67 +60,67 @@
         ];
 
         function initStore() {
-            const container = document.getElementById('storeProductList');
-            if (!container) return;
-            container.innerHTML = '';
+    const container = document.getElementById('storeProductList');
+    if (!container) return;
+    container.innerHTML = '';
 
-            productData.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
+    productData.forEach((product, index) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
 
-                card.innerHTML = `
-                    <div class="product-details">
-                        <div class="product-title">${product.name}</div>
-                        <div class="product-price">RM ${product.price.toFixed(2)}</div>
-                        <div class="badge badge-active">Available</div>
-                    </div>
-                    <div class="counter-group">
-                        <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
-                        <span id="qty-${product.id}" style="font-weight: bold; min-width: 20px; text-align: center;">${product.qty}</span>
-                        <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+        card.innerHTML = `
+            <div class="product-details">
+                <div class="product-title">${product.name}</div>
+                <div class="product-price">RM ${product.price.toFixed(2)}</div>
+                <div class="badge badge-active">Available</div>
+            </div>
+            <div class="counter-group">
+                <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
+                <span id="qty-${product.id}" style="font-weight: bold; min-width: 20px; text-align: center;">${product.qty}</span>
+                <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
-        function changeQty(index, amount) {
-            productData[index].qty = Math.max(0, productData[index].qty + amount);
-            const product = productData[index];
-            document.getElementById(`qty-${product.id}`).innerText = product.qty;
-            calculateTotal();
-        }
+function changeQty(index, amount) {
+    productData[index].qty = Math.max(0, productData[index].qty + amount);
+    const product = productData[index];
+    document.getElementById(`qty-${product.id}`).innerText = product.qty;
+    calculateTotal();
+}
 
-        function calculateTotal() {
-            let totalItems = 0;
-            let totalPrice = 0;
-            
-            productData.forEach(p => {
-                totalItems += p.qty;
-                totalPrice += (p.qty * p.price);
-            });
+function calculateTotal() {
+    let totalItems = 0;
+    let totalPrice = 0;
+    
+    productData.forEach(p => {
+        totalItems += p.qty;
+        totalPrice += (p.qty * p.price);
+    });
 
-            const btn = document.getElementById('checkoutBtn');
-            if (totalItems > 0) {
-                btn.disabled = false;
-                btn.innerText = `PROCEED TO PAYMENT (RM ${totalPrice.toFixed(2)})`;
-            } else {
-                btn.disabled = true;
-                btn.innerText = "PROCEED TO PAYMENT";
-            }
-        }
+    const btn = document.getElementById('checkoutBtn');
+    if (totalItems > 0) {
+        btn.disabled = false;
+        btn.innerText = `PROCEED TO PAYMENT (RM ${totalPrice.toFixed(2)})`;
+    } else {
+        btn.disabled = true;
+        btn.innerText = "PROCEED TO PAYMENT";
+    }
+}
 
-        function redirectPayment() {
-            const selectedItems = productData.filter(p => p.qty > 0);
-            const orderPayload = {
-                status: "PAID",
-                items: selectedItems
-            };
-            tg.sendData(JSON.stringify(orderPayload));
-            tg.close();
-        }
+function redirectPayment() {
+    const selectedItems = productData.filter(p => p.qty > 0);
+    const orderPayload = {
+        status: "PAID",
+        items: selectedItems
+    };
+    tg.sendData(JSON.stringify(orderPayload));
+    tg.close();
+}
 
-        window.onload = initStore;
+window.onload = initStore;
     </script>
 </body>
 </html>
