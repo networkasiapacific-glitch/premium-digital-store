@@ -69,7 +69,6 @@
             <button class="btn-gate btn-close" onclick="closePaymentModal()">[ Cancel ]</button>
         </div>
     </div>
-
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -160,10 +159,14 @@
             const orderPayload = {
                 status: "PENDING",
                 currency: selectedCurrency,
-        gateway: method,
-        items: selectedItems
-};
-        tg.sendData(JSON.stringify(orderPayload));
-        tg.close();
-}
+                gateway: method,
+                items: selectedItems
+            };
+            tg.sendData(JSON.stringify(orderPayload));
+            tg.close();
+        }
+
         window.onload = initStore;
+    </script>
+</body>
+</html>
