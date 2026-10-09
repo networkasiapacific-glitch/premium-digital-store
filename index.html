@@ -8,7 +8,7 @@
     <style>
         :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #8796a1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 120px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 140px; }
         .header-banner { background: linear-gradient(135deg, #1a3c72 0%, #2a5298 100%); padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .currency-panel { padding: 12px 5%; background: #111c24; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .currency-select { background-color: var(--card-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; }
@@ -21,11 +21,11 @@
         .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: fit-content; background-color: rgba(0, 191, 165, 0.2); color: #00bfa5; }
         .counter-group { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         .btn-counter { background-color: #2775ff; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .terms-banner { background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); margin: 15px 5%; padding: 12px; border-radius: 8px; text-align: center; }
+        .terms-text { font-size: 0.78rem; color: #fca5a5; line-height: 1.4; font-weight: 500; }
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
         .checkout-btn { background-color: #2488ff; color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer; }
         .checkout-btn:disabled { background-color: #23303d; color: var(--text-sub); cursor: not-allowed; }
-        
-        /* GAYA UNTUK POP-UP PILIHAN GATEWAY */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal-content { background: #17212b; padding: 25px; border-radius: 16px; width: 100%; max-width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; }
@@ -43,11 +43,15 @@
     </div>
 
     <div class="currency-panel">
-        <span style="color: var(--text-sub); font-size: 0.9rem;">Pilih Mata Wang / Currency:</span>
+        <span style="color: var(--text-sub); font-size: 0.9rem;">Select Currency:</span>
         <select id="currencySelector" class="currency-select" onchange="handleCurrencyChange()">
             <option value="SGD">Singapore Dollar (SGD)</option>
             <option value="RM">Malaysia Ringgit (RM)</option>
         </select>
+    </div>
+
+    <div class="terms-banner">
+        <p class="terms-text">⚠️ **Notice:** All digital purchases are final, deemed valid immediately upon purchase, and are strictly non-refundable under any circumstances whatsoever.</p>
     </div>
 
     <div class="section-title">E-Book Catalogue</div>
@@ -57,13 +61,12 @@
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="openPaymentModal()">PROCEED TO PAYMENT</button>
     </div>
 
-    <!-- POP-UP PILIHAN METHOD PEMBAYARAN -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <div class="modal-title">PILIH CARA BAYARAN</div>
+            <div class="modal-title">SELECT PAYMENT METHOD</div>
             <button class="btn-gate btn-tng" onclick="submitOrder('TNG')">📲 Touch 'n Go eWallet / DuitNow</button>
             <button class="btn-gate btn-stripe" onclick="submitOrder('STRIPE')">💳 Credit Card / FPX Bank (Stripe)</button>
-            <button class="btn-gate btn-close" onclick="closePaymentModal()">[ Batal / Cancel ]</button>
+            <button class="btn-gate btn-close" onclick="closePaymentModal()">[ Cancel ]</button>
         </div>
     </div>
 
@@ -157,14 +160,10 @@
             const orderPayload = {
                 status: "PENDING",
                 currency: selectedCurrency,
-                gateway: method, // Menghantar pilihan 'TNG' atau 'STRIPE' ke server
-                items: selectedItems
-            };
-            tg.sendData(JSON.stringify(orderPayload));
-            tg.close();
-        }
-
-        window.onload = initStore;
-    </script>
-</body>
-</html>
+gateway: method,
+items: selectedItems
+};
+tg.sendData(JSON.stringify(orderPayload));
+tg.close();
+}
+window.onload = initStore;
