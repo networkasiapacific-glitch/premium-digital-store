@@ -6,112 +6,121 @@
     <title>Premium Digital Store</title>
     <script src="https://telegram.org"></script>
     <style>
-        :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #7a8a96; --accent-blue: #248bbf; --accent-green: #00bfa5; }
+        :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #8796a1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; font-size: 14px; }
-        .header-banner { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 25px; text-align: center; }
-        .section-title { padding: 15px 5%; font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; }
+        .header-banner { background: linear-gradient(135deg, #1a3c72 0%, #2a5298 100%); padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .section-title { padding: 15px 5%; font-size: 0.85rem; text-transform: uppercase; color: var(--text-sub); font-weight: bold; }
         .product-list { display: flex; flex-direction: column; gap: 10px; padding: 0 5%; }
-        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #202b36; }
+        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); }
         .product-details { display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .product-title { font-size: 0.95rem; font-weight: bold; }
-        .price-display { font-size: 0.9rem; font-weight: bold; color: var(--accent-blue); }
-        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; font-weight: bold; width: fit-content; margin-top: 2px; }
-        .badge-active { background-color: rgba(0, 191, 165, 0.2); color: var(--accent-green); }
-        .badge-preview { background-color: rgba(122, 138, 150, 0.2); color: var(--text-sub); }
-        .btn-counter { background: var(--accent-blue); color: white; border: none; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        .counter-group { display: flex; align-items: center; gap: 12px; }
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; display: flex; border-top: 1px solid #202b36; }
-        .checkout-btn { background-color: #248bbf; color: #ffffff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; font-size: 1rem; }
+        .product-price { font-size: 0.85rem; color: #2775ff; font-weight: bold; }
+        .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: fit-content; }
+        .badge-active { background-color: rgba(0, 191, 165, 0.2); color: #00bfa5; }
+        .counter-group { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+        .btn-counter { background-color: #2775ff; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
+        .checkout-btn { background-color: #2488ff; color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .checkout-btn:disabled { background-color: #23303d; color: var(--text-sub); cursor: not-allowed; }
     </style>
 </head>
 <body>
+
     <div class="header-banner">
         <h2>Premium Digital Store</h2>
         <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Instant access via Secure Checkout</p>
     </div>
-    <div id="storeProductList"></div>
+
+    <div class="section-title">E-Book Catalogue</div>
+    <div id="storeProductList" class="product-list"></div>
+
     <div class="footer-bar">
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
     </div>
 
     <script>
-const productData = [
-  { id: "p1", name: "TikTok Automation Strategy", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p2", name: "Digital Marketing 2027", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p3", name: "E-Commerce Success Keys", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p4", name: "Advanced Automation Hub", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p5", name: "Financial Freedom Roadmap", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p6", name: "AI Content Formula", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p7", name: "Mastery Telegram", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p8", name: "Premium Strategy Guide", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p9", name: "Seni Jualan Senyap", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p10", name: "High Conversion Copywriting", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p11", name: "Organic Branding Matrix", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p12", name: "Viral Traffic System", price: 5.00, qty: 0, status: "ACTIVE" },
-  { id: "p13", name: "30-Day Video Action Plan", price: 5.00, qty: 0, status: "ACTIVE" }
-];
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-const tg = window.Telegram.WebApp;
-tg.expand();
+        const productData = [
+            { id: "p1", name: "TikTok Automation Strategy", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p2", name: "Digital Marketing 2027", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p3", name: "E-Commerce Success Keys", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p4", name: "Advanced Automation Hub", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p5", name: "Financial Freedom Roadmap", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p6", name: "AI Content Formula", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p7", name: "Mastery Telegram", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p8", name: "Premium Strategy Guide", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p9", name: "Seni Jualan Senyap", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p10", name: "High Conversion Copywriting", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p11", name: "Organic Branding Matrix", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p12", name: "Viral Traffic System", price: 5.00, qty: 0, status: "ACTIVE" },
+            { id: "p13", name: "30-Day Video Action Plan", price: 5.00, qty: 0, status: "ACTIVE" }
+        ];
 
-function initStore() {
-    const container = document.getElementById('storeProductList');
-    if (!container) return;
-    container.innerHTML = '';
-    
-    productData.forEach((product, index) => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        
-        const badgeClass = product.status === 'ACTIVE' ? 'badge-active' : 'badge-preview';
-        const badgeText = product.status === 'ACTIVE' ? 'AVAILABLE' : 'PREVIEW ONLY';
-        
-        card.innerHTML = `
-            <div class="product-details">
-                <div class="product-title">${product.name}</div>
-                <div class="product-price">SGD ${product.price.toFixed(2)}</div>
-                <div class="badge ${badgeClass}">${badgeText}</div>
-            </div>
-            <div class="counter-group">
-                <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
-                <span id="qty-${product.id}" class="qty-display">${product.qty}</span>
-                <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
+        function initStore() {
+            const container = document.getElementById('storeProductList');
+            if (!container) return;
+            container.innerHTML = '';
 
-function changeQty(index, amount) {
-    productData[index].qty = Math.max(0, productData[index].qty + amount);
-    document.getElementById(`qty-${productData[index].id}`).innerText = productData[index].qty;
-    calculateTotal();
-}
+            productData.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
 
-function calculateTotal() {
-    let totalItems = 0;
-    productData.forEach(p => { totalItems += p.qty; });
-    const btn = document.getElementById('checkoutBtn');
-    if (totalItems > 0) {
-        btn.disabled = false;
-        btn.innerText = `PROCEED TO PAYMENT (${totalItems} Items)`;
-    } else {
-        btn.disabled = true;
-        btn.innerText = 'PROCEED TO PAYMENT';
-    }
-}
+                card.innerHTML = `
+                    <div class="product-details">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price">RM ${product.price.toFixed(2)}</div>
+                        <div class="badge badge-active">Available</div>
+                    </div>
+                    <div class="counter-group">
+                        <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
+                        <span id="qty-${product.id}" style="font-weight: bold; min-width: 20px; text-align: center;">${product.qty}</span>
+                        <button class="btn-counter" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
 
-function redirectPayment() {
-    const selectedItems = productData.filter(p => p.qty > 0);
-    const orderPayload = {
-        status: "PAID",
-        items: selectedItems
-    };
-    tg.sendData(JSON.stringify(orderPayload));
-    tg.close();
-}
+        function changeQty(index, amount) {
+            productData[index].qty = Math.max(0, productData[index].qty + amount);
+            const product = productData[index];
+            document.getElementById(`qty-${product.id}`).innerText = product.qty;
+            calculateTotal();
+        }
 
-window.onload = initStore;
-</script>
+        function calculateTotal() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            productData.forEach(p => {
+                totalItems += p.qty;
+                totalPrice += (p.qty * p.price);
+            });
+
+            const btn = document.getElementById('checkoutBtn');
+            if (totalItems > 0) {
+                btn.disabled = false;
+                btn.innerText = `PROCEED TO PAYMENT (RM ${totalPrice.toFixed(2)})`;
+            } else {
+                btn.disabled = true;
+                btn.innerText = "PROCEED TO PAYMENT";
+            }
+        }
+
+        function redirectPayment() {
+            const selectedItems = productData.filter(p => p.qty > 0);
+            const orderPayload = {
+                status: "PAID",
+                items: selectedItems
+            };
+            tg.sendData(JSON.stringify(orderPayload));
+            tg.close();
+        }
+
+        window.onload = initStore;
+    </script>
+</body>
+</html>
