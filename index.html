@@ -8,21 +8,31 @@
     <style>
         :root { --bg-color: #0b141a; --card-bg: #182229; --text-main: #ffffff; --text-sub: #8796a1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 100px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 120px; }
         .header-banner { background: linear-gradient(135deg, #1a3c72 0%, #2a5298 100%); padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .currency-panel { padding: 12px 5%; background: #111c24; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .currency-select { background-color: var(--card-bg); color: var(--text-main); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; }
         .section-title { padding: 15px 5%; font-size: 0.85rem; text-transform: uppercase; color: var(--text-sub); font-weight: bold; }
         .product-list { display: flex; flex-direction: column; gap: 10px; padding: 0 5%; }
         .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); }
         .product-details { display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .product-title { font-size: 0.95rem; font-weight: bold; }
         .product-price { font-size: 0.85rem; color: #2775ff; font-weight: bold; }
-        .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: fit-content; }
-        .badge-active { background-color: rgba(0, 191, 165, 0.2); color: #00bfa5; }
+        .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: fit-content; background-color: rgba(0, 191, 165, 0.2); color: #00bfa5; }
         .counter-group { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         .btn-counter { background-color: #2775ff; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #17212b; padding: 15px 5%; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
-        .checkout-btn { background-color: #2488ff; color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .checkout-btn { background-color: #2488ff; color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer; }
         .checkout-btn:disabled { background-color: #23303d; color: var(--text-sub); cursor: not-allowed; }
+        
+        /* GAYA UNTUK POP-UP PILIHAN GATEWAY */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: #17212b; padding: 25px; border-radius: 16px; width: 100%; max-width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; }
+        .btn-gate { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-tng { background-color: #005bc4; color: white; }
+        .btn-stripe { background-color: #635bff; color: white; }
+        .btn-close { background-color: transparent; color: var(--text-sub); font-size: 0.85rem; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -32,31 +42,52 @@
         <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Instant access via Secure Checkout</p>
     </div>
 
+    <div class="currency-panel">
+        <span style="color: var(--text-sub); font-size: 0.9rem;">Pilih Mata Wang / Currency:</span>
+        <select id="currencySelector" class="currency-select" onchange="handleCurrencyChange()">
+            <option value="SGD">Singapore Dollar (SGD)</option>
+            <option value="RM">Malaysia Ringgit (RM)</option>
+        </select>
+    </div>
+
     <div class="section-title">E-Book Catalogue</div>
     <div id="storeProductList" class="product-list"></div>
 
     <div class="footer-bar">
-        <button class="checkout-btn" id="checkoutBtn" disabled onclick="redirectPayment()">PROCEED TO PAYMENT</button>
+        <button class="checkout-btn" id="checkoutBtn" disabled onclick="openPaymentModal()">PROCEED TO PAYMENT</button>
+    </div>
+
+    <!-- POP-UP PILIHAN METHOD PEMBAYARAN -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">PILIH CARA BAYARAN</div>
+            <button class="btn-gate btn-tng" onclick="submitOrder('TNG')">📲 Touch 'n Go eWallet / DuitNow</button>
+            <button class="btn-gate btn-stripe" onclick="submitOrder('STRIPE')">💳 Credit Card / FPX Bank (Stripe)</button>
+            <button class="btn-gate btn-close" onclick="closePaymentModal()">[ Batal / Cancel ]</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        let selectedCurrency = "SGD";
+        const myrRate = 3.30; 
+
         const productData = [
-            { id: "p1", name: "TikTok Automation Strategy", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p2", name: "Digital Marketing 2027", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p3", name: "E-Commerce Success Keys", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p4", name: "Advanced Automation Hub", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p5", name: "Financial Freedom Roadmap", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p6", name: "AI Content Formula", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p7", name: "Mastery Telegram", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p8", name: "Premium Strategy Guide", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p9", name: "Seni Jualan Senyap", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p10", name: "High Conversion Copywriting", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p11", name: "Organic Branding Matrix", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p12", name: "Viral Traffic System", price: 5.00, qty: 0, status: "ACTIVE" },
-            { id: "p13", name: "30-Day Video Action Plan", price: 5.00, qty: 0, status: "ACTIVE" }
+            { id: "p1", name: "TikTok Automation Strategy", price: 5.00, qty: 0 },
+            { id: "p2", name: "Digital Marketing 2027", price: 5.00, qty: 0 },
+            { id: "p3", name: "E-Commerce Success Keys", price: 5.00, qty: 0 },
+            { id: "p4", name: "Advanced Automation Hub", price: 5.00, qty: 0 },
+            { id: "p5", name: "Financial Freedom Roadmap", price: 5.00, qty: 0 },
+            { id: "p6", name: "AI Content Formula", price: 5.00, qty: 0 },
+            { id: "p7", name: "Mastery Telegram", price: 5.00, qty: 0 },
+            { id: "p8", name: "Premium Strategy Guide", price: 5.00, qty: 0 },
+            { id: "p9", name: "Seni Jualan Senyap", price: 5.00, qty: 0 },
+            { id: "p10", name: "High Conversion Copywriting", price: 5.00, qty: 0 },
+            { id: "p11", name: "Organic Branding Matrix", price: 5.00, qty: 0 },
+            { id: "p12", name: "Viral Traffic System", price: 5.00, qty: 0 },
+            { id: "p13", name: "30-Day Video Action Plan", price: 5.00, qty: 0 }
         ];
 
         function initStore() {
@@ -67,12 +98,14 @@
             productData.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                const finalPrice = selectedCurrency === "SGD" ? product.price : (product.price * myrRate);
+                const currencySign = selectedCurrency === "SGD" ? "SGD" : "RM";
 
                 card.innerHTML = `
                     <div class="product-details">
                         <div class="product-title">${product.name}</div>
-                        <div class="product-price">RM ${product.price.toFixed(2)}</div>
-                        <div class="badge badge-active">Available</div>
+                        <div class="product-price">${currencySign} ${finalPrice.toFixed(2)}</div>
+                        <div class="badge">Available</div>
                     </div>
                     <div class="counter-group">
                         <button class="btn-counter" onclick="changeQty(${index}, -1)">-</button>
@@ -91,29 +124,40 @@
             calculateTotal();
         }
 
+        function handleCurrencyChange() {
+            selectedCurrency = document.getElementById('currencySelector').value;
+            initStore();
+            calculateTotal();
+        }
+
         function calculateTotal() {
             let totalItems = 0;
             let totalPrice = 0;
-            
             productData.forEach(p => {
                 totalItems += p.qty;
                 totalPrice += (p.qty * p.price);
             });
-
             const btn = document.getElementById('checkoutBtn');
             if (totalItems > 0) {
                 btn.disabled = false;
-                btn.innerText = `PROCEED TO PAYMENT (RM ${totalPrice.toFixed(2)})`;
+                const finalTotal = selectedCurrency === "SGD" ? totalPrice : (totalPrice * myrRate);
+                const currencySign = selectedCurrency === "SGD" ? "SGD" : "RM";
+                btn.innerText = `PROCEED TO PAYMENT (${currencySign} ${finalTotal.toFixed(2)})`;
             } else {
                 btn.disabled = true;
                 btn.innerText = "PROCEED TO PAYMENT";
             }
         }
 
-        function redirectPayment() {
+        function openPaymentModal() { document.getElementById('paymentModal').style.display = 'flex'; }
+        function closePaymentModal() { document.getElementById('paymentModal').style.display = 'none'; }
+
+        function submitOrder(method) {
             const selectedItems = productData.filter(p => p.qty > 0);
             const orderPayload = {
-                status: "PAID",
+                status: "PENDING",
+                currency: selectedCurrency,
+                gateway: method, // Menghantar pilihan 'TNG' atau 'STRIPE' ke server
                 items: selectedItems
             };
             tg.sendData(JSON.stringify(orderPayload));
