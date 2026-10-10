@@ -141,7 +141,6 @@
             list.innerHTML = '';
             
             products.forEach((p, index) => {
-                // Kira harga paparan berdasarkan jenis mata wang yang dipilih
                 const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
                 
                 const card = document.createElement('div');
