@@ -272,18 +272,22 @@
             renderProducts();
             alert("✅ Saved successfully! Item has been updated to client view memory.");
 
-         // FUNGSI UTAMA UNTUK KEKAL PERMANEN
+            // FUNGSI UTAMA UNTUK KEKAL PERMANEN
         function savePermanently() {
+            // Mengunci data terus ke storan keras pelayar telefon
             localStorage.setItem('premium_store_products', JSON.stringify(products));
+            
+            // Cuba hantar data salinan ke bot (jika disokong)
+            try {
+                tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
+            } catch(e) {
+                console.log("Bot sync bypass");
+            }
+            
             document.body.classList.remove('admin-mode');
             renderProducts();
-            
-            // HANTAR DATA DIKEMAS KINI KE BOT PYTHON
-            tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
             alert("✅ Saved Permanently! Senarai baharu telah dikunci masuk ke sistem kedai.");
         }
-            
-        }   
             
         window.onload = renderProducts;
     </script>
