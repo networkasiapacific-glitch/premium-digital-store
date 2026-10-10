@@ -265,6 +265,14 @@
                 renderProducts();
             }
         }
+        
+        function forcePushToClient() {
+            document.body.classList.remove('admin-mode');
+            renderProducts();
+            alert("✅ Saved successfully! Item has been updated to client view memory.");
+        
+        }   
+            
         window.onload = renderProducts;
     </script>
 </body>
