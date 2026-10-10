@@ -4,39 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Digital Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org"></script>
     <style>
         :root { --bg-color: #0b1426; --card-bg: #152238; --text-color: #ffffff; --accent-color: #0088cc; --danger-color: #e53935; --success-color: #4caf50; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 90px; -webkit-user-select: none; user-select: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .header h1 { margin: 0; font-size: 18px; font-weight: bold; color: #0088cc; }
-        .admin-trigger { background: transparent; border: none; color: rgba(255,255,255,0.3); font-size: 12px; cursor: pointer; padding: 5px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 90px; user-select: none; -webkit-user-select: none; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .header h1 { margin: 0; font-size: 16px; font-weight: bold; color: #ffffff; }
+        .admin-trigger { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 11px; cursor: pointer; }
+        
+        /* Currency Selector */
+        .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
+        .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
+        
+        /* Product Cards */
+        .section-title { font-size: 12px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
         .product-list { display: flex; flex-direction: column; gap: 12px; }
-        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
         .product-info { flex: 1; margin-right: 10px; }
-        .product-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; display: block; }
-        .product-price { color: #8fa0bc; font-size: 13px; }
+        .product-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: block; }
+        .product-price { color: #0088cc; font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; }
+        .badge-status { display: inline-block; background: rgba(76, 175, 80, 0.15); color: #4caf50; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+        
+        /* Control Buttons */
         .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; }
         .btn-qty { background: var(--accent-color); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .qty-val { font-weight: bold; min-width: 15px; text-align: center; font-size: 14px; }
+        
+        /* Admin Mode */
         .admin-actions { display: none; gap: 6px; }
         body.admin-mode .admin-actions { display: flex; }
         body.admin-mode .qty-controls { display: none; }
         .btn-admin { border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .btn-edit { background-color: #ffa000; }
         .btn-delete { background-color: var(--danger-color); }
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f1c32; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
-        .btn-main { background: var(--accent-color); color: white; border: none; width: 100%; max-width: 400px; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; }
         .btn-add-list { background-color: var(--success-color); display: none; width: 100%; padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 14px; margin-bottom: 15px; cursor: pointer; }
         body.admin-mode .btn-add-list { display: block; }
+        
+        /* Footer & Modals */
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f1c32; padding: 15px; display: flex; justify-content: center; align-items: center; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
+        .btn-main { background: var(--accent-color); color: white; border: none; width: 100%; max-width: 400px; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; text-transform: uppercase; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; text-align: center; }
+        .modal-title { font-weight: bold; font-size: 15px; margin-bottom: 15px; text-align: center; letter-spacing: 0.5px; }
         .btn-gate { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; border: none; color: white; font-weight: bold; margin-bottom: 10px; cursor: pointer; font-size: 14px; }
         .gate-tng { background: #005bc4; }
         .gate-stripe { background: #635bff; }
-        .modal-close { text-align: center; color: #8fa0bc; font-size: 13px; cursor: pointer; margin-top: 10px; }
+        .modal-close { text-align: center; color: #8fa0bc; font-size: 12px; cursor: pointer; margin-top: 10px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; color: #8fa0bc; margin-bottom: 4px; }
         .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; }
@@ -45,29 +60,40 @@
 <body>
 
     <div class="header">
-        <h1>🛍️ Premium Digital Store</h1>
+        <h1>Premium Digital Store</h1>
         <button class="admin-trigger" onclick="checkAdmin()">⚙️ Staff</button>
     </div>
 
-    <button class="btn-add-list" onclick="openAddModal()">➕ Add New E-Book</button>
+    <!-- PENGATURAN PILIHAN MULTIPLE CURRENCY -->
+    <div class="currency-box">
+        <span class="currency-label">Select Currency:</span>
+        <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
+            <option value="SGD">Singapore Dollar (SGD)</option>
+            <option value="MYR">Malaysian Ringgit (MYR)</option>
+        </select>
+    </div>
+
+    <div class="section-title">E-Book Catalogue</div>
+    
+    <button class="btn-main btn-add-list" onclick="openAddModal()">➕ Add New E-Book</button>
 
     <div class="product-list" id="productList"></div>
 
     <div class="footer-bar">
-        <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT (SGD 0.00)</button>
+        <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT</button>
     </div>
 
-    <!-- PENGURUSAN UTAMAKAN BAYARAN POP-UP -->
+    <!-- MODAL PENGGERBANG PEMBAYARAN -->
     <div class="modal" id="paymentModal">
         <div class="modal-content">
             <div class="modal-title">SELECT PAYMENT METHOD</div>
             <button class="btn-gate gate-tng" onclick="payViaTNG()">📱 Touch 'n Go eWallet</button>
-            <button class="btn-gate gate-stripe" onclick="payViaStripe()">💳 Credit Card (Stripe)</button>
+            <button class="btn-gate gate-stripe" onclick="payViaStripe()">💳 Credit Card / FPX (Stripe)</button>
             <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
         </div>
     </div>
 
-    <!-- TAMPILAN EDITOR UNTUK TAMBAH/EDIT LIST -->
+    <!-- MODAL DASHBOARD EDITOR STAFF -->
     <div class="modal" id="editorModal">
         <div class="modal-content">
             <div class="modal-title" id="editorTitle">Edit E-Book</div>
@@ -77,7 +103,7 @@
                 <input type="text" id="prodName">
             </div>
             <div class="form-group">
-                <label>Price (SGD)</label>
+                <label>Base Price (SGD)</label>
                 <input type="number" step="0.01" id="prodPrice">
             </div>
             <button class="btn-main" onclick="saveProduct()">💾 Save Changes</button>
@@ -88,7 +114,10 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Pangkalan data asal (ID Nombor bulat dipadankan dengan Python backend)
+        let currentCurrency = "SGD";
+        const EXCHANGE_RATE = 3.30; // 1 SGD = 3.30 MYR
+
+        // Pangkalan Data Asal 13 E-Book
         let products = [
             { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0 },
             { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0 },
@@ -105,19 +134,23 @@
             { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0 }
         ];
 
-        const TNG_ACCOUNT = "161390792973";
         const STRIPE_LINK = "https://stripe.com";
 
         function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
+            
             products.forEach((p, index) => {
+                // Kira harga paparan berdasarkan jenis mata wang yang dipilih
+                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
                     <div class="product-info">
                         <span class="product-name">${p.name}</span>
-                        <span class="product-price">SGD ${p.price.toFixed(2)}</span>
+                        <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
+                        <span class="badge-status">Available</span>
                     </div>
                     <div class="qty-controls">
                         <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
@@ -139,18 +172,24 @@
             renderProducts();
         }
 
+        function updateCurrency() {
+            currentCurrency = document.getElementById('currencySelect').value;
+            renderProducts();
+        }
+
         function updateTotalPrice() {
             let total = 0;
-            products.forEach(p => total += (p.price * p.qty));
+            products.forEach(p => {
+                const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                total += (price * p.qty);
+            });
             const btn = document.getElementById('payButton');
-            btn.innerText = `PROCEED TO PAYMENT (SGD ${total.toFixed(2)})`;
+            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
             btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
         }
 
         function openPaymentModal() {
-            let total = 0;
-            products.forEach(p => total += (p.price * p.qty));
-            if(total > 0) document.getElementById('paymentModal').classList.add('active');
+            document.getElementById('paymentModal').classList.add('active');
         }
 
         function closeModal(id) {
@@ -166,7 +205,7 @@
             closeModal('paymentModal');
             const orderData = {
                 gateway: "TNG eWallet",
-                currency: "SGD",
+                currency: currentCurrency,
                 items: products.filter(p => p.qty > 0).map(p => ({ id: p.id, qty: p.qty }))
             };
             tg.sendData(JSON.stringify(orderData));
