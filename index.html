@@ -112,13 +112,11 @@
         </div>
     </div>
     <script>
-        <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         let currentCurrency = "SGD";
-        const EXCHANGE_RATE = 3.30; // <-- INI YANG TADI HILANG
-
+        const EXCHANGE_RATE = 3.30;
         const STRIPE_LINK = "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00";
 
         let defaultProducts = [
@@ -137,9 +135,9 @@
             { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0 }
         ];
 
-        // INI BARIS PENTING UNTUK SAVE KEKAL
         let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
         products.forEach(p => p.qty = 0);
+
         function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
@@ -174,9 +172,9 @@
             renderProducts();
         }
 
-        function updateCurrency() {
-            currentCurrency = document.getElementById('currencySelect').value;
-            renderProducts();
+        function updateCurrency() { 
+            currentCurrency = document.getElementById('currencySelect').value; 
+            renderProducts(); 
         }
 
         function updateTotalPrice() {
@@ -190,18 +188,10 @@
             btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
         }
 
-        function openPaymentModal() {
-            document.getElementById('paymentModal').classList.add('active');
-        }
+        function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function payViaStripe() {
-            closeModal('paymentModal');
-            tg.openLink(STRIPE_LINK);
-        }
+        function payViaStripe() { closeModal('paymentModal'); tg.openLink(STRIPE_LINK); }
 
         function payViaTNG() {
             closeModal('paymentModal');
@@ -221,12 +211,8 @@
                 return;
             }
             const code = prompt("🔐 Enter Admin Security Code:");
-            if(code === "333555") {
-                document.body.classList.add('admin-mode');
-                renderProducts();
-            } else if (code !== null) {
-                alert("❌ Access Denied.");
-            }
+            if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); }
+            else if (code !== null) { alert("❌ Access Denied."); }
         }
 
         function openAddModal() {
@@ -264,32 +250,20 @@
         function deleteProduct(index) {
             if(confirm("Padam e-book " + products[index].name + "?")) {
                 products.splice(index, 1);
+                localStorage.setItem('premium_store_products', JSON.stringify(products));
+                try { tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
                 renderProducts();
             }
         }
-        
-        function forcePushToClient() {
-            document.body.classList.remove('admin-mode');
-            renderProducts();
-            alert("✅ Saved successfully! Item has been updated to client view memory.");
 
-            // FUNGSI UTAMA UNTUK KEKAL PERMANEN
         function savePermanently() {
-            // Mengunci data terus ke storan keras pelayar telefon
             localStorage.setItem('premium_store_products', JSON.stringify(products));
-            
-            // Cuba hantar data salinan ke bot (jika disokong)
-            try {
-                tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
-            } catch(e) {
-                console.log("Bot sync bypass");
-            }
-            
+            try { tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
             document.body.classList.remove('admin-mode');
             renderProducts();
             alert("✅ Saved Permanently! Senarai baharu telah dikunci masuk ke sistem kedai.");
         }
-        
+
         window.onload = renderProducts;
     </script>
 </body>
