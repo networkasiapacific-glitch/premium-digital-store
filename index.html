@@ -140,10 +140,8 @@
         function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
-            
             products.forEach((p, index) => {
                 const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
@@ -160,7 +158,7 @@
                     <div class="admin-actions">
                         <button class="btn-admin btn-edit" onclick="openEditModal(${index})">Edit</button>
                         <button class="btn-admin btn-delete" onclick="deleteProduct(${index})">Delete</button>
-                        <button class="btn-admin" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
+                        <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
                     </div>
                 `;
                 list.appendChild(card);
