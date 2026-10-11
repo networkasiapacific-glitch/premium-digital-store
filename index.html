@@ -132,7 +132,17 @@
         let defaultProducts = [
             { id: 1, name: "TikTok Automation Strategy", price: 25.00, qty: 0, link: "" },
             { id: 2, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "" },
-            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" }
+            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
+            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
+            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
+            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
+            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
+            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
+            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
+            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
+            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
+            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
+            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
         ];
 
         let defaultGateways = [
@@ -144,16 +154,11 @@
         let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
         products.forEach(p => p.qty = 0);
 
-        // Pastikan dua baris pengisytiharan ini ada di atas fungsi render untuk mengelakkan ralat 'not defined'
-        if (typeof base64AssetFile === 'undefined') { var base64AssetFile = ""; }
-        if (typeof base64QrImage === 'undefined') { var base64QrImage = ""; }
-
         function renderProducts() {
             const list = document.getElementById('productList');
             if (!list) return;
             list.innerHTML = '';
 
-            const box = document.getElementById('gatewayAdminBox');
             if(document.body.classList.contains('admin-mode')) {
                 let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
                     '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
@@ -168,62 +173,59 @@
                 }
                 renderAdminGateways();
             } else {
+                const box = document.getElementById('gatewayAdminBox');
                 if(box) box.remove();
             }
 
-            if (typeof products !== 'undefined' && Array.isArray(products)) {
-                products.forEach((p, index) => {
-                    const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    
-                    card.innerHTML = '<div class="product-info">' +
-                        '<span class="product-name">' + p.name + '</span>' +
-                        '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
-                        '<span class="badge-status">Available</span>' +
-                        '</div>' +
-                        '<div class="qty-controls">' +
-                        '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
-                        '<span class="qty-val">' + p.qty + '</span>' +
-                        '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
-                        '</div>' +
-                        '<div class="admin-actions">' +
-                        '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
-                        '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
-                        '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
-                        '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
-                        '</div>';
-                    list.appendChild(card);
-                });
-            }
+            products.forEach((p, index) => {
+                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                card.innerHTML = '<div class="product-info">' +
+                    '<span class="product-name">' + p.name + '</span>' +
+                    '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
+                    '<span class="badge-status">Available</span>' +
+                    '</div>' +
+                    '<div class="qty-controls">' +
+                    '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
+                    '<span class="qty-val">' + p.qty + '</span>' +
+                    '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
+                    '</div>' +
+                    '<div class="admin-actions">' +
+                    '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
+                    '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
+                    '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
+                    '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
+                    '</div>';
+                list.appendChild(card);
+            });
             updateTotalPrice();
         }
+
         function renderAdminGateways() {
             const container = document.getElementById('adminGatewayList');
             if(!container) return;
             container.innerHTML = '';
-            
-            if (typeof gateways !== 'undefined' && Array.isArray(gateways)) {
-                gateways.forEach((g, index) => {
-                    const div = document.createElement('div');
-                    div.style.display = 'flex';
-                    div.style.justify = 'space-between';
-                    div.style.alignItems = 'center';
-                    div.style.background = 'rgba(0,0,0,0.2)';
-                    div.style.padding = '8px';
-                    div.style.borderRadius = '8px';
-                    div.style.fontSize = '12px';
-                    div.style.marginBottom = '4px';
-                    
-                    div.innerHTML = '<span>' + g.name + '</span>' +
-                        '<div style="display: flex; gap:4px;">' +
-                        '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
-                        '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
-                        '<button class="btn-admin" style="padding:4px 10px; font-size:10px; background-color:#4caf50;" onclick="savePermanently()">Save</button>' +
-                        '</div>';
-                    container.appendChild(div);
-                });
-            }
+            gateways.forEach((g, index) => {
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justify = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.background = 'rgba(0,0,0,0.2)';
+                div.style.padding = '8px';
+                div.style.borderRadius = '8px';
+                div.style.fontSize = '12px';
+                div.style.marginBottom = '4px';
+                
+                div.innerHTML = '<span>' + g.name + '</span>' +
+                    '<div style="display: flex; gap:4px;">' +
+                    '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
+                    '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
+                    '<button class="btn-admin" style="padding:4px 10px; font-size:10px; background-color:#4caf50;" onclick="savePermanently()">Save</button>' +
+                    '</div>';
+                container.appendChild(div);
+            });
         }
 
         function openPaymentModal() {
