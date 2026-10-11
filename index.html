@@ -107,6 +107,10 @@
                 <label>Base Price (SGD)</label>
                 <input type="number" step="0.01" id="prodPrice">
             </div>
+            <div class="form-group">
+                <label>File URL / Telegram Group Link</label>
+                <input type="text" id="prodLink" placeholder="Paste Google Drive / Telegram Group link here">
+            </div>
             <button class="btn-main" onclick="saveProduct()">💾 Save Changes</button>
             <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
         </div>
@@ -159,6 +163,7 @@
                     <div class="admin-actions">
                         <button class="btn-admin btn-edit" onclick="openEditModal(${index})">Edit</button>
                         <button class="btn-admin btn-delete" onclick="deleteProduct(${index})">Delete</button>
+                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditModal(${index})">💛 Set Link</button>
                         <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
                     </div>
                 `;
@@ -220,6 +225,7 @@
             document.getElementById('editIndex').value = "-1";
             document.getElementById('prodName').value = "";
             document.getElementById('prodPrice').value = "";
+            document.getElementById('prodLink').value = "";
             document.getElementById('editorModal').classList.add('active');
         }
 
@@ -228,6 +234,7 @@
             document.getElementById('editIndex').value = index;
             document.getElementById('prodName').value = products[index].name;
             document.getElementById('prodPrice').value = products[index].price;
+            document.getElementById('prodLink').value = products[index].link || "";
             document.getElementById('editorModal').classList.add('active');
         }
 
@@ -235,13 +242,16 @@
             const index = parseInt(document.getElementById('editIndex').value);
             const name = document.getElementById('prodName').value;
             const price = parseFloat(document.getElementById('prodPrice').value);
+            const link = document.getElementById('prodLink').value;
+
             if(!name || isNaN(price)) return alert("Sila masukkan maklumat dengan betul.");
             if(index === -1) {
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name: name, price: price, qty: 0 });
+                products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
             } else {
                 products[index].name = name;
                 products[index].price = price;
+                products[index].link = link;
             }
             closeModal('editorModal');
             renderProducts();
