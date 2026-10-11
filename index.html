@@ -454,7 +454,7 @@
             localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
             document.body.classList.remove('admin-mode');
-            alert("💾 Saved Permanently! All items and payment settings have been saved to local database storage.");
+            alert(" Saved Permanently! All items and payment settings have been saved to local database storage.");
             renderProducts();
         }
 
@@ -494,7 +494,7 @@
                 document.body.classList.add('admin-mode');
                 renderProducts();
             } else if (code !== null) {
-                alert("❌ Access Denied.");
+                alert(" Access Denied.");
             }
         }
 
