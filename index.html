@@ -193,85 +193,172 @@
             btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
         }
 
-        function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        // --- PANGKALAN DATA SEBUTAN KOTAK PEMBAYARAN DEFAULT (Boleh Tambah/Edit Dari HP) ---
+        let defaultGateways = [
+            { id: "tng", name: "📱 Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
+            { id: "stripe", name: "💳 Credit Card / FPX (Stripe)", link: "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00", color: "#635bff" }
+        ];
 
-        function payViaStripe() { closeModal('paymentModal'); tg.openLink(STRIPE_LINK); }
+        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
 
-        function payViaTNG() {
-            closeModal('paymentModal');
-            const orderData = {
-                gateway: "TNG eWallet",
-                currency: currentCurrency,
-                items: products.filter(p => p.qty > 0).map(p => ({ id: p.id, qty: p.qty }))
-            };
-            tg.sendData(JSON.stringify(orderData));
-            tg.close();
-        }
-
-        function checkAdmin() {
+        // Penyelarasan Fungsi Paparan Untuk Memasukkan Kotak Kawalan Gateway Dinamik
+        const originalRenderProducts = renderProducts;
+        renderProducts = function() {
+            originalRenderProducts();
+            
             if(document.body.classList.contains('admin-mode')) {
-                document.body.classList.remove('admin-mode');
-                renderProducts();
-                return;
-            }
-            const code = prompt("🔐 Enter Admin Security Code:");
-            if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); }
-            else if (code !== null) { alert("❌ Access Denied."); }
-        }
-
-        function openAddModal() {
-            document.getElementById('editorTitle').innerText = "Add New E-Book";
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('prodName').value = "";
-            document.getElementById('prodPrice').value = "";
-            document.getElementById('prodLink').value = "";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function openEditModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit E-Book";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('prodName').value = products[index].name;
-            document.getElementById('prodPrice').value = products[index].price;
-            document.getElementById('prodLink').value = products[index].link || "";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function saveProduct() {
-            const index = parseInt(document.getElementById('editIndex').value);
-            const name = document.getElementById('prodName').value;
-            const price = parseFloat(document.getElementById('prodPrice').value);
-            const link = document.getElementById('prodLink').value;
-
-            if(!name || isNaN(price)) return alert("Sila masukkan maklumat dengan betul.");
-            if(index === -1) {
-                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
+                let gatewayAdminHTML = `
+                    <div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #ffc107;">
+                        <span style="font-size:12px; color:#ffc107; font-weight:bold; display:block; margin-bottom:8px;">💳 CONTROL PAYMENT GATEWAYS</span>
+                        <button class="btn-main" style="background-color: #ffc107; color: #000; font-size:12px; padding:8px; margin-bottom: 8px; width:100%; border-radius:6px; font-weight:bold; border:none;" onclick="openAddGatewayModal()">➕ Add New Payment Method</button>
+                        <div id="adminGatewayList" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
+                    </div>
+                `;
+                const titleSec = document.querySelector('.section-title');
+                if(titleSec && !document.getElementById('gatewayAdminBox')) {
+                    const divWrapper = document.createElement('div');
+                    divWrapper.innerHTML = gatewayAdminHTML;
+                    titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
+                }
+                renderAdminGateways();
             } else {
-                products[index].name = name;
-                products[index].price = price;
-                products[index].link = link;
+                const box = document.getElementById('gatewayAdminBox');
+                if(box) box.remove();
+            }
+        };
+
+        function renderAdminGateways() {
+            const container = document.getElementById('adminGatewayList');
+            if(!container) return;
+            container.innerHTML = '';
+            gateways.forEach((g, index) => {
+                container.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; font-size:12px; margin-bottom:4px;">
+                        <span>${g.name}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-admin btn-edit" style="padding:3px 8px; background-color:#ffa000;" onclick="openEditGatewayModal(${index})">Edit</button>
+                            <button class="btn-admin btn-delete" style="padding:3px 8px; background-color:#e53935;" onclick="deleteGateway(${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openPaymentModal() {
+            const container = document.getElementById('paymentGatewayList');
+            container.innerHTML = '';
+            gateways.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-gate';
+                btn.style.width = '100%';
+                btn.style.padding = '12px';
+                btn.style.borderRadius = '8px';
+                btn.style.border = 'none';
+                btn.style.color = 'white';
+                btn.style.fontWeight = 'bold';
+                btn.style.marginBottom = '10px';
+                btn.style.backgroundColor = g.color || '#0088cc';
+                btn.innerText = g.name;
+                btn.onclick = function() {
+                    closeModal('paymentModal');
+                    if(g.link.includes('http://') || g.link.includes('https://')) {
+                        tg.openLink(g.link);
+                    } else {
+                        const orderData = {
+                            gateway: g.name,
+                            currency: currentCurrency,
+                            account_no: g.link,
+                            items: products.filter(p => p.qty > 0).map(p => ({ id: p.id, qty: p.qty }))
+                        };
+                        tg.sendData(JSON.stringify(orderData));
+                        tg.close();
+                    }
+                };
+                container.appendChild(btn);
+            });
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function openEditProductModal(index) {
+            document.getElementById('editorTitle').innerText = "Edit E-Book";
+            document.getElementById('editType').value = "product";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('itemName').value = products[index].name;
+            document.getElementById('itemPrice').value = products[index].price;
+            document.getElementById('itemLink').value = products[index].link || "";
+            document.getElementById('priceGroup').style.display = "block";
+            document.getElementById('editorModal').classList.add('active');
+        }
+
+        function openAddGatewayModal() {
+            document.getElementById('editorTitle').innerText = "Add New Payment Method";
+            document.getElementById('editType').value = "gateway";
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('itemName').value = "";
+            document.getElementById('itemLink').value = "";
+            document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('editorModal').classList.add('active');
+        }
+
+        function openEditGatewayModal(index) {
+            document.getElementById('editorTitle').innerText = "Edit Payment Method";
+            document.getElementById('editType').value = "gateway";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('itemName').value = gateways[index].name;
+            document.getElementById('itemLink').value = gateways[index].link;
+            document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('editorModal').classList.add('active');
+        }
+
+        function saveItemChanges() {
+            const type = document.getElementById('editType').value;
+            const index = parseInt(document.getElementById('editIndex').value);
+            const name = document.getElementById('itemName').value;
+            const link = document.getElementById('itemLink').value;
+
+            if(!name || !link) return alert("Sila isi maklumat dengan betul.");
+
+            if(type === "product") {
+                const price = parseFloat(document.getElementById('itemPrice').value);
+                if(isNaN(price)) return alert("Sila masukkan harga.");
+                if(index === -1) {
+                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                    products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
+                } else {
+                    products[index].name = name;
+                    products[index].price = price;
+                    products[index].link = link;
+                }
+            } else if(type === "gateway") {
+                if(index === -1) {
+                    gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" });
+                } else {
+                    gateways[index].name = name;
+                    gateways[index].link = link;
+                }
+                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             }
             closeModal('editorModal');
             renderProducts();
         }
 
-        function deleteProduct(index) {
-            if(confirm("Padam e-book " + products[index].name + "?")) {
-                products.splice(index, 1);
-                localStorage.setItem('premium_store_products', JSON.stringify(products));
-                try { tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
+        function deleteGateway(index) {
+            if(confirm("Padam kaedah pembayaran " + gateways[index].name + "?")) {
+                gateways.splice(index, 1);
+                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
                 renderProducts();
             }
         }
 
         function savePermanently() {
             localStorage.setItem('premium_store_products', JSON.stringify(products));
-            try { tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
+            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+            try {
+                tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
+            } catch(e){}
             document.body.classList.remove('admin-mode');
             renderProducts();
-            alert("✅ Saved Permanently! Senarai baharu telah dikunci masuk ke sistem kedai.");
+            alert("✅ Saved Permanently! Semua barangan dan kaedah pembayaran telah dikunci masuk.");
         }
 
         window.onload = renderProducts;
