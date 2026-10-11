@@ -4,20 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Digital Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org"></script>
     <style>
         :root { --bg-color: #0b1426; --card-bg: #152238; --text-color: #ffffff; --accent-color: #0088cc; --danger-color: #e53935; --success-color: #4caf50; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 90px; user-select: none; -webkit-user-select: none; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .header h1 { margin: 0; font-size: 16px; font-weight: bold; color: #ffffff; }
         .admin-trigger { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 11px; cursor: pointer; }
-        
-        /* Currency Selector */
         .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
         .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
         .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
-        
-        /* Product Cards */
         .section-title { font-size: 12px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
         .product-list { display: flex; flex-direction: column; gap: 12px; }
         .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
@@ -25,33 +21,25 @@
         .product-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: block; }
         .product-price { color: #0088cc; font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; }
         .badge-status { display: inline-block; background: rgba(76, 175, 80, 0.15); color: #4caf50; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-        
-        /* Control Buttons */
         .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; }
         .btn-qty { background: var(--accent-color); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .qty-val { font-weight: bold; min-width: 15px; text-align: center; font-size: 14px; }
-        
-        /* Admin Mode */
-        .admin-actions { display: none; gap: 6px; }
+        .admin-actions { display: none; gap: 4px; flex-wrap: wrap; }
         body.admin-mode .admin-actions { display: flex; }
         body.admin-mode .qty-controls { display: none; }
-        .btn-admin { border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-admin { border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
         .btn-edit { background-color: #ffa000; }
         .btn-delete { background-color: var(--danger-color); }
+        .btn-save-item { background-color: var(--success-color); }
         .btn-add-list { background-color: var(--success-color); display: none; width: 100%; padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 14px; margin-bottom: 15px; cursor: pointer; }
-        .btn-save-item { background-color: var(--success-color); } /* Butang Hijau Tambahan */
         body.admin-mode .btn-add-list { display: block; }
-        
-        /* Footer & Modals */
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f1c32; padding: 15px; display: flex; justify-content: center; align-items: center; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
         .btn-main { background: var(--accent-color); color: white; border: none; width: 100%; max-width: 400px; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; text-transform: uppercase; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-title { font-weight: bold; font-size: 15px; margin-bottom: 15px; text-align: center; letter-spacing: 0.5px; }
+        .modal-title { font-weight: bold; font-size: 15px; margin-bottom: 15px; text-align: center; }
         .btn-gate { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; border: none; color: white; font-weight: bold; margin-bottom: 10px; cursor: pointer; font-size: 14px; }
-        .gate-tng { background: #005bc4; }
-        .gate-stripe { background: #635bff; }
         .modal-close { text-align: center; color: #8fa0bc; font-size: 12px; cursor: pointer; margin-top: 10px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; color: #8fa0bc; margin-bottom: 4px; }
@@ -59,107 +47,96 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1>Premium Digital Store</h1>
         <button class="admin-trigger" onclick="checkAdmin()">⚙️ Staff</button>
     </div>
 
-    <!-- PENGATURAN PILIHAN MULTIPLE CURRENCY -->
-<div class="currency-box">
-    <span class="currency-label">Select Currency:</span>
-    <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
-        <option value="SGD">Singapore Dollar (SGD)</option>
-        <option value="MYR">Malaysian Ringgit (MYR)</option>
-    </select>
-</div>
-
-<div class="section-title">E-Book Catalogue</div>
-
-<!-- 1. KOTAK KAWALAN PEMBAYARAN STAFF (AKAN MUNCUL AUTOMATIK DALAM MOD STAFF) -->
-<div id="gatewayAdminBox"></div>
-
-<!-- BUTANG TAMBAH PRODUK BARU -->
-<button class="btn-main btn-add-list" onclick="openAddModal()">➕ Add New E-Book</button>
-<div class="product-list" id="productList"></div>
-
-<div class="footer-bar">
-    <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT</button>
-</div>
-
-<!-- 2. POP-UP MODAL PILIHAN PEMBAYARAN DINAMIK -->
-<div class="modal" id="paymentModal">
-    <div class="modal-content">
-        <div class="modal-title">SELECT PAYMENT METHOD</div>
-        <div id="paymentGatewayList" style="display:flex; flex-direction:column; gap:10px; width:100%;"></div>
-        <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
+    <div class="currency-box">
+        <span class="currency-label">Select Currency:</span>
+        <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
+            <option value="SGD">Singapore Dollar (SGD)</option>
+            <option value="MYR">Malaysian Ringgit (MYR)</option>
+        </select>
     </div>
-</div>
 
-<!-- 3. POP-UP MODAL EDITOR STAFF (UNTUK PRODUK DAN CARA BAYARAN) -->
-<div class="modal" id="editorModal">
-    <div class="modal-content">
-        <div class="modal-title" id="editorTitle">Edit Item</div>
-        <input type="hidden" id="editType">
-        <input type="hidden" id="editIndex">
-        
-        <div class="form-group">
-            <label id="nameLabel">Name / Title</label>
-            <input type="text" id="itemName">
-        </div>
-        <div class="form-group" id="priceGroup">
-            <label>Base Price (SGD)</label>
-            <input type="number" step="0.01" id="itemPrice">
-        </div>
-        <div class="form-group">
-            <label id="linkLabel">Destination Link (URL / Group Link / Account No)</label>
-            <input type="text" id="itemLink" placeholder="Paste target URL or details here">
-        </div>
-        <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">💾 Save Changes</button>
-        <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
+    <div class="section-title">E-Book Catalogue</div>
+    <div id="gatewayAdminBox"></div>
+    <button class="btn-add-list" onclick="openAddModal()">➕ Add New E-Book</button>
+    <div class="product-list" id="productList"></div>
+
+    <div class="footer-bar">
+        <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT</button>
     </div>
-</div>
 
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-title">SELECT PAYMENT METHOD</div>
+            <div id="paymentGatewayList" style="display:flex; flex-direction:column; gap:10px; width:100%;"></div>
+            <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
+        </div>
+    </div>
 
-    let currentCurrency = "SGD";
-    const EXCHANGE_RATE = 3.30;
+    <div class="modal" id="editorModal">
+        <div class="modal-content">
+            <div class="modal-title" id="editorTitle">Edit Item</div>
+            <input type="hidden" id="editType">
+            <input type="hidden" id="editIndex">
+            <div class="form-group">
+                <label>Name / Title</label>
+                <input type="text" id="itemName">
+            </div>
+            <div class="form-group" id="priceGroup">
+                <label>Base Price (SGD)</label>
+                <input type="number" step="0.01" id="itemPrice">
+            </div>
+            <div class="form-group">
+                <label>Destination Link (URL / Account No / QR Link)</label>
+                <input type="text" id="itemLink" placeholder="Paste target URL or details here">
+            </div>
+            <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">💾 Save Changes</button>
+            <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
+        </div>
+    </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    let defaultProducts = [
-        { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0, link: "" },
-        { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0, link: "" },
-        { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
-        { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
-        { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
-        { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
-        { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
-        { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
-        { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
-        { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
-        { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
-        { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
-        { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
-    ];
+        let currentCurrency = "SGD";
+        const EXCHANGE_RATE = 3.30;
 
-    let defaultGateways = [
-        { id: "tng", name: "📱 Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
-        { id: "stripe", name: "💳 Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
-    ];
+        let defaultProducts = [
+            { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0, link: "" },
+            { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0, link: "" },
+            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
+            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
+            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
+            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
+            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
+            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
+            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
+            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
+            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
+            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
+            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
+        ];
 
-    let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
-    let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
-    products.forEach(p => p.qty = 0);
-function renderProducts() {
+        let defaultGateways = [
+            { id: "tng", name: "📱 Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
+            { id: "stripe", name: "💳 Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
+        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
+        products.forEach(p => p.qty = 0);
+        function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
             
-            // Membina Kotak Pengurusan Cara Pembayaran Automatik (Hanya Muncul Dalam Mod Staff)
             if(document.body.classList.contains('admin-mode')) {
                 let gatewayAdminHTML = `
                     <div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #ffc107;">
-                        <span style="font-size:12px; color:#ffc107; font-weight:bold; display:block; margin-bottom:8px;">💳 CONTROL PAYMENT GATEWAYS</span>
+                        <span style="font-size:12px; color:#ffc107; font-weight:bold; display:block; margin-bottom:8px;">控制 GERBANG PEMBAYARAN</span>
                         <button class="btn-main" style="background-color: #ffc107; color: #000; font-size:12px; padding:8px; margin-bottom: 8px; width:100%; border-radius:6px; font-weight:bold; border:none;" onclick="openAddGatewayModal()">➕ Add New Payment Method</button>
                         <div id="adminGatewayList" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
                     </div>
@@ -194,7 +171,7 @@ function renderProducts() {
                     <div class="admin-actions">
                         <button class="btn-admin btn-edit" style="background-color: #ffa000;" onclick="openEditProductModal(${index})">Edit</button>
                         <button class="btn-admin btn-delete" style="background-color: #e53935;" onclick="deleteProduct(${index})">Delete</button>
-                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditProductModal(${index})">Set Link</button>
+                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditProductModal(${index})">💛 Set Link</button>
                         <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
                     </div>
                 `;
@@ -219,89 +196,84 @@ function renderProducts() {
                 `;
             });
         }
-function saveItemChanges() {
-            const type = document.getElementById('editType').value;
-            const index = parseInt(document.getElementById('editIndex').value);
-            const name = document.getElementById('itemName').value;
-            const link = document.getElementById('itemLink').value;
-
-            if(!name || !link) return alert("Sila isi maklumat dengan betul.");
-
-            if(type === "product") {
-                const price = parseFloat(document.getElementById('itemPrice').value);
-                if(isNaN(price)) return alert("Sila masukkan harga.");
-                if(index === -1) {
-                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                    products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
-                } else {
-                    products[index].name = name;
-                    products[index].price = price;
-                    products[index].link = link;
-                }
-            } else if(type === "gateway") {
-                if(index === -1) {
-                    gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" });
-                } else {
-                    gateways[index].name = name;
-                    gateways[index].link = link;
-                }
-                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-            }
-            closeModal('editorModal');
-            renderProducts();
+        function openPaymentModal() {
+            const container = document.getElementById('paymentGatewayList');
+            container.innerHTML = '';
+            gateways.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-gate';
+                btn.style.width = '100%';
+                btn.style.padding = '12px';
+                btn.style.borderRadius = '8px';
+                btn.style.border = 'none';
+                btn.style.color = 'white';
+                btn.style.fontWeight = 'bold';
+                btn.style.marginBottom = '10px';
+                btn.style.backgroundColor = g.color || '#0088cc';
+                btn.innerText = g.name;
+                btn.onclick = function() {
+                    closeModal('paymentModal');
+                    if(g.link.includes('http://') || g.link.includes('https://')) {
+                        tg.openLink(g.link);
+                    } else {
+                        const orderData = {
+                            gateway: g.name,
+                            currency: currentCurrency,
+                            account_no: g.link,
+                            items: products.filter(p => p.qty > 0).map(p => ({ id: p.id, qty: p.qty }))
+                        };
+                        tg.sendData(JSON.stringify(orderData));
+                        tg.close();
+                    }
+                };
+                container.appendChild(btn);
+            });
+            document.getElementById('paymentModal').classList.add('active');
         }
 
-        function deleteProduct(index) {
-            if(confirm("Padam e-book " + products[index].name + "?")) {
-                products.splice(index, 1);
-                localStorage.setItem('premium_store_products', JSON.stringify(products));
-                savePermanently();
-            }
+        function openEditProductModal(index) {
+            document.getElementById('editorTitle').innerText = "Edit E-Book";
+            document.getElementById('editType').value = "product";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('itemName').value = products[index].name;
+            document.getElementById('itemPrice').value = products[index].price;
+            document.getElementById('itemLink').value = products[index].link || "";
+            document.getElementById('priceGroup').style.display = "block";
+            document.getElementById('editorModal').classList.add('active');
         }
 
-        function deleteGateway(index) {
-            if(confirm("Padam kaedah pembayaran " + gateways[index].name + "?")) {
-                gateways.splice(index, 1);
-                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-                renderProducts();
-            }
+        function openAddModal() {
+            document.getElementById('editorTitle').innerText = "Add New E-Book";
+            document.getElementById('editType').value = "product";
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('itemName').value = "";
+            document.getElementById('itemPrice').value = "";
+            document.getElementById('itemLink').value = "";
+            document.getElementById('priceGroup').style.display = "block";
+            document.getElementById('editorModal').classList.add('active');
         }
 
-        function savePermanently() {
-            localStorage.setItem('premium_store_products', JSON.stringify(products));
-            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-            try {
-                tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
-            } catch(e){}
-            document.body.classList.remove('admin-mode');
-            renderProducts();
-            alert("✅ Saved Permanently! Semua barangan dan kaedah pembayaran telah dikunci masuk.");
+        function openAddGatewayModal() {
+            document.getElementById('editorTitle').innerText = "Add New Payment Method";
+            document.getElementById('editType').value = "gateway";
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('itemName').value = "";
+            document.getElementById('itemLink').value = "";
+            document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('editorModal').classList.add('active');
         }
 
-        function changeQty(index, change) { products[index].qty = Math.max(0, products[index].qty + change); renderProducts(); }
-        function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        
-        function updateTotalPrice() {
-            let total = 0;
-            products.forEach(p => { const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += (price * p.qty); });
-            const btn = document.getElementById('payButton');
-            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
-            btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
+        function openEditGatewayModal(index) {
+            document.getElementById('editorTitle').innerText = "Edit Payment Method";
+            document.getElementById('editType').value = "gateway";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('itemName').value = gateways[index].name;
+            document.getElementById('itemLink').value = gateways[index].link;
+            document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('editorModal').classList.add('active');
         }
 
-        function checkAdmin() {
-            if(document.body.classList.contains('admin-mode')) { document.body.classList.remove('admin-mode'); renderProducts(); return; }
-            const code = prompt("🔐 Enter Admin Security Code:");
-            if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); }
-            else if (code !== null) { alert("❌ Access Denied."); }
-        }
-
-        window.onload = renderProducts;
-    </script>
-</body>
-</html>
-function saveItemChanges() {
+        function saveItemChanges() {
             const type = document.getElementById('editType').value;
             const index = parseInt(document.getElementById('editIndex').value);
             const name = document.getElementById('itemName').value;
