@@ -141,76 +141,76 @@
 
         // PEMBETULAN: Membuang backtick bermasalah untuk mengelakkan cetakan kod mentah JavaScript di skrin
         function renderProducts() {
-            const list = document.getElementById('productList');
-            list.innerHTML = '';
+    const list = document.getElementById('productList');
+    list.innerHTML = '';
 
-            if(document.body.classList.contains('admin-mode')) {
-                let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
-                    '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PENGURUSAN KAEDAH PEMBAYARAN (PERMANENT)</span>' +
-                    '<div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>' +
-                    '</div>';
-                
-                const titleSec = document.querySelector('.section-title');
-                if(titleSec && !document.getElementById('gatewayAdminBox')) {
-                    const divWrapper = document.createElement('div');
-                    divWrapper.innerHTML = gatewayAdminHTML;
-                    titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
-                }
-                renderAdminGateways();
-            } else {
-                const box = document.getElementById('gatewayAdminBox');
-                if(box) box.remove();
-            }
-
-            products.forEach((p, index) => {
-                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                card.innerHTML = '<div class="product-info">' +
-                    '<span class="product-name">' + p.name + '</span>' +
-                    '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
-                    '<span class="badge-status">Available</span>' +
-                    '</div>' +
-                    '<div class="qty-controls">' +
-                    '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
-                    '<span class="qty-val">' + p.qty + '</span>' +
-                    '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
-                    '</div>' +
-                    '<div class="admin-actions">' +
-                    '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
-                    '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
-                    '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
-                    '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
-                    '</div>';
-                list.appendChild(card);
-            });
-            updateTotalPrice();
+    if(document.body.classList.contains('admin-mode')) {
+        let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
+            '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PENGURUSAN KAEDAH PEMBAYARAN (PERMANENT)</span>' +
+            '<div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>' +
+            '</div>';
+        
+        const titleSec = document.querySelector('.section-title');
+        if(titleSec && !document.getElementById('gatewayAdminBox')) {
+            const divWrapper = document.createElement('div');
+            divWrapper.innerHTML = gatewayAdminHTML;
+            titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
         }
+        renderAdminGateways();
+    } else {
+        const box = document.getElementById('gatewayAdminBox');
+        if(box) box.remove();
+    }
+
+    products.forEach((p, index) => {
+        const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        card.innerHTML = '<div class="product-info">' +
+            '<span class="product-name">' + p.name + '</span>' +
+            '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
+            '<span class="badge-status">Available</span>' +
+            '</div>' +
+            '<div class="qty-controls">' +
+            '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
+            '<span class="qty-val">' + p.qty + '</span>' +
+            '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
+            '</div>' +
+            '<div class="admin-actions">' +
+            '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
+            '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
+            '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
+            '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
+            '</div>';
+        list.appendChild(card);
+    });
+    updateTotalPrice();
+}
         // PEMBETULAN: Membuang backtick sintaks strings yang menyebabkan error paparan gateway admin
         function renderAdminGateways() {
-            const container = document.getElementById('adminGatewayList');
-            if(!container) return;
-            container.innerHTML = '';
-            gateways.forEach((g, index) => {
-                const div = document.createElement('div');
-                div.style.display = 'flex';
-                div.style.justify = 'space-between';
-                div.style.alignItems = 'center';
-                div.style.background = 'rgba(0,0,0,0.2)';
-                div.style.padding = '8px';
-                div.style.borderRadius = '8px';
-                div.style.fontSize = '12px';
-                div.style.marginBottom = '4px';
-                
-                div.innerHTML = '<span>' + g.name + '</span>' +
-                    '<div style="display: flex; gap:4px;">' +
-                    '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
-                    '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
-                    '</div>';
-                container.appendChild(div);
-            });
-        }
+    const container = document.getElementById('adminGatewayList');
+    if(!container) return;
+    container.innerHTML = '';
+    gateways.forEach((g, index) => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justify = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.background = 'rgba(0,0,0,0.2)';
+        div.style.padding = '8px';
+        div.style.borderRadius = '8px';
+        div.style.fontSize = '12px';
+        div.style.marginBottom = '4px';
+        
+        div.innerHTML = '<span>' + g.name + '</span>' +
+            '<div style="display: flex; gap:4px;">' +
+            '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
+            '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
+            '</div>';
+        container.appendChild(div);
+    });
+}
 
         function openPaymentModal() {
             const container = document.getElementById('paymentGatewayList');
