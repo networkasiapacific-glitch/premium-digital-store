@@ -78,6 +78,19 @@
     </div>
 
     <div class="modal" id="paymentModal">
+        <!-- NEW AUTOMATIC QR DISPLAY MODAL -->
+    <div class="modal" id="qrDisplayModal">
+        <div class="modal-content" style="text-align: center; max-width: 320px;">
+            <div class="modal-title" style="color: #4caf50; font-weight: bold;">⚡ AUTOMATIC QR PAYMENT ⚡</div>
+            <p style="font-size: 12px; color: #8fa0bc; margin-bottom: 15px;">Please screenshot or scan this QR Code to complete your professional secure payment.</p>
+            
+            <!-- Tempat gambar QR yang Anda upload akan muncul secara otomatis -->
+            <img id="autoQrTargetImage" src="" alt="Payment QR Code" style="width: 100%; max-width: 220px; border-radius: 12px; border: 4px solid #ffffff; margin-bottom: 15px;">
+            
+            <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-bottom: 15px;" id="autoQrGatewayName"></div>
+            <button class="btn-main" style="background-color: #e53935;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
+        </div>
+    </div>
         <div class="modal-content">
             <div class="modal-title">SELECT PAYMENT METHOD</div>
             <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
@@ -256,21 +269,31 @@
                         gateway_details: g.link, 
                         items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link })) 
                     };
+
+                    // ALUR JEJAK OTOMATIS TANPA SEKATAN BLOCKER
+                    if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
+                        // Jika Anda save berupa LINK (Stripe/TNG Invoice URL) -> Langsung luncurkan browser luar HP
+                        if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+                            window.Telegram.WebApp.openLink(g.link);
+                        } else {
+                            window.open(g.link, '_blank');
+                        }
+                    } else if (g.link.startsWith('data:image')) {
+                        // Jika Anda muat naik/SAVE berupa GAMBAR QR -> Sistem OTOMATIS tampilkan gambar QR besar di layar HP
+                        document.getElementById('autoQrTargetImage').src = g.link;
+                        document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
+                        document.getElementById('qrDisplayModal').classList.add('active');
+                    } else {
+                        // Jika Anda isi nomor akaun bank manual
+                        alert("PAYMENT INVOICE GENERATED\n\nPlease transfer your payment to the following " + g.name + " account details:\nAccount Details: " + g.link);
+                    }
                     
+                    // Teruskan sinkronisasi log pesanan ke Bot Telegram Bisnes Anda
                     try { 
                         if(tg && typeof tg.sendData === 'function') {
                             tg.sendData(JSON.stringify(orderData)); 
                         }
-                    } catch(e){}
-
-                    if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
-                        alert("Redirecting to the secure " + g.name + " checkout system. Once payment is authorized, your digital goods and transaction receipts will be automatically dispatched here via Telegram.");
-                        window.open(g.link, '_blank');
-                    } else if (g.link.startsWith('data:image')) {
-                        alert("Please scan the generated payment QR code on your screen to complete the transaction. Our system will automatically monitor the transaction gateway, confirm the receipt, and send your purchased file directly to this chat window.");
-                    } else {
-                        alert("PAYMENT INVOICE GENERATED\n\nPlease transfer your payment to the following " + g.name + " account details:\nAccount Details: " + g.link + "\n\nUpon gateway confirmation, the system will instantly process your transaction receipt and automatically send your purchased digital file down to this chat channel.");
-                    }
+                    } catch(e){ console.error(e); }
                 };
                 container.appendChild(btn);
             });
@@ -394,10 +417,13 @@
             const type = document.getElementById('editType').value;
             const titleText = document.getElementById('editorTitle').innerText;
 
-            if ((titleText.includes("YELLOW BOX") || titleText.includes("Add New E-Book")) && base64AssetFile !== "") {
+            // Sempurnakan penyimpanan data gambar QR secara permanen tanpa terpotong kode stringnya
+            if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") {
                 link = base64AssetFile; 
-            } else if(type === "gateway" && base64QrImage !== "") {
-                link = base64QrImage;
+            } else if(type === "gateway") {
+                if (base64QrImage !== "") {
+                    link = base64QrImage;
+                }
             }
 
             if(!name) return alert("Please fill in the required name field correctly.");
