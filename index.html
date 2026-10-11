@@ -106,7 +106,6 @@
                 <input type="text" id="itemLink">
             </div>
 
-            <!-- Fix: Shared upload structure for Add New Book and Yellow Set Link Button -->
             <div class="form-group" id="productAssetUploadGroup" style="display: none;">
                 <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
                 <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
@@ -202,7 +201,6 @@
             });
             updateTotalPrice();
         }
-
         function renderAdminGateways() {
             const container = document.getElementById('adminGatewayList');
             if(!container) return;
@@ -250,7 +248,6 @@
                 btn.onclick = function() {
                     closeModal('paymentModal');
                     
-                    // Alur Integrasi Bot: Status dihantar ke bot telegram sebagai AWAITING_PAYMENT_TRACE untuk dikesan kelulusan automatik
                     const orderData = { 
                         action: "PROCESS_AUTOMATIC_INVOICE",
                         status: "AWAITING_PAYMENT_TRACE",
@@ -456,7 +453,7 @@
             localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
             document.body.classList.remove('admin-mode');
-            alert(" Saved Permanently! All items and payment settings have been saved to local database storage.");
+            alert("💾 Saved Permanently! All items and payment settings have been saved to local database storage.");
             renderProducts();
         }
 
@@ -496,7 +493,7 @@
                 document.body.classList.add('admin-mode');
                 renderProducts();
             } else if (code !== null) {
-                alert(" Access Denied.");
+                alert("❌ Access Denied.");
             }
         }
 
