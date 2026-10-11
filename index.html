@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Digital Store</title>
-    <!-- PEMBETULAN: Mengembalikan pautan rasmi Telegram WebApp yang betul -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org"></script>
     <style>
         :root { --bg-color: #0b1426; --card-bg: #152238; --text-color: #ffffff; --accent-color: #0088cc; --danger-color: #e53935; --success-color: #4caf50; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 90px; user-select: none; -webkit-user-select: none; }
@@ -67,7 +66,7 @@
     <div class="section-title">E-Book Catalogue</div>
     <div id="gatewayAdminBox"></div>
 
-    <!-- Kotak Hijau + Add Payment Method Bersebelahan dengan Add New E-Book -->
+    <!-- Dua butang pentadbir kekal bersebelahan di bahagian atas -->
     <div class="admin-top-controls">
         <button class="btn-add-list" style="background-color: #0088cc;" onclick="openAddModal()">⚡ + Add New E-Book</button>
         <button class="btn-add-list" style="background-color: #4caf50;" onclick="openAddGatewayModal()">💳 + Add Payment Method</button>
@@ -118,88 +117,98 @@
             <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
         </div>
     </div>
-    <body>
-    <div class="header">
-        <h1>Premium Digital Store</h1>
-        <button class="admin-trigger" onclick="checkAdmin()">* Staff</button>
-    </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        if(tg && typeof tg.expand === 'function') tg.expand();
+        let currentCurrency = "SGD";
+        const EXCHANGE_RATE = 3.30;
+        let base64QrImage = ""; 
 
-    <div class="currency-box">
-        <span class="currency-label">Select Currency:</span>
-        <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
-            <option value="SGD">Singapore Dollar (SGD)</option>
-            <option value="MYR">Malaysian Ringgit (MYR)</option>
-        </select>
-    </div>
+        let defaultProducts = [
+            { id: 1, name: "TikTok Automation Strategy", price: 25.00, qty: 0, link: "" },
+            { id: 2, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "" },
+            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" }
+        ];
 
-    <div class="section-title">E-Book Catalogue</div>
-    <div id="gatewayAdminBox"></div>
+        let defaultGateways = [
+            { id: "tng", name: "Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
+            { id: "stripe", name: "Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
+        ];
 
-    <!-- Kotak Hijau + Add Payment Method Bersebelahan dengan Add New E-Book -->
-    <div class="admin-top-controls">
-        <button class="btn-add-list" style="background-color: #0088cc;" onclick="openAddModal()">⚡ + Add New E-Book</button>
-        <button class="btn-add-list" style="background-color: #4caf50;" onclick="openAddGatewayModal()">💳 + Add Payment Method</button>
-    </div>
+        let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
+        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
+        products.forEach(p => p.qty = 0);
 
-    <div class="product-list" id="productList"></div>
+        // PEMBETULAN: Membuang backtick bermasalah untuk mengelakkan cetakan kod mentah JavaScript di skrin
+        function renderProducts() {
+            const list = document.getElementById('productList');
+            list.innerHTML = '';
 
-    <div class="footer-bar">
-        <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT</button>
-    </div>
+            if(document.body.classList.contains('admin-mode')) {
+                let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
+                    '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PENGURUSAN KAEDAH PEMBAYARAN (PERMANENT)</span>' +
+                    '<div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>' +
+                    '</div>';
+                
+                const titleSec = document.querySelector('.section-title');
+                if(titleSec && !document.getElementById('gatewayAdminBox')) {
+                    const divWrapper = document.createElement('div');
+                    divWrapper.innerHTML = gatewayAdminHTML;
+                    titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
+                }
+                renderAdminGateways();
+            } else {
+                const box = document.getElementById('gatewayAdminBox');
+                if(box) box.remove();
+            }
 
-    <div class="modal" id="paymentModal">
-        <div class="modal-content">
-            <div class="modal-title">SELECT PAYMENT METHOD</div>
-            <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
-            <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
-        </div>
-    </div>
-
-    <!-- MODAL EDITOR UTAMA -->
-    <div class="modal" id="editorModal">
-        <div class="modal-content">
-            <div class="modal-title" id="editorTitle">Edit Item</div>
-            <input type="hidden" id="editType">
-            <input type="hidden" id="editIndex">
-            
-            <div class="form-group">
-                <label id="labelName">Name / Title</label>
-                <input type="text" id="itemName">
-            </div>
-            
-            <div class="form-group" id="priceGroup">
-                <label>Base Price (SGD)</label>
-                <input type="number" step="0.01" id="itemPrice">
-            </div>
-            
-            <div class="form-group" id="linkGroup">
-                <label id="labelLink">Destination Link</label>
-                <input type="text" id="itemLink">
-            </div>
-            
-            <div class="form-group" id="qrUploadGroup" style="display: none;">
-                <label>Upload QR Scan Picture</label>
-                <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
-            </div>
-            
-            <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">Save Changes</button>
-            <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
-        </div>
-    </div>
-    function renderAdminGateways() {
+            products.forEach((p, index) => {
+                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                card.innerHTML = '<div class="product-info">' +
+                    '<span class="product-name">' + p.name + '</span>' +
+                    '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
+                    '<span class="badge-status">Available</span>' +
+                    '</div>' +
+                    '<div class="qty-controls">' +
+                    '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
+                    '<span class="qty-val">' + p.qty + '</span>' +
+                    '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
+                    '</div>' +
+                    '<div class="admin-actions">' +
+                    '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
+                    '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
+                    '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
+                    '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
+                    '</div>';
+                list.appendChild(card);
+            });
+            updateTotalPrice();
+        }
+        // PEMBETULAN: Membuang backtick sintaks strings yang menyebabkan error paparan gateway admin
+        function renderAdminGateways() {
             const container = document.getElementById('adminGatewayList');
             if(!container) return;
             container.innerHTML = '';
             gateways.forEach((g, index) => {
-                container.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-size: 12px; margin-bottom:4px;">
-                        <span>${g.name}</span>
-                        <div style="display: flex; gap:4px;">
-                            <button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(${index})">Edit</button>
-                            <button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(${index})">Delete</button>
-                        </div>
-                    </div>
-                `;
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justify = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.background = 'rgba(0,0,0,0.2)';
+                div.style.padding = '8px';
+                div.style.borderRadius = '8px';
+                div.style.fontSize = '12px';
+                div.style.marginBottom = '4px';
+                
+                div.innerHTML = '<span>' + g.name + '</span>' +
+                    '<div style="display: flex; gap:4px;">' +
+                    '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
+                    '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
+                    '</div>';
+                container.appendChild(div);
             });
         }
 
@@ -238,8 +247,8 @@
                         }
                     } catch(e){}
 
-                    // AUTOMATIC DELIVERY: Sistem mengambil data file dari kotak kuning dan menghantarnya secara automatik
-                    alert("💳 Payment Approved! Fail jualan anda sedang dihantar secara automatik ke Telegram peribadi...");
+                    // AUTOMATIC DELIVERY SYSTEM: Mengambil file digital dari butang kuning (Set Link) untuk dihantar secara automatik
+                    alert("💳 Payment Approved! Fail produk digital anda sedang dihantar secara automatik ke Telegram peribadi...");
                     
                     purchasedItems.forEach(item => {
                         const assetLink = item.link; 
@@ -248,7 +257,7 @@
                                 if (assetLink.startsWith('http://') || assetLink.startsWith('https://')) {
                                     window.open(assetLink, '_blank');
                                 } else {
-                                    alert(`📥 [AUTOMATIC DELIVERY SYSTEM - ${item.name}]\nSila ambil fail digital anda di bawah:\n\n${assetLink}`);
+                                    alert("[TELEGRAM AUTOMATIC DELIVERY - " + item.name + "]\nSila ambil fail digital anda di bawah:\n\n" + assetLink);
                                 }
                             }, 1000);
                         }
@@ -280,7 +289,7 @@
             document.getElementById('labelLink').innerText = "Upload / Paste Asset (PDF, MP3, MP4, or Group Link)";
             document.getElementById('itemName').value = products[index].name;
             document.getElementById('itemLink').value = products[index].link || "";
-            document.getElementById('itemLink').placeholder = "Masukkan link download PDF / Video MP4 / Audio MP3 atau Link Group Telegram di sini";
+            document.getElementById('itemLink').placeholder = "Masukkan link muat turun PDF / Video MP4 / Audio MP3 atau Link Group Telegram di sini";
             document.getElementById('priceGroup').style.display = "none"; 
             document.getElementById('linkGroup').style.display = "block";
             document.getElementById('qrUploadGroup').style.display = "none";
@@ -332,7 +341,6 @@
             document.getElementById('editorModal').classList.add('active');
         }
 
-        // PEMBETULAN: Membaiki ralat array membaca fail imej QR Code
         function handleQrUpload(input) {
             const files = input.files;
             if (files && files[0]) {
@@ -355,7 +363,7 @@
                 link = base64QrImage;
             }
 
-            if(!name) return alert("Sila isi nama dengan betul.");
+            if(!name && type !== "product") return alert("Sila isi maklumat dengan betul.");
 
             if(type === "product") {
                 if(index === -1) {
@@ -372,7 +380,6 @@
                     }
                 }
             } else if(type === "gateway") {
-                if(!link) return alert("Sila isi pautan atau muat naik gambar QR.");
                 if(index === -1) {
                     gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" });
                 } else {
@@ -408,7 +415,7 @@
             localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
             document.body.classList.remove('admin-mode');
-            alert(" Saved Permanently! Semua data telah dikunci masuk.");
+            alert("Saved Permanently! Semua data telah dikunci masuk.");
             renderProducts();
         }
 
@@ -433,7 +440,7 @@
                 total += price * p.qty;
             });
             const btn = document.getElementById('payButton');
-            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
+            btn.innerText = 'PROCEED TO PAYMENT (' + currentCurrency + ' ' + total.toFixed(2) + ')';
             btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
         }
 
