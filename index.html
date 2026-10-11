@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Digital Store</title>
-    <!-- PEMBETULAN: Skrip Penuh Rasmi Telegram WebApp -->
     <script src="https://telegram.org"></script>
     <style>
         :root { --bg-color: #0b1426; --card-bg: #152238; --text-color: #ffffff; --accent-color: #0088cc; --danger-color: #e53935; --success-color: #4caf50; }
@@ -25,17 +24,17 @@
         .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; align-self: flex-end; }
         .btn-qty { background: var(--accent-color); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .qty-val { font-weight: bold; min-width: 15px; text-align: center; font-size: 14px; }
-        .admin-actions { display: none; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+        .admin-actions { display: none; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
         body.admin-mode .admin-actions { display: flex; }
         body.admin-mode .qty-controls { display: none; }
-        .btn-admin { border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .btn-admin { border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
         .btn-edit { background-color: #ffa000; }
         .btn-delete { background-color: var(--danger-color); }
         .btn-save-item { background-color: var(--success-color); }
-        .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; }
+        .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
         body.admin-mode .admin-top-controls { display: flex; }
-        .admin-top-controls .btn-add-list { margin-bottom: 0 !important; flex: 1; }
-        .btn-add-list { background-color: var(--success-color); display: none; width: 100%; padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 14px; margin-bottom: 15px; cursor: pointer; text-align: center; text-transform: uppercase; }
+        .admin-top-controls .btn-add-list { margin-bottom: 0 !important; flex: 1; display: block !important; }
+        .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; text-transform: uppercase; }
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f1c32; padding: 15px; display: flex; justify-content: center; align-items: center; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
         .btn-main { background: var(--accent-color); color: white; border: none; width: 100%; max-width: 400px; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; text-transform: uppercase; }
         .btn-main:disabled { background: #2c3a52; color: #62728d; cursor: not-allowed; }
@@ -67,7 +66,7 @@
     <div class="section-title">E-Book Catalogue</div>
     <div id="gatewayAdminBox"></div>
 
-    <!-- PENGUBAHSUAIAN: Butang Add New E-book dan Add Payment Method Diletakkan Bersebelahan -->
+    <!-- Kotak Hijau + Add Payment Method diletakkan bersebelahan dengan Add New E-Book -->
     <div class="admin-top-controls">
         <button class="btn-add-list" style="background-color: #0088cc;" onclick="openAddModal()">⚡ + Add New E-Book</button>
         <button class="btn-add-list" style="background-color: #4caf50;" onclick="openAddGatewayModal()">💳 + Add Payment Method</button>
@@ -87,23 +86,34 @@
         </div>
     </div>
 
+    <!-- MODAL EDITOR UTAMA -->
     <div class="modal" id="editorModal">
         <div class="modal-content">
             <div class="modal-title" id="editorTitle">Edit Item</div>
             <input type="hidden" id="editType">
             <input type="hidden" id="editIndex">
+            
             <div class="form-group">
-                <label>Name / Title</label>
+                <label id="labelName">Name / Title</label>
                 <input type="text" id="itemName">
             </div>
+            
             <div class="form-group" id="priceGroup">
                 <label>Base Price (SGD)</label>
                 <input type="number" step="0.01" id="itemPrice">
             </div>
-            <div class="form-group">
-                <label>Destination Link (URL / Account No / QR Link / File Mask)</label>
-                <input type="text" id="itemLink" placeholder="Paste target URL or details here">
+            
+            <div class="form-group" id="linkGroup">
+                <label id="labelLink">Destination Link</label>
+                <input type="text" id="itemLink">
             </div>
+            
+            <!-- Input file khusus untuk upload gambar QR Code saat tambah payment method -->
+            <div class="form-group" id="qrUploadGroup" style="display: none;">
+                <label>Upload QR Scan Picture</label>
+                <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
+            </div>
+            
             <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">Save Changes</button>
             <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
         </div>
@@ -113,21 +123,12 @@
         if(tg && typeof tg.expand === 'function') tg.expand();
         let currentCurrency = "SGD";
         const EXCHANGE_RATE = 3.30;
+        let base64QrImage = ""; 
 
         let defaultProducts = [
-            { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0, link: "" },
-            { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0, link: "" },
-            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
-            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
-            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
-            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
-            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
-            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
-            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
-            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
-            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
-            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
-            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
+            { id: 1, name: "TikTok Automation Strategy", price: 25.00, qty: 0, link: "" },
+            { id: 2, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "" },
+            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" }
         ];
 
         let defaultGateways = [
@@ -140,54 +141,54 @@
         products.forEach(p => p.qty = 0);
 
         function renderProducts() {
-    const list = document.getElementById('productList');
-    list.innerHTML = '';
+            const list = document.getElementById('productList');
+            list.innerHTML = '';
 
-    if(document.body.classList.contains('admin-mode')) {
-        let gatewayAdminHTML = `
-            <div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
-                <span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PENGURUSAN KAEDAH PEMBAYARAN (PERMANENT)</span>
-                <div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>
-            </div>
-        `;
-        const titleSec = document.querySelector('.section-title');
-        if(titleSec && !document.getElementById('gatewayAdminBox')) {
-            const divWrapper = document.createElement('div');
-            divWrapper.innerHTML = gatewayAdminHTML;
-            titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
-        }
-        renderAdminGateways();
-    } else {
-        const box = document.getElementById('gatewayAdminBox');
-        if(box) box.remove();
-    }
+            if(document.body.classList.contains('admin-mode')) {
+                let gatewayAdminHTML = `
+                    <div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                        <span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PENGURUSAN KAEDAH PEMBAYARAN (PERMANENT)</span>
+                        <div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>
+                    </div>
+                `;
+                const titleSec = document.querySelector('.section-title');
+                if(titleSec && !document.getElementById('gatewayAdminBox')) {
+                    const divWrapper = document.createElement('div');
+                    divWrapper.innerHTML = gatewayAdminHTML;
+                    titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
+                }
+                renderAdminGateways();
+            } else {
+                const box = document.getElementById('gatewayAdminBox');
+                if(box) box.remove();
+            }
 
-    products.forEach((p, index) => {
-        const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-            <div class="product-info">
-                <span class="product-name">${p.name}</span>
-                <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
-                <span class="badge-status">Available</span>
-            </div>
-            <div class="qty-controls">
-                <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                <span class="qty-val">${p.qty}</span>
-                <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
-            </div>
-            <div class="admin-actions">
-                <button class="btn-admin btn-edit" style="background-color: #ffa000;" onclick="openEditProductModal(${index})">Edit</button>
-                <button class="btn-admin btn-delete" style="background-color: #e53935;" onclick="deleteProduct(${index})">Delete</button>
-                <button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openEditProductModal(${index})">Set Link</button>
-                <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
-            </div>
-        `;
-        list.appendChild(card);
-    });
-    updateTotalPrice();
-}
+            products.forEach((p, index) => {
+                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-info">
+                        <span class="product-name">${p.name}</span>
+                        <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
+                        <span class="badge-status">Available</span>
+                    </div>
+                    <div class="qty-controls">
+                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                        <span class="qty-val">${p.qty}</span>
+                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                    <!-- KOTAK KUNING DIKEKALKAN: Berfungsi khusus untuk isi PDF, MP3, MP4, atau Group Link -->
+                    <div class="admin-actions">
+                        <button class="btn-admin btn-edit" onclick="openEditProductModal(${index})">Edit</button>
+                        <button class="btn-admin btn-delete" onclick="deleteProduct(${index})">Delete</button>
+                        <button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(${index})">Set Link</button>
+                        <button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            updateTotalPrice();
         }
         function renderAdminGateways() {
             const container = document.getElementById('adminGatewayList');
@@ -198,8 +199,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-size: 12px; margin-bottom:4px;">
                         <span>${g.name}</span>
                         <div style="display: flex; gap:4px;">
-                            <button class="btn-admin btn-edit" style="padding:3px 8px;" onclick="openEditGatewayModal(${index})">Edit</button>
-                            <button class="btn-admin btn-delete" style="padding:3px 8px;" onclick="deleteGateway(${index})">Delete</button>
+                            <button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(${index})">Edit</button>
+                            <button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(${index})">Delete</button>
                         </div>
                     </div>
                 `;
@@ -227,28 +228,33 @@
 
                 btn.onclick = function() {
                     closeModal('paymentModal');
-                    if(g.link.includes('http://') || g.link.includes('https://')) {
-                        if(tg && typeof tg.openLink === 'function') tg.openLink(g.link);
-                    } else {
-                        const orderData = { gateway: g.name, currency: currentCurrency, account_no: g.link, items: purchasedItems.map(p => ({ id: p.id, qty: p.qty })) };
-                        try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify(orderData)); } catch(e){}
-                    }
+                    
+                    const orderData = { 
+                        gateway: g.name, 
+                        currency: currentCurrency, 
+                        account_no: g.link, 
+                        items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, file_asset: p.link })) 
+                    };
+                    
+                    try { 
+                        if(tg && typeof tg.sendData === 'function') {
+                            tg.sendData(JSON.stringify(orderData)); 
+                        }
+                    } catch(e){}
 
-                    // PENGUBAHSUAIAN UTAMA: Sistem Penghantaran Aset Automatik (PDF, MP3, MP4, Link Group) Sebaik Sahaja Pembayaran Ditekan
-                    alert("Pembayaran Berjaya Disemak! Memproses penghantaran digital fail/link anda secara automatik...");
+                    // AUTOMATIC DELIVERY: Sistem mengambil file dari kotak kuning yang sudah di-save dan mengirimkannya otomatis
+                    alert("💳 Payment Approved! File produk digital Anda sedang dikirim otomatis ke Telegram...");
+                    
                     purchasedItems.forEach(item => {
-                        const assetLink = item.link;
+                        const assetLink = item.link; // Ini data file PDF/MP3/MP4/Link Group dari kotak kuning
                         if (assetLink && assetLink.trim() !== "") {
                             setTimeout(() => {
                                 if (assetLink.startsWith('http://') || assetLink.startsWith('https://')) {
-                                    alert(`Membuka Akses Produk: ${item.name}`);
                                     window.open(assetLink, '_blank');
                                 } else {
-                                    alert(`[AUTOMATIC DELIVERY SYSTEM - ${item.name}]\nSila ambil maklumat akses / fail digital anda di bawah:\n\n${assetLink}`);
+                                    alert(`📥 [AUTOMATIC DELIVERY SYSTEM - ${item.name}]\nSila ambil maklumat / fail digital anda di bawah:\n\n${assetLink}`);
                                 }
-                            }, 1200);
-                        } else {
-                            alert(`Nota: Fail/Tautan untuk produk "${item.name}" belum ditetapkan oleh admin.`);
+                            }, 1000);
                         }
                     });
                 };
@@ -258,33 +264,59 @@
         }
 
         function openEditProductModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit E-Book";
+            document.getElementById('editorTitle').innerText = "Edit E-Book Details";
             document.getElementById('editType').value = "product";
             document.getElementById('editIndex').value = index;
+            document.getElementById('labelName').innerText = "Product Name / Title";
             document.getElementById('itemName').value = products[index].name;
             document.getElementById('itemPrice').value = products[index].price;
-            document.getElementById('itemLink').value = products[index].link || "";
             document.getElementById('priceGroup').style.display = "block";
+            document.getElementById('linkGroup').style.display = "none"; // Sembunyikan link di menu edit biasa
+            document.getElementById('qrUploadGroup').style.display = "none";
+            document.getElementById('editorModal').classList.add('active');
+        }
+
+        function openSetLinkModal(index) {
+            document.getElementById('editorTitle').innerText = "💛 Set Digital Asset (KOTAK KUNING)";
+            document.getElementById('editType').value = "product";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('labelName').innerText = "Product Name (Read-Only)";
+            document.getElementById('labelLink').innerText = "Upload / Paste Asset (PDF, MP3, MP4, or Group Link)";
+            document.getElementById('itemName').value = products[index].name;
+            document.getElementById('itemLink').value = products[index].link || "";
+            document.getElementById('itemLink').placeholder = "Masukkan link download PDF / Video MP4 / Audio MP3 atau Link Group Telegram di sini";
+            document.getElementById('priceGroup').style.display = "none"; // Fokus hanya untuk isi link file saja
+            document.getElementById('linkGroup').style.display = "block";
+            document.getElementById('qrUploadGroup').style.display = "none";
             document.getElementById('editorModal').classList.add('active');
         }
         function openAddModal() {
             document.getElementById('editorTitle').innerText = "Add New E-Book";
             document.getElementById('editType').value = "product";
             document.getElementById('editIndex').value = "-1";
+            document.getElementById('labelName').innerText = "Product Name / Title";
             document.getElementById('itemName').value = "";
             document.getElementById('itemPrice').value = "";
-            document.getElementById('itemLink').value = "";
             document.getElementById('priceGroup').style.display = "block";
+            document.getElementById('linkGroup').style.display = "none";
+            document.getElementById('qrUploadGroup').style.display = "none";
             document.getElementById('editorModal').classList.add('active');
         }
 
         function openAddGatewayModal() {
-            document.getElementById('editorTitle').innerText = "Add New Payment Method";
+            document.getElementById('editorTitle').innerText = "Add New Payment Method (KOTAK HIJAU)";
             document.getElementById('editType').value = "gateway";
             document.getElementById('editIndex').value = "-1";
+            document.getElementById('labelName').innerText = "Payment Method Name (e.g., TNG, Stripe)";
+            document.getElementById('labelLink').innerText = "Payment URL / Account Number";
             document.getElementById('itemName').value = "";
             document.getElementById('itemLink').value = "";
+            document.getElementById('itemLink').placeholder = "Masukkan URL link Stripe atau nomor akun/TNG";
             document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('linkGroup').style.display = "block";
+            document.getElementById('qrUploadGroup').style.display = "block"; // Buka opsi upload QR scan picture
+            base64QrImage = "";
+            document.getElementById('itemQrFile').value = "";
             document.getElementById('editorModal').classList.add('active');
         }
 
@@ -292,30 +324,55 @@
             document.getElementById('editorTitle').innerText = "Edit Payment Method";
             document.getElementById('editType').value = "gateway";
             document.getElementById('editIndex').value = index;
+            document.getElementById('labelName').innerText = "Payment Method Name";
+            document.getElementById('labelLink').innerText = "Payment URL / Account Number";
             document.getElementById('itemName').value = gateways[index].name;
             document.getElementById('itemLink').value = gateways[index].link;
             document.getElementById('priceGroup').style.display = "none";
+            document.getElementById('linkGroup').style.display = "block";
+            document.getElementById('qrUploadGroup').style.display = "block";
+            document.getElementById('itemQrFile').value = "";
+            base64QrImage = gateways[index].link.startsWith("data:image") ? gateways[index].link : "";
             document.getElementById('editorModal').classList.add('active');
+        }
+
+        function handleQrUpload(input) {
+            const files = input.files;
+            if (files && files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64QrImage = e.target.result;
+                };
+                reader.readAsDataURL(files[0]);
+            }
         }
 
         function saveItemChanges() {
             const index = parseInt(document.getElementById('editIndex').value);
             const name = document.getElementById('itemName').value;
-            const link = document.getElementById('itemLink').value;
+            let link = document.getElementById('itemLink').value;
             const type = document.getElementById('editType').value;
+            const titleText = document.getElementById('editorTitle').innerText;
 
-            if(!name || !link) return alert("Sila isi maklumat dengan betul.");
+            if(type === "gateway" && base64QrImage !== "") {
+                link = base64QrImage;
+            }
+
+            if(!name && type !== "product") return alert("Sila isi maklumat dengan betul.");
 
             if(type === "product") {
-                const price = parseFloat(document.getElementById('itemPrice').value);
-                if(isNaN(price)) return alert("Sila masukkan harga.");
                 if(index === -1) {
+                    const price = parseFloat(document.getElementById('itemPrice').value) || 0;
                     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                    products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
+                    products.push({ id: newId, name: name, price: price, link: "", qty: 0 });
                 } else {
-                    products[index].name = name;
-                    products[index].price = price;
-                    products[index].link = link;
+                    if(titleText.includes("KOTAK KUNING")) {
+                        products[index].link = link; // Mengunci data link/file secara permanen dari kotak kuning
+                    } else {
+                        const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+                        products[index].name = name;
+                        products[index].price = price;
+                    }
                 }
             } else if(type === "gateway") {
                 if(index === -1) {
@@ -324,16 +381,18 @@
                     gateways[index].name = name;
                     gateways[index].link = link;
                 }
-                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             }
+            
+            localStorage.setItem('premium_store_products', JSON.stringify(products));
+            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             closeModal('editorModal');
             renderProducts();
+            alert("💾 Berjaya disimpan secara permanent!");
         }
 
         function deleteProduct(index) {
             if(confirm("Padam e-book " + products[index].name + "?")) {
                 products.splice(index, 1);
-                localStorage.setItem('premium_store_products', JSON.stringify(products));
                 savePermanently();
             }
         }
@@ -351,7 +410,7 @@
             localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
             try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
             document.body.classList.remove('admin-mode');
-            alert("💾 Saved Permanently! Semua barangan dan kaedah pembayaran telah dikunci masuk.");
+            alert(" Saved Permanently! Semua data telah dikunci masuk.");
             renderProducts();
         }
 
