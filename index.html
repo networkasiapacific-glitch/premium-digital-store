@@ -112,14 +112,16 @@
         </div>
     </div>
     <script>
+        <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         let currentCurrency = "SGD";
-        const EXCHANGE_RATE = 3.30; // 1 SGD = 3.30 MYR
+        const EXCHANGE_RATE = 3.30; // <-- INI YANG TADI HILANG
 
-        // Pangkalan Data Asal 13 E-Book
-        let products = [
+        const STRIPE_LINK = "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00";
+
+        let defaultProducts = [
             { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0 },
             { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0 },
             { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0 },
@@ -135,8 +137,9 @@
             { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0 }
         ];
 
-        const STRIPE_LINK = "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00";
-
+        // INI BARIS PENTING UNTUK SAVE KEKAL
+        let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
+        products.forEach(p => p.qty = 0);
         function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
