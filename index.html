@@ -151,10 +151,11 @@
     let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
     let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
     products.forEach(p => p.qty = 0);
-        function renderProducts() {
+function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
             
+            // Membina Kotak Pengurusan Cara Pembayaran Automatik (Hanya Muncul Dalam Mod Staff)
             if(document.body.classList.contains('admin-mode')) {
                 let gatewayAdminHTML = `
                     <div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #ffc107;">
@@ -193,7 +194,7 @@
                     <div class="admin-actions">
                         <button class="btn-admin btn-edit" style="background-color: #ffa000;" onclick="openEditProductModal(${index})">Edit</button>
                         <button class="btn-admin btn-delete" style="background-color: #e53935;" onclick="deleteProduct(${index})">Delete</button>
-                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditProductModal(${index})">💛 Set Link</button>
+                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditProductModal(${index})">Set Link</button>
                         <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
                     </div>
                 `;
@@ -218,73 +219,7 @@
                 `;
             });
         }
-        function openPaymentModal() {
-            const container = document.getElementById('paymentGatewayList');
-            container.innerHTML = '';
-            gateways.forEach(g => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-gate';
-                btn.style.width = '100%';
-                btn.style.padding = '12px';
-                btn.style.borderRadius = '8px';
-                btn.style.border = 'none';
-                btn.style.color = 'white';
-                btn.style.fontWeight = 'bold';
-                btn.style.marginBottom = '10px';
-                btn.style.backgroundColor = g.color || '#0088cc';
-                btn.innerText = g.name;
-                btn.onclick = function() {
-                    closeModal('paymentModal');
-                    if(g.link.includes('http://') || g.link.includes('https://')) {
-                        tg.openLink(g.link);
-                    } else {
-                        const orderData = {
-                            gateway: g.name,
-                            currency: currentCurrency,
-                            account_no: g.link,
-                            items: products.filter(p => p.qty > 0).map(p => ({ id: p.id, qty: p.qty }))
-                        };
-                        tg.sendData(JSON.stringify(orderData));
-                        tg.close();
-                    }
-                };
-                container.appendChild(btn);
-            });
-            document.getElementById('paymentModal').classList.add('active');
-        }
-
-        function openEditProductModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit E-Book";
-            document.getElementById('editType').value = "product";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('itemName').value = products[index].name;
-            document.getElementById('itemPrice').value = products[index].price;
-            document.getElementById('itemLink').value = products[index].link || "";
-            document.getElementById('priceGroup').style.display = "block";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function openAddGatewayModal() {
-            document.getElementById('editorTitle').innerText = "Add New Payment Method";
-            document.getElementById('editType').value = "gateway";
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('itemName').value = "";
-            document.getElementById('itemLink').value = "";
-            document.getElementById('priceGroup').style.display = "none";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function openEditGatewayModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit Payment Method";
-            document.getElementById('editType').value = "gateway";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('itemName').value = gateways[index].name;
-            document.getElementById('itemLink').value = gateways[index].link;
-            document.getElementById('priceGroup').style.display = "none";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function saveItemChanges() {
+function saveItemChanges() {
             const type = document.getElementById('editType').value;
             const index = parseInt(document.getElementById('editIndex').value);
             const name = document.getElementById('itemName').value;
@@ -314,6 +249,96 @@
             }
             closeModal('editorModal');
             renderProducts();
+        }
+
+        function deleteProduct(index) {
+            if(confirm("Padam e-book " + products[index].name + "?")) {
+                products.splice(index, 1);
+                localStorage.setItem('premium_store_products', JSON.stringify(products));
+                savePermanently();
+            }
+        }
+
+        function deleteGateway(index) {
+            if(confirm("Padam kaedah pembayaran " + gateways[index].name + "?")) {
+                gateways.splice(index, 1);
+                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+                renderProducts();
+            }
+        }
+
+        function savePermanently() {
+            localStorage.setItem('premium_store_products', JSON.stringify(products));
+            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+            try {
+                tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products }));
+            } catch(e){}
+            document.body.classList.remove('admin-mode');
+            renderProducts();
+            alert("✅ Saved Permanently! Semua barangan dan kaedah pembayaran telah dikunci masuk.");
+        }
+
+        function changeQty(index, change) { products[index].qty = Math.max(0, products[index].qty + change); renderProducts(); }
+        function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function updateTotalPrice() {
+            let total = 0;
+            products.forEach(p => { const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += (price * p.qty); });
+            const btn = document.getElementById('payButton');
+            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
+            btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
+        }
+
+        function checkAdmin() {
+            if(document.body.classList.contains('admin-mode')) { document.body.classList.remove('admin-mode'); renderProducts(); return; }
+            const code = prompt("🔐 Enter Admin Security Code:");
+            if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); }
+            else if (code !== null) { alert("❌ Access Denied."); }
+        }
+
+        window.onload = renderProducts;
+    </script>
+</body>
+</html>
+function saveItemChanges() {
+            const type = document.getElementById('editType').value;
+            const index = parseInt(document.getElementById('editIndex').value);
+            const name = document.getElementById('itemName').value;
+            const link = document.getElementById('itemLink').value;
+
+            if(!name || !link) return alert("Sila isi maklumat dengan betul.");
+
+            if(type === "product") {
+                const price = parseFloat(document.getElementById('itemPrice').value);
+                if(isNaN(price)) return alert("Sila masukkan harga.");
+                if(index === -1) {
+                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                    products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
+                } else {
+                    products[index].name = name;
+                    products[index].price = price;
+                    products[index].link = link;
+                }
+            } else if(type === "gateway") {
+                if(index === -1) {
+                    gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" });
+                } else {
+                    gateways[index].name = name;
+                    gateways[index].link = link;
+                }
+                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+            }
+            closeModal('editorModal');
+            renderProducts();
+        }
+
+        function deleteProduct(index) {
+            if(confirm("Padam e-book " + products[index].name + "?")) {
+                products.splice(index, 1);
+                localStorage.setItem('premium_store_products', JSON.stringify(products));
+                savePermanently();
+            }
         }
 
         function deleteGateway(index) {
