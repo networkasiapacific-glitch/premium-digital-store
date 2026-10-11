@@ -121,90 +121,34 @@
 
         let currentCurrency = "SGD";
         const EXCHANGE_RATE = 3.30;
-        const STRIPE_LINK = "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00";
 
         let defaultProducts = [
-            { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0 },
-            { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0 },
-            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0 },
-            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0 },
-            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0 },
-            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0 },
-            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0 },
-            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0 },
-            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0 },
-            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0 },
-            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0 },
-            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0 },
-            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0 }
+            { id: 1, name: "TikTok Automation Strategy", price: 5.00, qty: 0, link: "" },
+            { id: 2, name: "Digital Marketing 2027", price: 5.00, qty: 0, link: "" },
+            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
+            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
+            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
+            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
+            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
+            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
+            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
+            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
+            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
+            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
+            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
+        ];
+
+        let defaultGateways = [
+            { id: "tng", name: "📱 Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
+            { id: "stripe", name: "💳 Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
         ];
 
         let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
+        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
         products.forEach(p => p.qty = 0);
-
         function renderProducts() {
             const list = document.getElementById('productList');
             list.innerHTML = '';
-            products.forEach((p, index) => {
-                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <div class="product-info">
-                        <span class="product-name">${p.name}</span>
-                        <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
-                        <span class="badge-status">Available</span>
-                    </div>
-                    <div class="qty-controls">
-                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span class="qty-val">${p.qty}</span>
-                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
-                    </div>
-                    <div class="admin-actions">
-                        <button class="btn-admin btn-edit" onclick="openEditModal(${index})">Edit</button>
-                        <button class="btn-admin btn-delete" onclick="deleteProduct(${index})">Delete</button>
-                        <button class="btn-admin" style="background-color: #ffc107; color: #000;" onclick="openEditModal(${index})">💛 Set Link</button>
-                        <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-            updateTotalPrice();
-        }
-
-        function changeQty(index, change) {
-            products[index].qty = Math.max(0, products[index].qty + change);
-            renderProducts();
-        }
-
-        function updateCurrency() { 
-            currentCurrency = document.getElementById('currencySelect').value; 
-            renderProducts(); 
-        }
-
-        function updateTotalPrice() {
-            let total = 0;
-            products.forEach(p => {
-                const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                total += (price * p.qty);
-            });
-            const btn = document.getElementById('payButton');
-            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
-            btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
-        }
-
-        // --- PANGKALAN DATA SEBUTAN KOTAK PEMBAYARAN DEFAULT (Boleh Tambah/Edit Dari HP) ---
-        let defaultGateways = [
-            { id: "tng", name: "📱 Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
-            { id: "stripe", name: "💳 Credit Card / FPX (Stripe)", link: "https://buy.stripe.com/bJe6oJdqf4rCeeTbRH53O00", color: "#635bff" }
-        ];
-
-        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
-
-        // Penyelarasan Fungsi Paparan Untuk Memasukkan Kotak Kawalan Gateway Dinamik
-        const originalRenderProducts = renderProducts;
-        renderProducts = function() {
-            originalRenderProducts();
             
             if(document.body.classList.contains('admin-mode')) {
                 let gatewayAdminHTML = `
@@ -225,7 +169,32 @@
                 const box = document.getElementById('gatewayAdminBox');
                 if(box) box.remove();
             }
-        };
+
+            products.forEach((p, index) => {
+                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-info">
+                        <span class="product-name">${p.name}</span>
+                        <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
+                        <span class="badge-status">Available</span>
+                    </div>
+                    <div class="qty-controls">
+                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                        <span class="qty-val">${p.qty}</span>
+                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn-admin btn-edit" onclick="openEditProductModal(${index})">Edit</button>
+                        <button class="btn-admin btn-delete" onclick="deleteProduct(${index})">Delete</button>
+                        <button class="btn-admin btn-save-item" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            updateTotalPrice();
+        }
 
         function renderAdminGateways() {
             const container = document.getElementById('adminGatewayList');
@@ -243,7 +212,6 @@
                 `;
             });
         }
-
         function openPaymentModal() {
             const container = document.getElementById('paymentGatewayList');
             container.innerHTML = '';
@@ -359,6 +327,25 @@
             document.body.classList.remove('admin-mode');
             renderProducts();
             alert("✅ Saved Permanently! Semua barangan dan kaedah pembayaran telah dikunci masuk.");
+        }
+
+        function changeQty(index, change) { products[index].qty = Math.max(0, products[index].qty + change); renderProducts(); }
+        function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function updateTotalPrice() {
+            let total = 0;
+            products.forEach(p => { const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += (price * p.qty); });
+            const btn = document.getElementById('payButton');
+            btn.innerText = `PROCEED TO PAYMENT (${currentCurrency} ${total.toFixed(2)})`;
+            btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
+        }
+
+        function checkAdmin() {
+            if(document.body.classList.contains('admin-mode')) { document.body.classList.remove('admin-mode'); renderProducts(); return; }
+            const code = prompt("🔐 Enter Admin Security Code:");
+            if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); }
+            else if (code !== null) { alert("❌ Access Denied."); }
         }
 
         window.onload = renderProducts;
