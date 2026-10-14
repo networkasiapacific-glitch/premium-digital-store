@@ -323,6 +323,39 @@
             });
             document.getElementById('paymentModal').classList.add('active');
         }
+        // FUNGSI OVERLAY BAHAGIAN 2: PAPARAN BANNER & DETAILS PELANGGAN
+function bukaPaparanBahagian2(idx) {
+  if(document.body.classList.contains('admin-mode')) return;
+  const p = products[idx];
+  const displayPrice = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+  
+  document.getElementById('detailsProductName').innerText = p.name;
+  document.getElementById('detailsProductPrice').innerText = currentCurrency + " " + displayPrice.toFixed(2);
+  document.getElementById('detailsProductDesc').innerText = p.desc || "Premium operational digital layout asset training framework bundle.";
+  
+  const imgArea = document.getElementById('detailsBigImageArea');
+  if (imgArea) {
+    if (p.bigImg) {
+      // Paparkan Gambar 2 (Inner Banner) jika wujud
+      imgArea.innerHTML = '<img src="' + p.bigImg + '" class="details-big-img" style="width:100%; max-height:160px; object-fit:cover; border-radius:10px; margin-bottom:15px;">';
+    } else if (p.img) {
+      // Gunakan Gambar 1 (Front Thumbnail) sebagai sandaran jika Gambar 2 kosong
+      imgArea.innerHTML = '<img src="' + p.img + '" class="details-big-img" style="width:100%; max-height:160px; object-fit:cover; border-radius:10px; margin-bottom:15px;">';
+    } else {
+      imgArea.innerHTML = '<div style="width:100%; padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; margin-bottom:15px; font-size:11px; color:#8fa0bc;">📸 No production graphic banner view uploaded by staff yet.</div>';
+    }
+  }
+  
+  // Render Ulasan Pembeli MY/SG secara automatik
+  const reviewsList = document.getElementById('detailsProductReviewsList');
+  if (reviewsList) {
+    reviewsList.innerHTML = '<div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><strong>faiz_99 (MY) ⭐⭐⭐⭐⭐</strong><br>"Sumpah berbaloi gila beli masa flash sale."</div><div style="padding:6px 0;"><strong>jessica_tan (SG) ⭐⭐⭐⭐⭐</strong><br>"Super fast delivery to email, practical formula."</div>';
+  }
+  
+  // Aktifkan paparan overlay Bahagian 2
+  const viewModal = document.getElementById('productDetailsViewModal');
+  if (viewModal) viewModal.classList.add('active');
+}
 
         function openEditProductModal(index) {
             document.getElementById('editorTitle').innerText = "Edit E-Book Details";
@@ -595,7 +628,58 @@ function closeModal(id) {
     targetModal.style.display = "none";
     targetModal.classList.remove('active');
   }
+// ==========================================
+// LOGIK PENGURUSAN MEDIA PERMANENT VAULT (OREN)
+// ==========================================
 
+// 1. Fungsi membuka modal oren muat naik media berkembar
+function bukaModalMediaKhasStaf(idx) {
+  document.getElementById('mediaTargetProductIndex').value = idx;
+  
+  // Ambil data gambar lama dari database (jika ada) untuk mengelakkan ralat data kosong
+  document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
+  document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
+  
+  // Reset input fail fizikal agar sedia menerima fail baharu
+  document.getElementById('mediaFileFrontInput').value = "";
+  document.getElementById('mediaFileDescInput').value = "";
+  
+  // Buka modal media
+  document.getElementById('staffMediaUploadModal').style.display = "flex";
+}
+
+// 2. Fungsi memproses fail imej yang dipilih menjadi format rentetan teks Base64
+function prosesGambarKhasStaf(input, jenis) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      if (jenis === 'front') {
+        document.getElementById('dataHolderBase64Front').value = e.target.result;
+      } else if (jenis === 'desc') {
+        document.getElementById('dataHolderBase64Desc').value = e.target.result;
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// 3. Fungsi menyimpan fail Gambar 1 & Gambar 2 secara kekal ke storan tempatan peranti
+function simpanMediaKhasMuttamad() {
+  const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
+  if (isNaN(idx) || idx < 0) return;
+  
+  // Ambil nilai daripada pemegang data tersembunyi
+  products[idx].img = document.getElementById('dataHolderBase64Front').value;
+  products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
+  
+  // Kunci data ke dalam fail database localStorage peranti secara muttamad
+  localStorage.setItem('premium_store_products', JSON.stringify(products));
+  
+  // Tutup modal dan muat semula senarai katalog depan
+  document.getElementById('staffMediaUploadModal').style.display = "none";
+  renderProducts();
+  alert("💾 Media Vault Sync Complete! Front Thumbnail & Inner Banner saved permanently.");
+}
         function checkAdmin() {
             if(document.body.classList.contains('admin-mode')) {
                 document.body.classList.remove('admin-mode');
