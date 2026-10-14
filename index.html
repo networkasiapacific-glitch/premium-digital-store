@@ -1,710 +1,623 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium Digital Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --bg-color: #0b1426; --card-bg: #152238; --text-color: #ffffff; --accent-color: #0088cc; --danger-color: #e53935; --success-color: #4caf50; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 90px; user-select: none; -webkit-user-select: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .header h1 { margin: 0; font-size: 16px; font-weight: bold; color: #ffffff; }
-        .admin-trigger { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 11px; cursor: pointer; }
-        .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
-        .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
-        .section-title { font-size: 12px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
-        .product-list { display: flex; flex-direction: column; gap: 12px; }
-        .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .product-info { flex: 1; margin-right: 10px; }
-        .product-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: block; }
-        .product-price { color: #0088cc; font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; }
-        .badge-status { display: inline-block; background: rgba(76, 175, 80, 0.15); color: #4caf50; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-        .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; align-self: flex-end; }
-        .btn-qty { background: var(--accent-color); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .qty-val { font-weight: bold; min-width: 15px; text-align: center; font-size: 14px; }
-        .admin-actions { display: none; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
-        body.admin-mode .admin-actions { display: flex; }
-        body.admin-mode .qty-controls { display: none; }
-        .btn-admin { border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .btn-edit { background-color: #ffa000; }
-        .btn-delete { background-color: var(--danger-color); }
-        .btn-save-item { background-color: var(--success-color); }
-        .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
-        body.admin-mode .admin-top-controls { display: flex; }
-        .admin-top-controls .btn-add-list { margin-bottom: 0 !important; flex: 1; display: block !important; }
-        .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; text-transform: uppercase; }
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f1c32; padding: 15px; display: flex; justify-content: center; align-items: center; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08); }
-        .btn-main { background: var(--accent-color); color: white; border: none; width: 100%; max-width: 400px; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; text-transform: uppercase; }
-        .btn-main:disabled { background: #2c3a52; color: #62728d; cursor: not-allowed; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-title { font-weight: bold; font-size: 15px; margin-bottom: 15px; text-align: center; }
-        .btn-gate { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; border: none; color: white; font-weight: bold; margin-bottom: 10px; cursor: pointer; font-size: 14px; }
-        .modal-close { text-align: center; color: #8fa0bc; font-size: 12px; cursor: pointer; margin-top: 10px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: #8fa0bc; margin-bottom: 4px; }
-        .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Premium Digital Store</title>
+  <script src="https://telegram.org"></script>
+  <style>
+    :root {
+      --bg-color: #0b1426; 
+      --card-bg: #152238; 
+      --text-color: #ffffff; 
+      --accent-color: #0088cc;
+      --danger-color: #e53935;
+      --success-color: #4caf50;
+      --warning-color: #ffa000;
+    }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background-color: var(--bg-color); 
+      color: var(--text-color); 
+      margin: 0; 
+      padding: 15px; 
+      padding-bottom: 150px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 18px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .header h1 { margin: 0; font-size: 16px; font-weight: bold; color: #ffffff; }
+    .admin-trigger { background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 15px; cursor: pointer; outline: none; transition: opacity 0.2s; }
+    .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+    .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
+    .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
+    .section-title { font-size: 12px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
+    .product-list { display: flex; flex-direction: column; gap: 12px; }
+      .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
+    .product-card:hover { background: rgba(255,255,255,0.02); }
+    .product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
+    .product-name { font-weight: 600; font-size: 14px; color: #ffffff; }
+    .product-price { color: #0088cc; font-size: 13px; font-weight: bold; margin-top: 2px; }
+    .badge-status { display: inline-block; background: rgba(76, 175, 80, 0.15); color: #4caf50; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; width: max-content; margin-top: 4px; }
+    .product-thumbnail-box { width: 50px; height: 50px; border-radius: 8px; background: rgba(0, 0, 0, 0.3); border: 1px dashed rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .product-thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-placeholder { font-size: 8px; color: #8fa0bc; text-align: center; line-height: 1.1; }
+    .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; }
+    .btn-qty { background: var(--accent-color); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .qty-val { font-weight: bold; min-width: 12px; text-align: center; font-size: 13px; }
+    .admin-actions { display: none; gap: 5px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+    body.admin-mode .admin-actions { display: flex; }
+    body.admin-mode .qty-controls { display: none; }
+    .btn-admin { border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+    .btn-inline-orange-media { background-color: #ff7a00 !important; color: #ffffff !important; }
+    .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
+    body.admin-mode .admin-top-controls { display: flex; }
+    .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; text-transform: uppercase; margin-bottom: 0 !important; flex: 1; display: block !important; }
+    .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1426; padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; }
+    .btn-main { background: #00cc99; color: #0b1426; border: none; width: 100%; max-width: 420px; margin: 0 auto; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+    .btn-main:disabled { background: #2c3a52 !important; color: #62728d !important; cursor: not-allowed; opacity: 0.5; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal.active { display: flex; }
+    .modal-content { background: #111e35; border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; border: 1px solid rgba(0, 136, 204, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.55); box-sizing: border-box; color: #ffffff; }
+    .modal-title { font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; }
+    .modal-close { text-align: center; color: #8fa0bc; font-size: 11px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 11px; color: #8fa0bc; margin-bottom: 4px; text-transform: uppercase; }
+    .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(7,13,24,0.6); color: white; box-sizing: border-box; font-size: 12px; }
+    .form-group input:focus { border-color: #0088cc; box-shadow: 0 0 8px rgba(0, 136, 204, 0.4); outline: none; }
+    .details-image-container-3d { position: relative; width: 100%; max-width: 260px; margin: 0 auto 15px auto; perspective: 1000px; }
+    .details-big-img-wrapper { width: 100%; height: 160px; border-radius: 12px; background: #070d18; border: 1px solid rgba(0, 136, 204, 0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; animation: apunganLampuBawah 3s infinite ease-in-out; }
+    .details-big-img-wrapper img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; }
+    .details-big-img-wrapper::after { content: ''; position: absolute; bottom: 0; left: 10%; width: 80%; height: 10px; background: radial-gradient(ellipse at bottom, #0088cc 0%, transparent 70%); opacity: 0.7; filter: blur(3px); }
+    @keyframes apunganLampuBawah {
+      0% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(0,136,204,0.1); }
+      50% { transform: translateY(-5px); box-shadow: 0 12px 22px rgba(0,136,204,0.25); }
+      100% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(0,136,204,0.1); }
+    }
+    .review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; font-size: 11px; color: #c5d1e6; }
+    .sales-pop { position: fixed; bottom: 145px; left: 15px; right: 15px; background: #1c2e4a; border: 1px solid rgba(0, 136, 204, 0.3); border-radius: 10px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transform: translateY(180%); transition: transform 0.5s ease-in-out; }
+    .sales-pop.show { transform: translateY(0); }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Premium Digital Store</h1>
-        <button class="admin-trigger" onclick="checkAdmin()">* Staff</button>
+
+  <!-- KEPALA HALAMAN DEPAN GRADIENT PREMIUM -->
+  <div class="header">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <span style="font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff 30%, #8fa0bc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PREMIUM DIGITAL STORE</span>
+      <span style="font-size: 9px; color: #0088cc; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">Official Catalogue Vault</span>
     </div>
-
-    <div class="currency-box">
-        <span class="currency-label">Select Currency:</span>
-        <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
-            <option value="SGD">Singapore Dollar (SGD)</option>
-            <option value="MYR">Malaysian Ringgit (MYR)</option>
-        </select>
-    </div>
-
-    <div class="section-title">E-Book Catalogue</div>
-    <div id="gatewayAdminBox"></div>
-
-    <div class="admin-top-controls">
-        <button class="btn-add-list" style="background-color: #0088cc;" onclick="openAddModal()">⚡ + Add New E-Book</button>
-        <button class="btn-add-list" style="background-color: #4caf50;" onclick="openAddGatewayModal()">💳 + Add Payment Method</button>
-    </div>
-
-    <div class="product-list" id="productList"></div>
-
-    <div class="footer-bar">
-        <button class="btn-main" id="payButton" onclick="openPaymentModal()" disabled>PROCEED TO PAYMENT</button>
-    </div>
-
-    <div class="modal" id="paymentModal">
-        <!-- NEW AUTOMATIC QR DISPLAY MODAL -->
-    <div class="modal" id="qrDisplayModal">
-        <div class="modal-content" style="text-align: center; max-width: 320px;">
-            <div class="modal-title" style="color: #4caf50; font-weight: bold;">⚡ AUTOMATIC QR PAYMENT ⚡</div>
-            <p style="font-size: 12px; color: #8fa0bc; margin-bottom: 15px;">Please screenshot or scan this QR Code to complete your professional secure payment.</p>
-            
-            <!-- Tempat gambar QR yang Anda upload akan muncul secara otomatis -->
-            <img id="autoQrTargetImage" src="" alt="Payment QR Code" style="width: 100%; max-width: 220px; border-radius: 12px; border: 4px solid #ffffff; margin-bottom: 15px;">
-            
-            <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-bottom: 15px;" id="autoQrGatewayName"></div>
-            <button class="btn-main" style="background-color: #e53935;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
-        </div>
-    </div>
-        <div class="modal-content">
-            <div class="modal-title">SELECT PAYMENT METHOD</div>
-            <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
-            <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
-        </div>
-    </div>
-
-    <div class="modal" id="editorModal">
-        <div class="modal-content">
-            <div class="modal-title" id="editorTitle">Edit Item</div>
-            <input type="hidden" id="editType">
-            <input type="hidden" id="editIndex">
-            
-            <div class="form-group">
-                <label id="labelName">Name / Title</label>
-                <input type="text" id="itemName">
-            </div>
-            
-            <div class="form-group" id="priceGroup">
-                <label>Base Price (SGD)</label>
-                <input type="number" step="0.01" id="itemPrice">
-            </div>
-            
-            <div class="form-group" id="linkGroup">
-                <label id="labelLink">Destination Link</label>
-                <input type="text" id="itemLink">
-            </div>
-
-            <div class="form-group" id="productAssetUploadGroup" style="display: none;">
-                <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
-                <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
-            </div>
-            
-            <div class="form-group" id="qrUploadGroup" style="display: none;">
-                <label>Upload QR Scan Picture</label>
-                <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
-            </div>
-            
-            <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">Save Changes</button>
-            <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
-        </div>
-   <!-- MODAL OVERLAY VERIFIKASI TERMA ANTI-REFUND -->
-<div class="modal" id="strictTermsVerificationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
-  <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; border: 1px solid rgba(229, 57, 53, 0.3); box-sizing: border-box; text-align: center;">
-    <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
-    <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
-    <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
-      <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
-      <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">
-        I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.
-      </label>
-    </div>
-    <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
-    <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
+    <button class="admin-trigger" id="staffModeTriggerBtn" onclick="checkAdmin()">⚙️</button>
   </div>
-</div>
+
+  <div class="currency-box">
+    <span class="currency-label">Select Currency:</span>
+    <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
+      <option value="SGD">Singapore Dollar (SGD)</option>
+      <option value="MYR">Malaysian Ringgit (MYR)</option>
+    </select>
+  </div>
+
+  <!-- DUA BUTANG KUNING STAFF PANEL -->
+  <div class="admin-top-controls" id="staffTopPanel">
+    <button class="btn-add-list" style="background-color: #ffc107 !important; color: #0b1426 !important; font-weight: 800;" onclick="openAddModal()">⚡ + ADD NEW E-BOOK</button>
+    <button class="btn-add-list" style="background-color: #ffc107 !important; color: #0b1426 !important; font-weight: 800;" onclick="openAddGatewayModal()">🟢 + ADD PAYMENT METHOD</button>
+  </div>
+
+  <div class="section-title">E-Book Catalogue</div>
+  <div id="gatewayAdminBox"></div>
+  <div class="product-list" id="productList"></div>
+
+  <!-- PANEL TERAPUNG NOTIFIKASI REVIEW -->
+  <div id="salesPopNotification" class="sales-pop">
+    <div style="font-size:16px; background:rgba(0,136,204,0.2); padding:6px; border-radius:50%;">⚡</div>
+    <div style="font-size: 11px; color: #ffffff; line-height: 1.4; flex: 1;">
+      <span id="salesPopContent">Loading verified client review...</span>
+      <span id="salesPopTime" style="font-size: 9px; color: #8fa0bc; display: block; margin-top: 2px;">Just now</span>
     </div>
+  </div>
+
+  <!-- STICKY CHECKOUT FOOTER -->
+  <div class="footer-bar"></div>
+
+  <!-- MODAL DISPLAY KAEDAH QR ASAL -->
+  <div class="modal" id="qrDisplayModal">
+    <div class="modal-content" style="text-align: center; max-width: 320px;">
+      <div class="modal-title" style="color: #4caf50; font-weight: bold;">AUTOMATIC QR PAYMENT</div>
+      <p style="font-size: 12px; color: #8fa0bc; margin-bottom: 15px;">Please screenshot or scan this QR Code to complete your professional secure payment.</p>
+      <img id="autoQrTargetImage" src="" alt="Payment QR Code" style="width: 100%; max-width: 220px; border-radius: 12px; border: 4px solid #ffffff; margin-bottom: 15px;">
+      <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-bottom: 15px;" id="autoQrGatewayName"></div>
+      <button class="btn-main" style="background-color: #e53935 !important; color:#fff;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
+    </div>
+  </div>
+
+  <!-- MODAL PILIHAN PEMBAYARAN KEPADA PELANGGAN -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <div class="modal-title">SELECT PAYMENT METHOD</div>
+      <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
+      <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
+    </div>
+  </div>
+  <!-- TETINGKAP DIALOG EDIT DATA LAMA STAFF -->
+  <div class="modal" id="editorModal">
+    <div class="modal-content">
+      <div class="modal-title" id="editorTitle">Edit Item</div>
+      <input type="hidden" id="editType"><input type="hidden" id="editIndex">
+      <div class="form-group">
+        <label id="labelName">Name / Title</label><input type="text" id="itemName">
+      </div>
+      <div class="form-group" id="priceGroup">
+        <label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice">
+      </div>
+      <div class="form-group" id="linkGroup">
+        <label id="labelLink">Destination Link</label><input type="text" id="itemLink">
+      </div>
+      <div class="form-group" id="productAssetUploadGroup" style="display: none;">
+        <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
+        <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
+      </div>
+      <div class="form-group" id="qrUploadGroup" style="display: none;">
+        <label>Upload QR Scan Picture</label>
+        <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
+      </div>
+      <button class="btn-main" style="background-color: #4caf50 !important; color:#fff;" onclick="saveItemChanges()">Save Changes</button>
+      <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
+    </div>
+  </div>
+
+  <!-- MODAL OREN STAFF: PEMUAT NAIK FAIL BERKEMBAR KOTAK HIJAU -->
+  <div class="modal" id="staffMediaUploadModal">
+    <div class="modal-content" style="border: 1px solid #ff7a00;">
+      <div class="modal-title" style="color: #ff7a00; font-size: 14px;">🖼️ Manage Product Media Vault</div>
+      <input type="hidden" id="mediaTargetProductIndex">
+      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76,175,80,0.3);">
+        <label style="color: #4caf50; font-weight: 700; font-size: 11px; display: block; margin-bottom: 4px;">📂 Choose File 1: Dashboard Front Picture</label>
+        <input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')" style="font-size: 12px; color: #8fa0bc;">
+      </div>
+      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76,175,80,0.3);">
+        <label style="color: #4caf50; font-weight: 700; font-size: 11px; display: block; margin-bottom: 4px;">📂 Choose File 2: Description Inner Banner</label>
+        <input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')" style="font-size: 12px; color: #8fa0bc;">
+      </div>
+      <input type="hidden" id="dataHolderBase64Front"><input type="hidden" id="dataHolderBase64Desc">
+      <button class="btn-main" style="background-color: #ff7a00 !important; color: #ffffff !important;" onclick="simpanMediaKhasMuttamad()">SAVE & LOCK MEDIA</button>
+      <div class="modal-close" onclick="closeModal('staffMediaUploadModal')">[ Close ]</div>
+    </div>
+  </div>
+
+  <!-- BAHAGIAN 2: PAPARAN FULL SCREEN OVERLAY PELANGGAN VIEW -->
+  <div class="modal" id="productDetailsViewModal">
+    <div class="modal-content" style="max-width: 360px; max-height: 80vh; overflow-y: auto;">
+      <div id="detailsBigImageArea"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <h2 id="detailsProductName" style="margin: 0; font-size: 15px; font-weight: bold;"></h2>
+        <span id="detailsProductPrice" style="color: #0088cc; font-weight: bold; font-size: 14px;"></span>
+      </div>
+      <div style="font-size: 11px; font-weight: bold; color: #0088cc; margin: 15px 0 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase;">📋 Description Spec</div>
+      <p id="detailsProductDesc" style="font-size: 12px; color: #8fa0bc; margin: 0; line-height: 1.5;"></p>
+      <div style="font-size: 11px; font-weight: bold; color: #0088cc; margin: 15px 0 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase;">⭐ Verified Customer Ratings</div>
+      <div id="detailsProductReviewsList"></div>
+      <button class="btn-main" style="background: #2c3a52 !important; color:#fff; margin-top: 20px;" onclick="closeModal('productDetailsViewModal')">Back to Catalogue</button>
+    </div>
+  </div>
+
+  <!-- POP-UP TINGKAP AMARAN VERIFIKASI ANTI-REFUND -->
+  <div class="modal" id="strictTermsVerificationModal">
+    <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; text-align: center; border: 1px solid rgba(229, 57, 53, 0.3);">
+      <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+      <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
+        <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
+        <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.</label>
+      </div>
+      <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
+      <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
+    </div>
+  </div>
+
+</div>
     <script>
-        const tg = window.Telegram.WebApp;
-        if(tg && typeof tg.expand === 'function') tg.expand();
-        let currentCurrency = "SGD";
-        const EXCHANGE_RATE = 3.30;
-        let base64QrImage = ""; 
-        let base64AssetFile = ""; 
+  const tg = window.Telegram.WebApp;
+  if(tg && typeof tg.expand === 'function') tg.expand();
 
-        let defaultProducts = [
-            { id: 1, name: "TikTok Automation Strategy", price: 25.00, qty: 0, link: "" },
-            { id: 2, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "" },
-            { id: 3, name: "E-Commerce Success Keys", price: 5.00, qty: 0, link: "" },
-            { id: 4, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "" },
-            { id: 5, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "" },
-            { id: 6, name: "AI Content Formula", price: 5.00, qty: 0, link: "" },
-            { id: 7, name: "Mastery Telegram", price: 5.00, qty: 0, link: "" },
-            { id: 8, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "" },
-            { id: 9, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "" },
-            { id: 10, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "" },
-            { id: 11, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "" },
-            { id: 12, name: "Viral Traffic System", price: 5.00, qty: 0, link: "" },
-            { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "" }
-        ];
+  let currentCurrency = "SGD";
+  const EXCHANGE_RATE = 3.30;
+  let base64QrImage = "";
+  let base64AssetFile = "";
 
-        let defaultGateways = [
-            { id: "tng", name: "Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
-            { id: "stripe", name: "Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
-        ];
+  // Senarai Pangkalan Data Utama Produk Kedai Digital
+  let defaultProducts = [
+    { id: 1, name: "TikTok Automation Strategy", price: 35.90, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
+    { id: 2, name: "Viral Traffic System", price: 55.90, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
+    { id: 3, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "" },
+    { id: 4, name: "E-Commerce Success Keys", price: 15.00, qty: 0, link: "" }
+  ];
 
-        let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
-        let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
-        products.forEach(p => p.qty = 0);
+  let defaultGateways = [
+    { id: "tng", name: "Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
+    { id: "stripe", name: "Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
+  ];
 
-        function renderProducts() {
-            const list = document.getElementById('productList');
-            if (!list) return;
-            list.innerHTML = '';
+  let products = JSON.parse(localStorage.getItem('premium_store_vault_products')) || defaultProducts;
+  let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
+  products.forEach(p => p.qty = 0);
 
-            if(document.body.classList.contains('admin-mode')) {
-                let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
-                    '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">⚙️ PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
-                    '<div id="adminGatewayList" style="display: flex; flex-direction:column; gap: 6px;"></div>' +
-                    '</div>';
-                
-                const titleSec = document.querySelector('.section-title');
-                if(titleSec && !document.getElementById('gatewayAdminBox')) {
-                    const divWrapper = document.createElement('div');
-                    divWrapper.innerHTML = gatewayAdminHTML;
-                    titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
-                }
-                renderAdminGateways();
-            } else {
-                const box = document.getElementById('gatewayAdminBox');
-                if(box) box.remove();
-            }
+  const list = document.getElementById('productList');
 
-            products.forEach((p, index) => {
-  const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-  const card = document.createElement('div');
-  card.className = 'product-card';
-  card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ');
+  function renderProducts() {
+    if (!list) return;
+    list.innerHTML = '';
 
-  card.innerHTML = 
-    '<div class="product-info" style="display:flex; flex-direction:column;">' +
-      '<span class="product-name" style="font-weight:600; font-size:14px; color:#fff;">' + p.name + '</span>' +
-      '<span class="product-price" style="color:#0088cc; font-weight:bold; font-size:13px; margin-top:2px;">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
-      '<span class="badge-status">Available</span>' +
-      '<div class="admin-actions" onclick="event.stopPropagation();" style="margin-top:10px; display:none; gap:5px; flex-wrap:wrap;">' +
-        '<button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(' + index + ')">Edit</button>' +
-        '<button class="btn-admin" style="background-color:#e53935;" onclick="deleteProduct(' + index + ')">Delete</button>' +
-        '<button class="btn-admin" style="background-color:#ffc107; color:#000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
-        '<button class="btn-admin" style="background-color:#ff7a00 !important; color:#fff;" onclick="bukaModalMediaKhasStaf(' + index + ')">📸 Media</button>' +
-        '<button class="btn-admin" style="background-color:#4caf50;" onclick="savePermanently()">Save</button>' +
-      '</div>' +
-    '</div>' +
-    '<div style="display:flex; flex-direction:column; align-items:flex-end;" onclick="event.stopPropagation();">' +
-      '<div style="width:50px; height:50px; border-radius:8px; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px dashed rgba(255,255,255,0.15); margin-bottom:6px;">' + 
-        (p.img ? '<img src="' + p.img + '" style="width:100%; height:100%; object-fit:cover;">' : '<span style="font-size:8px; color:#8fa0bc; text-align:center; line-height:1.1;">No Img</span>') + 
-      '</div>' +
-      '<div class="qty-controls">' +
-        '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
-        '<span class="qty-val">' + p.qty + '</span>' +
-        '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
-      '</div>' +
-    '</div>';
-    
-  list.appendChild(card);
-});
-            updateTotalPrice();
-        }
-        function renderAdminGateways() {
-            const container = document.getElementById('adminGatewayList');
-            if(!container) return;
-            container.innerHTML = '';
-            gateways.forEach((g, index) => {
-                const div = document.createElement('div');
-                div.style.display = 'flex';
-                div.style.justify = 'space-between';
-                div.style.alignItems = 'center';
-                div.style.background = 'rgba(0,0,0,0.2)';
-                div.style.padding = '8px';
-                div.style.borderRadius = '8px';
-                div.style.fontSize = '12px';
-                div.style.marginBottom = '4px';
-                
-                div.innerHTML = '<span>' + g.name + '</span>' +
-                    '<div style="display: flex; gap:4px;">' +
-                    '<button class="btn-admin btn-edit" style="padding:4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
-                    '<button class="btn-admin btn-delete" style="padding:4px 10px; font-size:10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
-                    '<button class="btn-admin" style="padding:4px 10px; font-size:10px; background-color:#4caf50;" onclick="savePermanently()">Save</button>' +
-                    '</div>';
-                container.appendChild(div);
-            });
-        }
-
-        function openPaymentModal() {
-            const container = document.getElementById('paymentGatewayList');
-            container.innerHTML = '';
-            const purchasedItems = products.filter(p => p.qty > 0);
-            if(purchasedItems.length === 0) return;
-
-            gateways.forEach(g => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-gate';
-                btn.style.width = '100%';
-                btn.style.padding = '12px';
-                btn.style.borderRadius = '8px';
-                btn.style.border = 'none';
-                btn.style.color = 'white';
-                btn.style.fontWeight = 'bold';
-                btn.style.marginBottom = '10px';
-                btn.style.backgroundColor = g.color || '#0088cc';
-                btn.innerText = g.name;
-
-                btn.onclick = function() {
-                    closeModal('paymentModal');
-                    
-                    const orderData = { 
-                        action: "PROCESS_AUTOMATIC_INVOICE",
-                        status: "AWAITING_PAYMENT_TRACE",
-                        gateway_name: g.name, 
-                        currency: currentCurrency, 
-                        gateway_details: g.link, 
-                        items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link })) 
-                    };
-
-                    // ALUR JEJAK OTOMATIS TANPA SEKATAN BLOCKER
-                    if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
-                        // Jika Anda save berupa LINK (Stripe/TNG Invoice URL) -> Langsung luncurkan browser luar HP
-                        if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                            window.Telegram.WebApp.openLink(g.link);
-                        } else {
-                            window.open(g.link, '_blank');
-                        }
-                    } else if (g.link.startsWith('data:image')) {
-                        // Jika Anda muat naik/SAVE berupa GAMBAR QR -> Sistem OTOMATIS tampilkan gambar QR besar di layar HP
-                        document.getElementById('autoQrTargetImage').src = g.link;
-                        document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
-                        document.getElementById('qrDisplayModal').classList.add('active');
-                    } else {
-                        // Jika Anda isi nomor akaun bank manual
-                        alert("PAYMENT INVOICE GENERATED\n\nPlease transfer your payment to the following " + g.name + " account details:\nAccount Details: " + g.link);
-                    }
-                    
-                    // Teruskan sinkronisasi log pesanan ke Bot Telegram Bisnes Anda
-                    try { 
-                        if(tg && typeof tg.sendData === 'function') {
-                            tg.sendData(JSON.stringify(orderData)); 
-                        }
-                    } catch(e){ console.error(e); }
-                };
-                container.appendChild(btn);
-            });
-            document.getElementById('paymentModal').classList.add('active');
-        }
-        // FUNGSI OVERLAY BAHAGIAN 2: PAPARAN BANNER & DETAILS PELANGGAN
-function bukaPaparanBahagian2(idx) {
-  if(document.body.classList.contains('admin-mode')) return;
-  const p = products[idx];
-  const displayPrice = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-  
-  document.getElementById('detailsProductName').innerText = p.name;
-  document.getElementById('detailsProductPrice').innerText = currentCurrency + " " + displayPrice.toFixed(2);
-  document.getElementById('detailsProductDesc').innerText = p.desc || "Premium operational digital layout asset training framework bundle.";
-  
-  const imgArea = document.getElementById('detailsBigImageArea');
-  if (imgArea) {
-    if (p.bigImg) {
-      // Paparkan Gambar 2 (Inner Banner) jika wujud
-      imgArea.innerHTML = '<img src="' + p.bigImg + '" class="details-big-img" style="width:100%; max-height:160px; object-fit:cover; border-radius:10px; margin-bottom:15px;">';
-    } else if (p.img) {
-      // Gunakan Gambar 1 (Front Thumbnail) sebagai sandaran jika Gambar 2 kosong
-      imgArea.innerHTML = '<img src="' + p.img + '" class="details-big-img" style="width:100%; max-height:160px; object-fit:cover; border-radius:10px; margin-bottom:15px;">';
+    if(document.body.classList.contains('admin-mode')) {
+      let gatewayAdminHTML = '<div id="gatewayAdminBox" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">' +
+        '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
+        '<div id="adminGatewayList" style="display: flex; flex-direction: column; gap: 6px; "></div>' +
+        '</div>';
+      const titleSec = document.querySelector('.section-title');
+      if(titleSec && !document.getElementById('gatewayAdminBox')) {
+        const divWrapper = document.createElement('div');
+        divWrapper.innerHTML = gatewayAdminHTML;
+        titleSec.parentNode.insertBefore(divWrapper.firstChild, titleSec);
+      }
+      renderAdminGateways();
     } else {
-      imgArea.innerHTML = '<div style="width:100%; padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; margin-bottom:15px; font-size:11px; color:#8fa0bc;">📸 No production graphic banner view uploaded by staff yet.</div>';
+      const box = document.getElementById('gatewayAdminBox');
+      if(box) box.remove();
+    }
+
+    products.forEach((p, index) => {
+      const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ')');
+
+      card.innerHTML = 
+        '<div class="product-info">' +
+          '<span class="product-name" style="font-weight:600; font-size: 14px; color:#fff;">' + p.name + '</span>' +
+          '<span class="product-price" style="color:#0088cc; font-weight:bold; font-size: 13px; margin-top:2px;">'+ currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
+          '<span class="badge-status">Available</span>' +
+          '<div class="admin-actions" onclick="event.stopPropagation();" style="margin-top:10px; display:none; gap: 5px; flex-wrap:wrap;">' +
+            '<button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(' + index + ')">Edit</button>' +
+            '<button class="btn-admin" style="background-color: #e53935;" onclick="deleteProduct(' + index + ')">Delete</button>' +
+            '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
+            '<button class="btn-admin btn-inline-orange-media" onclick="bukaModalMediaKhasStaf(' + index + ')">📸 Media</button>' +
+            '<button class="btn-admin" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display: flex; flex-direction:column; align-items: flex-end;" onclick="event.stopPropagation();">' +
+          '<div class="product-thumbnail-box">' + (p.img ? '<img src="' + p.img + '" style="width: 100%; height: 100%; object-fit:cover;">' : '<span class="thumb-placeholder">No Img</span>') + '</div>' +
+          '<div class="qty-controls" style="margin-top: 6px;">' +
+            '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
+            '<span class="qty-val">' + p.qty + '</span>' +
+            '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
+          '</div>' +
+        '</div>';
+        
+      list.appendChild(card);
+    });
+    updateTotalPrice();
+  }
+        const container = document.getElementById('adminGatewayList');
+
+  function renderAdminGateways() {
+    const gatewayContainer = document.getElementById('adminGatewayList');
+    if(!gatewayContainer) return;
+    gatewayContainer.innerHTML = '';
+    gateways.forEach((g, index) => {
+      const div = document.createElement('div');
+      div.style.display = 'flex';
+      div.style.justify = 'space-between';
+      div.style.alignItems = 'center';
+      div.style.background = 'rgba(0,0,0,0.2)';
+      div.style.padding = '8px';
+      div.style.borderRadius = '8px';
+      div.style.fontSize = '12px';
+      div.style.marginBottom = '4px';
+      div.innerHTML = '<span>' + g.name + '</span>' +
+        '<div style="display: flex; gap:4px;">' +
+        '<button class="btn-admin btn-edit" style="padding: 4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
+        '<button class="btn-admin btn-delete" style="padding: 4px 10px; font-size: 10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
+        '<button class="btn-admin" style="padding: 4px 10px; font-size: 10px; background-color: #4caf50;" onclick="savePermanently()">Save</button>' +
+        '</div>';
+      gatewayContainer.appendChild(div);
+    });
+  }
+
+  function openPaymentModal() {
+    const container = document.getElementById('paymentGatewayList');
+    container.innerHTML = '';
+    const purchasedItems = products.filter(p => p.qty > 0);
+    if(purchasedItems.length === 0) return;
+    gateways.forEach(g => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-gate';
+      btn.style.width = '100%';
+      btn.style.padding = '12px';
+      btn.style.borderRadius = '8px';
+      btn.style.border = 'none';
+      btn.style.color = 'white';
+      btn.style.fontWeight = 'bold';
+      btn.style.marginBottom = '10px';
+      btn.style.backgroundColor = g.color || '#0088cc';
+      btn.innerText = g.name;
+      btn.onclick = function() {
+        closeModal('paymentModal');
+        const orderData = {
+          action: "PROCESS_AUTOMATIC_INVOICE",
+          status: "AWAITING_PAYMENT_TRACE",
+          gateway_name: g.name,
+          currency: currentCurrency,
+          gateway_details: g.link,
+          items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link }))
+        };
+
+        if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(g.link);
+          } else { window.open(g.link, '_blank'); }
+        } else if (g.link.startsWith('data:image')) {
+          document.getElementById('autoQrTargetImage').src = g.link;
+          document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
+          document.getElementById('qrDisplayModal').classList.add('active');
+        } else {
+          alert("PAYMENT INVOICE GENERATED\n\nPlease transfer your payment to the following " + g.name + " account details:\n\nAccount Details: " + g.link);
+        }
+
+        try {
+          if(tg && typeof tg.sendData === 'function') { tg.sendData(JSON.stringify(orderData)); }
+        } catch(e){ console.error(e); }
+      };
+      container.appendChild(btn);
+    });
+    document.getElementById('paymentModal').classList.add('active');
+  }
+
+  function handleAssetUpload(input) {
+    const files = input.files;
+    if (files && files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) { base64AssetFile = e.target.result; };
+      reader.readAsDataURL(files[0]);
     }
   }
-  
-  // Render Ulasan Pembeli MY/SG secara automatik
-  const reviewsList = document.getElementById('detailsProductReviewsList');
-  if (reviewsList) {
-    reviewsList.innerHTML = '<div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><strong>faiz_99 (MY) ⭐⭐⭐⭐⭐</strong><br>"Sumpah berbaloi gila beli masa flash sale."</div><div style="padding:6px 0;"><strong>jessica_tan (SG) ⭐⭐⭐⭐⭐</strong><br>"Super fast delivery to email, practical formula."</div>';
+
+  function handleQrUpload(input) {
+    const files = input.files;
+    if (files && files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) { base64QrImage = e.target.result; };
+      reader.readAsDataURL(files[0]);
+    }
   }
-  
-  // Aktifkan paparan overlay Bahagian 2
-  const viewModal = document.getElementById('productDetailsViewModal');
-  if (viewModal) viewModal.classList.add('active');
-}
 
-        function openEditProductModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit E-Book Details";
-            document.getElementById('editType').value = "product";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('labelName').innerText = "Product Name / Title";
-            document.getElementById('itemName').value = products[index].name;
-            document.getElementById('itemPrice').value = products[index].price;
-            document.getElementById('priceGroup').style.display = "block";
-            document.getElementById('linkGroup').style.display = "none"; 
-            document.getElementById('productAssetUploadGroup').style.display = "none";
-            document.getElementById('qrUploadGroup').style.display = "none";
-            document.getElementById('editorModal').classList.add('active');
-        }
-        function openSetLinkModal(index) {
-            document.getElementById('editorTitle').innerText = "💛 Set Digital Asset (YELLOW BOX)";
-            document.getElementById('editType').value = "product";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('labelName').innerText = "Product Name (Read-Only)";
-            document.getElementById('labelLink').innerText = "Paste Asset Destination Link (URL / Group Link)";
-            document.getElementById('itemName').value = products[index].name;
-            document.getElementById('itemLink').value = products[index].link && !products[index].link.startsWith("data:") ? products[index].link : "";
-            document.getElementById('itemLink').placeholder = "Paste your download URL or group invite link here";
-            
-            document.getElementById('priceGroup').style.display = "none"; 
-            document.getElementById('linkGroup').style.display = "block";
-            document.getElementById('productAssetUploadGroup').style.display = "block"; 
-            document.getElementById('qrUploadGroup').style.display = "none";
-            
-            base64AssetFile = products[index].link && products[index].link.startsWith("data:") ? products[index].link : "";
-            document.getElementById('itemAssetFile').value = "";
-            document.getElementById('editorModal').classList.add('active');
-        }
+  function saveItemChanges() {
+    const index = parseInt(document.getElementById('editIndex').value);
+    const name = document.getElementById('itemName').value;
+    let link = document.getElementById('itemLink').value;
+    const type = document.getElementById('editType').value;
+    const titleText = document.getElementById('editorTitle').innerText;
 
-        function openAddModal() {
-            document.getElementById('editorTitle').innerText = "Add New E-Book";
-            document.getElementById('editType').value = "product";
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('labelName').innerText = "Product Name / Title";
-            document.getElementById('labelLink').innerText = "Destination Link (URL / Group Link)";
-            document.getElementById('itemName').value = "";
-            document.getElementById('itemPrice').value = "";
-            document.getElementById('itemLink').value = "";
-            document.getElementById('itemLink').placeholder = "Enter your download URL or group invite link here";
-            
-            document.getElementById('priceGroup').style.display = "block";
-            document.getElementById('linkGroup').style.display = "block";
-            document.getElementById('productAssetUploadGroup').style.display = "block"; 
-            document.getElementById('qrUploadGroup').style.display = "none";
-            
-            base64AssetFile = "";
-            document.getElementById('itemAssetFile').value = "";
-            document.getElementById('editorModal').classList.add('active');
-        }
+    if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") { link = base64AssetFile; }
+    else if(type === "gateway" && base64QrImage !== "") { link = base64QrImage; }
 
-        function openAddGatewayModal() {
-            document.getElementById('editorTitle').innerText = "Add New Payment Method (GREEN BUTTON)";
-            document.getElementById('editType').value = "gateway";
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('labelName').innerText = "Payment Method Name (e.g., TNG, Stripe)";
-            document.getElementById('labelLink').innerText = "Payment URL / Account Number";
-            document.getElementById('itemName').value = "";
-            document.getElementById('itemLink').value = "";
-            document.getElementById('itemLink').placeholder = "Enter your Stripe web link or wallet account number";
-            document.getElementById('priceGroup').style.display = "none";
-            document.getElementById('linkGroup').style.display = "block";
-            document.getElementById('productAssetUploadGroup').style.display = "none";
-            document.getElementById('qrUploadGroup').style.display = "block"; 
-            base64QrImage = "";
-            document.getElementById('itemQrFile').value = "";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function openEditGatewayModal(index) {
-            document.getElementById('editorTitle').innerText = "Edit Payment Method";
-            document.getElementById('editType').value = "gateway";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('labelName').innerText = "Payment Method Name";
-            document.getElementById('labelLink').innerText = "Payment URL / Account Number";
-            document.getElementById('itemName').value = gateways[index].name;
-            document.getElementById('itemLink').value = gateways[index].link.startsWith("data:") ? "" : gateways[index].link;
-            document.getElementById('priceGroup').style.display = "none";
-            document.getElementById('linkGroup').style.display = "block";
-            document.getElementById('productAssetUploadGroup').style.display = "none";
-            document.getElementById('qrUploadGroup').style.display = "block";
-            document.getElementById('itemQrFile').value = "";
-            base64QrImage = gateways[index].link.startsWith("data:") ? gateways[index].link : "";
-            document.getElementById('editorModal').classList.add('active');
-        }
-
-        function handleAssetUpload(input) {
-            const files = input.files;
-            if (files && files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64AssetFile = e.target.result; 
-                };
-                reader.readAsDataURL(files[0]);
-            }
-        }
-
-        function handleQrUpload(input) {
-            const files = input.files;
-            if (files && files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64QrImage = e.target.result;
-                };
-                reader.readAsDataURL(files[0]);
-            }
-        }
-        function saveItemChanges() {
-            const index = parseInt(document.getElementById('editIndex').value);
-            const name = document.getElementById('itemName').value;
-            let link = document.getElementById('itemLink').value;
-            const type = document.getElementById('editType').value;
-            const titleText = document.getElementById('editorTitle').innerText;
-
-            // Sempurnakan penyimpanan data gambar QR secara permanen tanpa terpotong kode stringnya
-            if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") {
-                link = base64AssetFile; 
-            } else if(type === "gateway") {
-                if (base64QrImage !== "") {
-                    link = base64QrImage;
-                }
-            }
-
-            if(!name) return alert("Please fill in the required name field correctly.");
-
-            if(type === "product") {
-                const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-                if(index === -1) {
-                    if(isNaN(price) || price <= 0) return alert("Please enter a valid price for the new book.");
-                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                    products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
-                } else {
-                    if(titleText.includes("YELLOW BOX")) {
-                        products[index].link = link; 
-                    } else {
-                        products[index].name = name;
-                        products[index].price = price;
-                    }
-                }
-            } else if(type === "gateway") {
-                if(!link) return alert("Please provide payment routing parameters or upload a clear QR scan image file.");
-                if(index === -1) {
-                    gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" });
-                } else {
-                    gateways[index].name = name;
-                    gateways[index].link = link;
-                }
-            }
-            
-            localStorage.setItem('premium_store_products', JSON.stringify(products));
-            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-            closeModal('editorModal');
-            renderProducts();
-            alert("💾 Saved changes successfully!");
-        }
-
-        function deleteProduct(index) {
-            if(confirm("Are you sure you want to permanently delete the e-book: " + products[index].name + "?")) {
-                products.splice(index, 1);
-                savePermanently();
-            }
-        }
-
-        function deleteGateway(index) {
-            if(confirm("Are you sure you want to permanently delete the payment method: " + gateways[index].name + "?")) {
-                gateways.splice(index, 1);
-                localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-                renderProducts();
-            }
-        }
-
-        function savePermanently() {
-            localStorage.setItem('premium_store_products', JSON.stringify(products));
-            localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-            try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
-            document.body.classList.remove('admin-mode');
-            alert("💾 Saved Permanently! All items and payment settings have been saved to local database storage.");
-            renderProducts();
-        }
-        // FUNGSI TAMBAHAN: Membuka modal oren pengurusan media fail
-        function bukaModalMediaKhasStaf(idx) {
-        document.getElementById('mediaTargetProductIndex').value = idx;
-        document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
-        document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
-        document.getElementById('mediaFileFrontInput').value = "";
-        document.getElementById('mediaFileDescInput').value = "";
-        document.getElementById('staffMediaUploadModal').style.display = "flex";
-}
-
-        function changeQty(index, change) {
-            products[index].qty = Math.max(0, products[index].qty + change);
-            renderProducts();
-        }
-
-        function updateCurrency() {
-            currentCurrency = document.getElementById('currencySelect').value;
-            renderProducts();
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function updateTotalPrice() {
-  let total = 0;
-  let totalQty = 0;
-  
-  products.forEach(p => {
-    totalQty += p.qty;
-    const price = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-    total += price * p.qty;
-  });
-
-  const footerBar = document.querySelector('.footer-bar');
-  if (footerBar) {
-    footerBar.style.position = "fixed";
-    footerBar.style.bottom = "0";
-    footerBar.style.left = "0";
-    footerBar.style.right = "0";
-    footerBar.style.background = "#0b1426";
-    footerBar.style.padding = "15px 20px";
-    footerBar.style.borderTop = "1px solid rgba(255,255,255,0.08)";
-    footerBar.style.display = "flex";
-    footerBar.style.flexDirection = "column";
-    footerBar.style.gap = "10px";
-    
-    footerBar.innerHTML = 
-      '<div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin:0 auto; font-size:13px; color:#8fa0bc; font-weight:500;">' +
-        '<span>Items Selected: <strong style="color:#fff; font-size:14px;">' + totalQty + ' items</strong></span>' +
-        '<span>Net Total: <strong style="color:#00cc99; font-size:15px;">' + currentCurrency + ' ' + total.toFixed(2) + '</strong></span>' +
-      '</div>' +
-      '<button id="payButton" class="btn-main" style="width:100%; max-width:420px; margin:0 auto; background:#00cc99 !important; color:#0b1426 !important; border:none; padding:14px; border-radius:12px; font-size:14px; font-weight:800; text-transform:uppercase; cursor:pointer;" onclick="cetusBorangPengesahanTerma()" ' + (totalQty === 0 ? 'disabled' : '') + '>' +
-        'PROCEED TO PAYMENT (' + totalQty + ')' +
-      '</button>' +
-      '<div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:11px; color:#4caf50; font-weight:600; margin-top:2px;">' +
-        '<span>🔒</span><span>Powered by Best Network Asia</span>' +
-        // ===================================================
-// KAWALAN DUA PERINGKAT CHECKOUT VERIFIED (ANTI-REFUND)
-// ===================================================
-
-// 1. Fungsi melancarkan modal amaran keselamatan apabila butang Proceed ditekan
-function cetusBorangPengesahanTerma() {
-  document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
-  document.getElementById('popupFinalPaySubmitBtn').disabled = true;
-  document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
-  
-  // Paparkan modal pengesahan terma secara fleksibel
-  document.getElementById('strictTermsVerificationModal').style.display = "flex";
-}
-
-// 2. Fungsi mengaktifkan butang bayar di dalam popup jika checkbox di-tick
-function togglePopupFinalPayBtn() {
-  const isChecked = document.getElementById('popupStrictAntiRefundCheckbox').checked;
-  const finalPayBtn = document.getElementById('popupFinalPaySubmitBtn');
-  
-  if (isChecked) {
-    finalPayBtn.disabled = false;
-    finalPayBtn.style.opacity = "1";
-  } else {
-    finalPayBtn.disabled = true;
-    finalPayBtn.style.opacity = "0.4";
-  }
-}
-
-// 3. Fungsi menutup modal amaran dan terus membawa pengguna ke pilihan bank asal anda
-function teruskanKeGatewayPembayaranSah() {
-  closeModal('strictTermsVerificationModal');
-  openPaymentModal();
-}
-
-// 4. Fungsi pembantu logik tutup modal ekspres
-function closeModal(id) {
-  const targetModal = document.getElementById(id);
-  if (targetModal) {
-    targetModal.style.display = "none";
-    targetModal.classList.remove('active');
-  }
-// ==========================================
-// LOGIK PENGURUSAN MEDIA PERMANENT VAULT (OREN)
-// ==========================================
-
-// 1. Fungsi membuka modal oren muat naik media berkembar
-function bukaModalMediaKhasStaf(idx) {
-  document.getElementById('mediaTargetProductIndex').value = idx;
-  
-  // Ambil data gambar lama dari database (jika ada) untuk mengelakkan ralat data kosong
-  document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
-  document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
-  
-  // Reset input fail fizikal agar sedia menerima fail baharu
-  document.getElementById('mediaFileFrontInput').value = "";
-  document.getElementById('mediaFileDescInput').value = "";
-  
-  // Buka modal media
-  document.getElementById('staffMediaUploadModal').style.display = "flex";
-}
-
-// 2. Fungsi memproses fail imej yang dipilih menjadi format rentetan teks Base64
-function prosesGambarKhasStaf(input, jenis) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      if (jenis === 'front') {
-        document.getElementById('dataHolderBase64Front').value = e.target.result;
-      } else if (jenis === 'desc') {
-        document.getElementById('dataHolderBase64Desc').value = e.target.result;
+    if(type === "product") {
+      if(!name) return alert("Please fill in the required name field correctly.");
+      const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+      if(index === -1) {
+        if(isNaN(price) || price <= 0) return alert("Please enter a valid price for the new book.");
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id))+1 : 1;
+        products.push({ id: newId, name: name, price: price, link: link, qty: 0 });
+      } else {
+        if(titleText.includes("YELLOW BOX")) { products[index].link = link; } 
+        else { products[index].name = name; products[index].price = price; }
       }
-    };
-    reader.readAsDataURL(input.files[0]);
+    } else if(type === "gateway") {
+      if(!link) return alert("Please provide payment parameter URL or upload QR picture file.");
+      if(index === -1) { gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" }); } 
+      else { gateways[index].name = name; gateways[index].link = link; }
+    }
+
+    localStorage.setItem('premium_store_vault_products', JSON.stringify(products));
+    localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+    closeModal('editorModal');
+    renderProducts();
+    alert("Saved changes successfully!");
   }
-}
 
-// 3. Fungsi menyimpan fail Gambar 1 & Gambar 2 secara kekal ke storan tempatan peranti
-function simpanMediaKhasMuttamad() {
-  const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
-  if (isNaN(idx) || idx < 0) return;
-  
-  // Ambil nilai daripada pemegang data tersembunyi
-  products[idx].img = document.getElementById('dataHolderBase64Front').value;
-  products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
-  
-  // Kunci data ke dalam fail database localStorage peranti secara muttamad
-  localStorage.setItem('premium_store_products', JSON.stringify(products));
-  
-  // Tutup modal dan muat semula senarai katalog depan
-  document.getElementById('staffMediaUploadModal').style.display = "none";
-  renderProducts();
-  alert("💾 Media Vault Sync Complete! Front Thumbnail & Inner Banner saved permanently.");
-}
-        function checkAdmin() {
-            if(document.body.classList.contains('admin-mode')) {
-                document.body.classList.remove('admin-mode');
-                renderProducts();
-                return;
-            }
-            const code = prompt("Enter Admin Security Code:");
-            if(code === "333555") {
-                document.body.classList.add('admin-mode');
-                renderProducts();
-            } else if (code !== null) {
-                alert("❌ Access Denied.");
-            }
-        }
+  function deleteProduct(index) {
+    if(confirm("Are you sure you want to permanently delete the e-book: " + products[index].name + "?")) {
+      products.splice(index, 1); savePermanently();
+    }
+  }
 
-        window.onload = renderProducts;
-    </script>
+  function deleteGateway(index) {
+    if(confirm("Are you sure you want to permanently delete the payment method: " + gateways[index].name + "?")) {
+      gateways.splice(index, 1);
+      localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+      renderProducts();
+    }
+  }
+
+  function savePermanently() {
+    localStorage.setItem('premium_store_vault_products', JSON.stringify(products));
+    localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
+    try { if(tg && typeof tg.sendData === 'function') tg.sendData(JSON.stringify({ action: "sync_database", updated_list: products })); } catch(e){}
+    document.body.classList.remove('admin-mode');
+    alert("Saved Permanently! All items and payment settings have been saved to local database storage.");
+    renderProducts();
+  }
+        function changeQty(index, change) {
+    products[index].qty = Math.max(0, products[index].qty + change);
+    renderProducts();
+  }
+
+  function updateCurrency() {
+    currentCurrency = document.getElementById('currencySelect').value;
+    renderProducts();
+  }
+
+  function closeModal(id) {
+    const targetModal = document.getElementById(id);
+    if (targetModal) {
+      targetModal.style.display = "none";
+      targetModal.classList.remove('active');
+    }
+  }
+
+  function bukaModalMediaKhasStaf(idx) {
+    document.getElementById('mediaTargetProductIndex').value = idx;
+    document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
+    document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
+    document.getElementById('mediaFileFrontInput').value = "";
+    document.getElementById('mediaFileDescInput').value = "";
+    document.getElementById('staffMediaUploadModal').style.display = "flex";
+  }
+
+  function prosesGambarKhasStaf(input, jenis) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result;
+        if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function simpanMediaKhasMuttamad() {
+    const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
+    if (isNaN(idx) || idx < 0) return;
+    products[idx].img = document.getElementById('dataHolderBase64Front').value;
+    products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
+    localStorage.setItem('premium_store_vault_products', JSON.stringify(products));
+    document.getElementById('staffMediaUploadModal').style.display = "none";
+    renderProducts();
+    alert("Media Vault Sync Complete! Front Thumbnail & Inner Banner saved permanently.");
+  }
+
+  function bukaPaparanBahagian2(idx) {
+    if(document.body.classList.contains('admin-mode')) return;
+    const p = products[idx];
+    const displayPrice = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+    document.getElementById('detailsProductName').innerText = p.name;
+    document.getElementById('detailsProductPrice').innerText = currentCurrency + " " + displayPrice.toFixed(2);
+    document.getElementById('detailsProductDesc').innerText = p.desc || "Premium high-fidelity training courseware asset.";
+    
+    const imgArea = document.getElementById('detailsBigImageArea');
+    if (imgArea) {
+      if (p.bigImg) {
+        imgArea.innerHTML = '<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="' + p.bigImg + '"></div></div>';
+      } else if (p.img) {
+        imgArea.innerHTML = '<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="' + p.img + '"></div></div>';
+      } else {
+        imgArea.innerHTML = '<div style="width:100%; padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; margin-bottom:15px; font-size:11px; color:#8fa0bc;">📸 No banner graphic view uploaded by staff yet.</div>';
+      }
+    }
+    
+    const reviewsList = document.getElementById('detailsProductReviewsList');
+    if (reviewsList) {
+      reviewsList.innerHTML = '<div class="review-item-layout"><strong>faiz_99 (MY) ⭐⭐⭐⭐⭐</strong><br>"Sumpah berbaloi gila beli masa flash sale."</div><div class="review-item-layout"><strong>jessica_tan (SG) ⭐⭐⭐⭐⭐</strong><br>"Super fast delivery to email, practical formula."</div>';
+    }
+    document.getElementById('productDetailsViewModal').classList.add('active');
+  }
+
+  function updateTotalPrice() {
+    let total = 0; let totalQty = 0;
+    products.forEach(p => {
+      totalQty += p.qty;
+      const price = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+      total += price * p.qty;
+    });
+    const footerBar = document.querySelector('.footer-bar');
+    if (footerBar) {
+      footerBar.innerHTML = 
+        '<div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin:0 auto; font-size:13px; color:#8fa0bc; font-weight:500;">' +
+          '<span>Items Selected: <strong style="color:#fff; font-size:14px;">' + totalQty + ' items</strong></span>' +
+          '<span>Net Total: <strong style="color:#00cc99; font-size:15px;">' + currentCurrency + ' ' + total.toFixed(2) + '</strong></span>' +
+        '</div>' +
+        '<button id="payButton" class="btn-main" onclick="cetusBorangPengesahanTerma()" ' + (totalQty === 0 ? 'disabled' : '') + '>PROCEED TO PAYMENT (' + totalQty + ')</button>' +
+        '<div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:11px; color:#4caf50; font-weight:600; margin-top:2px;"><span>🔒</span><span>Powered by Best Network Asia</span></div>';
+    }
+  }
+
+  function cetusBorangPengesahanTerma() {
+    document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
+    document.getElementById('popupFinalPaySubmitBtn').disabled = true;
+    document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
+    document.getElementById('strictTermsVerificationModal').style.display = "flex";
+  }
+  
+  function togglePopupFinalPayBtn() {
+    const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked;
+    const btn = document.getElementById('popupFinalPaySubmitBtn');
+    btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4";
+  }
+  
+  function teruskanKeGatewayPembayaranSah() {
+    document.getElementById('strictTermsVerificationModal').style.display = "none";
+    openPaymentModal();
+  }
+
+  function checkAdmin() {
+    if(document.body.classList.contains('admin-mode')) {
+      document.body.classList.remove('admin-mode');
+      const b = document.getElementById('staffModeTriggerBtn');
+      if(b) { b.innerText = "⚙️"; b.style.opacity = "0.12"; b.style.color = "#ffffff"; }
+      renderProducts(); return;
+    }
+    const code = prompt("Enter Admin Security Code:");
+    if(code === "333555") {
+      document.body.classList.add('admin-mode');
+      const b = document.getElementById('staffModeTriggerBtn');
+      if(b) { b.innerText = "🔒"; b.style.opacity = "1"; b.style.color = "#ffc107"; }
+      renderProducts();
+    } else if (code !== null) { alert("Access Denied."); }
+  }
+
+  function openAddModal() {
+    document.getElementById('editorTitle').innerText = "Add New E-Book";
+    document.getElementById('editType').value = "product";
+    document.getElementById('editIndex').value = "-1";
+    document.getElementById('labelName').innerText = "Product Name / Title";
+    document.getElementById('itemName').value = "";
+    document.getElementById('itemPrice').value = "";
+    document.getElementById('priceGroup').style.display = "block";
+    document.getElementById('linkGroup').style.display = "none";
+    document.getElementById('productAssetUploadGroup').style.display = "none";
+    document.getElementById('qrUploadGroup').style.display = "none";
+    document.getElementById('editorModal').classList.add('active');
+  }
+
+  function openAddGatewayModal() {
+    document.getElementById('editorTitle').innerText = "Add New Payment Method";
+    document.getElementById('editType').value = "gateway";
+    document.getElementById('editIndex').value = "-1";
+    document.getElementById('labelName').innerText = "Payment Method Name";
+    document.getElementById('itemName').value = "";
+    document.getElementById('itemPrice').value = "";
+    document.getElementById('itemLink').value = "";
+    document.getElementById('priceGroup').style.display = "none";
+    document.getElementById('linkGroup').style.display = "block";
+    document.getElementById('productAssetUploadGroup').style.display = "none";
+    document.getElementById('qrUploadGroup').style.display = "block";
+    document.getElementById('editorModal').classList.add('active');
+  }
+
+  function openEditGatewayModal(index) {
+    document.getElementById('editorTitle').innerText = "Edit Payment Method";
+    document.getElementById('editType').value = "gateway";
+    document.getElementById('editIndex').value = index;
+    document.getElementById('labelName').innerText = "Payment Method Name";
+    document.getElementById('itemName').value = gateways[index].name;
+    document.getElementById('itemLink').value = gateways[index].link.startsWith("data:") ? "" : gateways[index].link;
+    document.getElementById('priceGroup').style.display = "none";
+    document.getElementById('linkGroup').style.display = "block";
+    document.getElementById('productAssetUploadGroup').style.display = "none";
+    document.getElementById('qrUploadGroup').style.display = "block";
+    document.getElementById('editorModal').classList.add('active');
+  }
+
+  window.onload = renderProducts;
+</script>
 </body>
 </html>
