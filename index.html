@@ -132,6 +132,21 @@
             <button class="btn-main" style="background-color: #4caf50;" onclick="saveItemChanges()">Save Changes</button>
             <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
         </div>
+   <!-- MODAL OVERLAY VERIFIKASI TERMA ANTI-REFUND -->
+<div class="modal" id="strictTermsVerificationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+  <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; border: 1px solid rgba(229, 57, 53, 0.3); box-sizing: border-box; text-align: center;">
+    <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+    <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
+    <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
+      <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
+      <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">
+        I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.
+      </label>
+    </div>
+    <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
+    <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
+  </div>
+</div>
     </div>
     <script>
         const tg = window.Telegram.WebApp;
@@ -190,28 +205,37 @@
             }
 
             products.forEach((p, index) => {
-                const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                card.innerHTML = '<div class="product-info">' +
-                    '<span class="product-name">' + p.name + '</span>' +
-                    '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
-                    '<span class="badge-status">Available</span>' +
-                    '</div>' +
-                    '<div class="qty-controls">' +
-                    '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
-                    '<span class="qty-val">' + p.qty + '</span>' +
-                    '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
-                    '</div>' +
-                    '<div class="admin-actions">' +
-                    '<button class="btn-admin btn-edit" onclick="openEditProductModal(' + index + ')">Edit</button>' +
-                    '<button class="btn-admin btn-delete" onclick="deleteProduct(' + index + ')">Delete</button>' +
-                    '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
-                    '<button class="btn-admin btn-save-item" onclick="savePermanently()">Save</button>' +
-                    '</div>';
-                list.appendChild(card);
-            });
+  const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ')');
+
+  card.innerHTML = 
+    '<div class="product-info" style="display:flex; flex-direction:column;">' +
+      '<span class="product-name" style="font-weight:600; font-size:14px; color:#fff;">' + p.name + '</span>' +
+      '<span class="product-price" style="color:#0088cc; font-weight:bold; font-size:13px; margin-top:2px;">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
+      '<span class="badge-status">Available</span>' +
+      '<div class="admin-actions" onclick="event.stopPropagation();" style="margin-top:10px; display:none; gap:5px; flex-wrap:wrap;">' +
+        '<button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(' + index + ')">Edit</button>' +
+        '<button class="btn-admin" style="background-color:#e53935;" onclick="deleteProduct(' + index + ')">Delete</button>' +
+        '<button class="btn-admin" style="background-color:#ffc107; color:#000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
+        '<button class="btn-admin" style="background-color:#ff7a00 !important; color:#fff;" onclick="bukaModalMediaKhasStaf(' + index + ')">📸 Media</button>' +
+        '<button class="btn-admin" style="background-color:#4caf50;" onclick="savePermanently()">Save</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex; flex-direction:column; align-items:flex-end;" onclick="event.stopPropagation();">' +
+      '<div style="width:50px; height:50px; border-radius:8px; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px dashed rgba(255,255,255,0.15); margin-bottom:6px;">' + 
+        (p.img ? '<img src="' + p.img + '" style="width:100%; height:100%; object-fit:cover;">' : '<span style="font-size:8px; color:#8fa0bc; text-align:center; line-height:1.1;">No Img</span>') + 
+      '</div>' +
+      '<div class="qty-controls">' +
+        '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
+        '<span class="qty-val">' + p.qty + '</span>' +
+        '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
+      '</div>' +
+    '</div>';
+    
+  list.appendChild(card);
+});
             updateTotalPrice();
         }
         function renderAdminGateways() {
@@ -498,15 +522,79 @@
         }
 
         function updateTotalPrice() {
-            let total = 0;
-            products.forEach(p => {
-                const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-                total += price * p.qty;
-            });
-            const btn = document.getElementById('payButton');
-            btn.innerText = 'PROCEED TO PAYMENT (' + currentCurrency + ' ' + total.toFixed(2) + ')';
-            btn.disabled = total === 0 && !document.body.classList.contains('admin-mode');
-        }
+  let total = 0;
+  let totalQty = 0;
+  
+  products.forEach(p => {
+    totalQty += p.qty;
+    const price = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+    total += price * p.qty;
+  });
+
+  const footerBar = document.querySelector('.footer-bar');
+  if (footerBar) {
+    footerBar.style.position = "fixed";
+    footerBar.style.bottom = "0";
+    footerBar.style.left = "0";
+    footerBar.style.right = "0";
+    footerBar.style.background = "#0b1426";
+    footerBar.style.padding = "15px 20px";
+    footerBar.style.borderTop = "1px solid rgba(255,255,255,0.08)";
+    footerBar.style.display = "flex";
+    footerBar.style.flexDirection = "column";
+    footerBar.style.gap = "10px";
+    
+    footerBar.innerHTML = 
+      '<div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin:0 auto; font-size:13px; color:#8fa0bc; font-weight:500;">' +
+        '<span>Items Selected: <strong style="color:#fff; font-size:14px;">' + totalQty + ' items</strong></span>' +
+        '<span>Net Total: <strong style="color:#00cc99; font-size:15px;">' + currentCurrency + ' ' + total.toFixed(2) + '</strong></span>' +
+      '</div>' +
+      '<button id="payButton" class="btn-main" style="width:100%; max-width:420px; margin:0 auto; background:#00cc99 !important; color:#0b1426 !important; border:none; padding:14px; border-radius:12px; font-size:14px; font-weight:800; text-transform:uppercase; cursor:pointer;" onclick="cetusBorangPengesahanTerma()" ' + (totalQty === 0 ? 'disabled' : '') + '>' +
+        'PROCEED TO PAYMENT (' + totalQty + ')' +
+      '</button>' +
+      '<div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:11px; color:#4caf50; font-weight:600; margin-top:2px;">' +
+        '<span>🔒</span><span>Powered by Best Network Asia</span>' +
+        // ===================================================
+// KAWALAN DUA PERINGKAT CHECKOUT VERIFIED (ANTI-REFUND)
+// ===================================================
+
+// 1. Fungsi melancarkan modal amaran keselamatan apabila butang Proceed ditekan
+function cetusBorangPengesahanTerma() {
+  document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
+  document.getElementById('popupFinalPaySubmitBtn').disabled = true;
+  document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
+  
+  // Paparkan modal pengesahan terma secara fleksibel
+  document.getElementById('strictTermsVerificationModal').style.display = "flex";
+}
+
+// 2. Fungsi mengaktifkan butang bayar di dalam popup jika checkbox di-tick
+function togglePopupFinalPayBtn() {
+  const isChecked = document.getElementById('popupStrictAntiRefundCheckbox').checked;
+  const finalPayBtn = document.getElementById('popupFinalPaySubmitBtn');
+  
+  if (isChecked) {
+    finalPayBtn.disabled = false;
+    finalPayBtn.style.opacity = "1";
+  } else {
+    finalPayBtn.disabled = true;
+    finalPayBtn.style.opacity = "0.4";
+  }
+}
+
+// 3. Fungsi menutup modal amaran dan terus membawa pengguna ke pilihan bank asal anda
+function teruskanKeGatewayPembayaranSah() {
+  closeModal('strictTermsVerificationModal');
+  openPaymentModal();
+}
+
+// 4. Fungsi pembantu logik tutup modal ekspres
+function closeModal(id) {
+  const targetModal = document.getElementById(id);
+  if (targetModal) {
+    targetModal.style.display = "none";
+    targetModal.classList.remove('active');
+  }
 
         function checkAdmin() {
             if(document.body.classList.contains('admin-mode')) {
