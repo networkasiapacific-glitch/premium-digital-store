@@ -13,7 +13,7 @@
       --accent-color: #0088cc;
       --danger-color: #e53935;
       --success-color: #4caf50;
-      --warning-color: #ffa000;
+      --warning-color: #ffc107;
     }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
@@ -21,7 +21,7 @@
       color: var(--text-color); 
       margin: 0; 
       padding: 15px; 
-      padding-bottom: 160px;
+      padding-bottom: 180px;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -31,7 +31,7 @@
     .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
     .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
     .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
-    .section-title { font-size: 12px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
+    .section-title { font-size: 11px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
     .product-list { display: flex; flex-direction: column; gap: 12px; }
     .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
     .product-card:hover { background: rgba(255,255,255,0.02); }
@@ -52,7 +52,7 @@
     .btn-inline-orange-media { background-color: #ff7a00 !important; color: #ffffff !important; }
     .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
     body.admin-mode .admin-top-controls { display: flex; }
-    .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: white; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; text-transform: uppercase; margin-bottom: 0 !important; flex: 1; display: block !important; }
+    .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: #0b1426; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; text-transform: uppercase; margin-bottom: 0 !important; flex: 1; display: block !important; }
     .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1426; padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; }
     .btn-main { background: #00cc99; color: #0b1426; border: none; width: 100%; max-width: 420px; margin: 0 auto; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
     .btn-main:disabled { background: #2c3a52 !important; color: #62728d !important; cursor: not-allowed; opacity: 0.5; }
@@ -79,13 +79,13 @@
 </head>
 <body>
 
-  <!-- HEADER PRESTIJ DENGAN IKON ⚙️ SAMAR RAHASIA -->
+  <!-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
   <div class="header">
     <div style="display: flex; flex-direction: column; gap: 2px;">
       <span style="font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff 30%, #8fa0bc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PREMIUM DIGITAL STORE</span>
       <span style="font-size: 9px; color: #0088cc; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">Official Catalogue Vault</span>
     </div>
-    <button class="admin-trigger" id="staffModeTriggerBtn" onclick="checkAdmin()">⚙️</button>
+    <button class="admin-trigger" id="staffModeTriggerBtn" onclick="checkAdmin()">⚙</button>
   </div>
 
   <div class="currency-box">
@@ -96,20 +96,19 @@
     </select>
   </div>
 
-  <!-- DUA BUTANG KUNING PANEL STAFF (⚡ + KOTAK TAMBAH) -->
+  <!-- DUA BUTANG KUNING UTAMA STAFF -->
   <div class="admin-top-controls" id="staffTopPanel">
-    <button class="btn-add-list" style="background-color: #ffc107 !important; color: #0b1426 !important; font-weight: 800;" onclick="openAddModal()">⚡ + ADD NEW E-BOOK</button>
-    <button class="btn-add-list" style="background-color: #ffc107 !important; color: #0b1426 !important; font-weight: 800;" onclick="openAddGatewayModal()">🟢 + ADD PAYMENT METHOD</button>
+    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddModal()">⚡ + ADD NEW E-BOOK</button>
+    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddGatewayModal()">🟢 + ADD PAYMENT METHOD</button>
   </div>
 
   <div class="section-title">E-Book Catalogue</div>
   <div id="gatewayAdminBox"></div>
   <div class="product-list" id="productList"></div>
 
-  <!-- STICKY CHECKOUT FOOTER -->
+  <!-- KAWASAN STICKY FOOTER BAWAH -->
   <div class="footer-bar"></div>
-
-  <!-- MODAL DISPLAY QR CODE ASAL -->
+  <!-- MODAL DISPLAY INVOIS QR CODE -->
   <div class="modal" id="qrDisplayModal">
     <div class="modal-content" style="text-align: center; max-width: 320px;">
       <div class="modal-title" style="color: #4caf50; font-weight: bold;">AUTOMATIC QR PAYMENT</div>
@@ -119,7 +118,8 @@
       <button class="btn-main" style="background-color: #e53935 !important; color:#fff;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
     </div>
   </div>
-  <!-- MODAL PILIHAN PEMBAYARAN KEPADA PELANGGAN -->
+
+  <!-- MODAL PILIHAN KAEDAH BANK KEPADA PELANGGAN -->
   <div class="modal" id="paymentModal">
     <div class="modal-content">
       <div class="modal-title">SELECT PAYMENT METHOD</div>
@@ -128,7 +128,7 @@
     </div>
   </div>
 
-  <!-- TETINGKAP DIALOG EDIT DATA LAMA STAFF -->
+  <!-- TETINGKAP DIALOG UTAMA EDIT DATA STAFF (PROSES KEKAL) -->
   <div class="modal" id="editorModal">
     <div class="modal-content">
       <div class="modal-title" id="editorTitle">Edit Item</div>
@@ -140,7 +140,7 @@
         <label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice">
       </div>
       <div class="form-group" id="linkGroup">
-        <label id="labelLink">Destination Link</label><input type="text" id="itemLink">
+        <label id="labelLink">Destination Link / Link Fail</label><input type="text" id="itemLink">
       </div>
       <div class="form-group" id="productAssetUploadGroup" style="display: none;">
         <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
@@ -154,17 +154,16 @@
       <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
     </div>
   </div>
-
   <!-- MODAL OREN STAFF: PEMUAT NAIK FAIL BERKEMBAR KOTAK HIJAU -->
   <div class="modal" id="staffMediaUploadModal">
     <div class="modal-content" style="border: 1px solid #ff7a00;">
       <div class="modal-title" style="color: #ff7a00; font-size: 14px;">🖼️ Manage Product Media Vault</div>
       <input type="hidden" id="mediaTargetProductIndex">
-      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76,175,80,0.3);">
+      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.3);">
         <label style="color: #4caf50; font-weight: 700; font-size: 11px;">📂 Choose File 1: Dashboard Front Picture</label>
         <input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')" style="font-size: 12px; color: #8fa0bc;">
       </div>
-      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76,175,80,0.3);">
+      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76, 175, 80, 0.3);">
         <label style="color: #4caf50; font-weight: 700; font-size: 11px;">📂 Choose File 2: Description Inner Banner</label>
         <input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')" style="font-size: 12px; color: #8fa0bc;">
       </div>
@@ -174,7 +173,7 @@
     </div>
   </div>
 
-  <!-- BAHAGIAN 2: PAPARAN FULL SCREEN OVERLAY PELANGGAN VIEW -->
+  <!-- BAHAGIAN 2: PAPARAN FULL SCREEN OVERLAY DETAILS PELANGGAN VIEW -->
   <div class="modal" id="productDetailsViewModal">
     <div class="modal-content" style="max-width: 360px; max-height: 80vh; overflow-y: auto;">
       <div id="detailsBigImageArea"></div>
@@ -213,18 +212,18 @@
   let base64QrImage = "";
   let base64AssetFile = "";
 
-  // DATABASE RASMI KEDAI DIGITAL (LENGKAP 13 LIST UTAMA)
+  // PENYELARASAN DATABASE LENGKAP 13 LIST UTAMA (SINKRONISASI PANGKALAN DATA SEGERA)
   let defaultProducts = [
     { id: 1, name: "TikTok Automation Strategy", price: 35.90, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
     { id: 2, name: "Viral Traffic System", price: 55.90, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
-    { id: 3, name: "Digital Marketing 2027", price: 25.00, qty: 0, link: "", img: "", bigImg: "", desc: "Future-proof frameworks for modern digital product distribution and organic scaling models." },
-    { id: 4, name: "E-Commerce Success Keys", price: 15.00, qty: 0, link: "", img: "", bigImg: "", desc: "Exact cross-border conversion optimization scaling mechanisms for modern digital stores." },
-    { id: 5, name: "Advanced Automation Hub", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Operational workflow automations to sync databases and tools seamlessly." },
-    { id: 6, name: "Financial Freedom Roadmap", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Strategic blueprint detailing tactical digital wealth-building frameworks." },
+    { id: 3, name: "Digital Marketing 2027", price: 25.90, qty: 0, link: "", img: "", bigImg: "", desc: "Future-proof frameworks for modern digital product distribution and organic scaling models." },
+    { id: 4, name: "E-Commerce Success Keys", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Exact cross-border conversion optimization scaling mechanisms for modern digital stores." },
+    { id: 5, name: "Advanced Automation Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Operational workflow automations to sync databases and tools seamlessly." },
+    { id: 6, name: "Financial Freedom Roadmap", price: 59.90, qty: 0, link: "", img: "", bigImg: "", desc: "Strategic blueprint detailing tactical digital wealth-building frameworks." },
     { id: 7, name: "AI Content Formula", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Secret artificial intelligence prompts to generate premium automated articles and copy." },
     { id: 8, name: "Mastery Telegram", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Complete guide to deploying automated premium monetization channels inside Telegram." },
     { id: 9, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "High-ticket enterprise positioning blueprints for global digital store owners." },
-    { id: 10, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Kombinasi psikologi psikofizikal untuk menukar prospek dingin kepada pembeli tegar." },
+    { id: 10, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Kombinasi psikologi jualan senyap untuk menukar prospek dingin kepada pembeli tegar." },
     { id: 11, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Tested premium persuasive conversion scripts engineered for landing page structures." },
     { id: 12, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Omnichannel brand deployment framework to dominate social media feeds without paid ads." },
     { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Day-to-day tactical deployment calendar for short-form content execution hooks." }
@@ -235,7 +234,7 @@
     { id: "stripe", name: "Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
   ];
 
-  // Sinkronisasi sistem lokal pangkalan data peranti
+  // Mengunci pemanduan pelayan lokal 'premium_store_products'
   let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
   let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
   
@@ -297,8 +296,7 @@
   }
   function renderAdminGateways() {
     const gatewayContainer = document.getElementById('adminGatewayList');
-    if(!gatewayContainer) return;
-    gatewayContainer.innerHTML = '';
+    if(!gatewayContainer) return; gatewayContainer.innerHTML = '';
     gateways.forEach((g, index) => {
       const div = document.createElement('div');
       div.style.display = 'flex'; div.style.justify = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'rgba(0,0,0,0.2)'; div.style.padding = '8px'; div.style.borderRadius = '8px'; div.style.fontSize = '12px'; div.style.marginBottom = '4px';
@@ -389,7 +387,7 @@
     document.body.classList.remove('admin-mode');
     alert("Saved Permanently to Local Storage Database."); renderProducts();
   }
-    function closeModal(id) {
+  function closeModal(id) {
     const m = document.getElementById(id);
     if(m) { m.classList.remove('active'); m.style.display = "none"; }
   }
@@ -423,7 +421,7 @@
     renderProducts(); alert("Media uploaded and locked successfully!");
   }
 
-  // LOGIK DATABASE ALOKASI ULASAN SPESIFIK BAGI TIAP 13 LIST MENU (1, 5, 13, 18, 3, 6, 15, 8, 11, 17, 22, 55, 35)
+  // ALOKASI JUMLAH REVIEWS BERBEZA SETIAP LIST MENU (1, 5, 13, 18, 3, 6, 15, 8, 11, 17, 22, 55, 35)
   const senaraiUlasanSistemKhas = {
     1: ["<strong>alex_sg ⭐⭐⭐⭐⭐</strong><br>'Highly targeted frameworks. Worth every single cent.'"],
     2: [
@@ -433,21 +431,20 @@
       "<strong>karl_low ⭐⭐⭐⭐⭐</strong><br>'Clean strategies, zero fluff contents.'",
       "<strong>shawn_crypto ⭐⭐⭐⭐⭐</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"
     ],
-    3: ["<strong>shikin_r ⭐⭐⭐⭐⭐</strong><br>'Banyak rahsia trafik organik yang baru saya tahu kat sini.'","<strong>dennish_l ⭐⭐⭐⭐⭐</strong><br>'Instant access received via email. Solid frameworks.'","<strong>clara_tan ⭐⭐⭐⭐⭐</strong><br>'Fast download delivery link to email.'"],
-    4: ["<strong>user_vault1 ⭐⭐⭐⭐⭐</strong><br>'Excellent execution and premium design asset.'","<strong>amanda_lee ⭐⭐⭐⭐⭐</strong><br>'Verified purchase, very high quality guide.'","<strong>muhd_haikal ⭐⭐⭐⭐⭐</strong><br>'Sangat membantu newbies setup bisnes digital.'","<strong>rizal_90 ⭐⭐⭐⭐⭐</strong><br>'Terbaik seller, penerangan langkah demi langkah sangat mantap.'"],
-    5: ["<strong>fauzi_99 ⭐⭐⭐⭐⭐</strong><br>'Sangat berbaloi.'","<strong>tan_sg ⭐⭐⭐⭐⭐</strong><br>'Fast sync.'","<strong>lim_my ⭐⭐⭐⭐⭐</strong><br>'Good blueprint.'"],
-    6: ["<strong>haziq_zen ⭐⭐⭐⭐⭐</strong><br>'Banyak ilmu baru.'","<strong>wong_88 ⭐⭐⭐⭐⭐</strong><br>'Excellent automation.'"],
-    7: ["<strong>ain_ramli ⭐⭐⭐⭐⭐</strong><br>'Highly targeted.'","<strong>sam_low ⭐⭐⭐⭐⭐</strong><br>'Clear step.'"],
-    8: ["<strong>nisha_k ⭐⭐⭐⭐⭐</strong><br>'Recommended.'","<strong>brian_tan ⭐⭐⭐⭐⭐</strong><br>'Gold templates.'"],
-    9: ["<strong>zul_95 ⭐⭐⭐⭐⭐</strong><br>'Terbaik.'","<strong>amy_lee ⭐⭐⭐⭐⭐</strong><br>'Very compact.'"],
-    10: ["<strong>khairul_a ⭐⭐⭐⭐⭐</strong><br>'Psikologi mantap.'","<strong>siti_ramlah ⭐⭐⭐⭐⭐</strong><br>'Fast access.'"],
-    11: ["<strong>vick_sg ⭐⭐⭐⭐⭐</strong><br>'High converting.'","<strong>fiona_tan ⭐⭐⭐⭐⭐</strong><br>'Tested scripts.'"],
-    12: ["<strong>hafiz_matrix ⭐⭐⭐⭐⭐</strong><br>'Omnichannel framework.'","<strong>grace_low ⭐⭐⭐⭐⭐</strong><br>'No paid ads needed.'"],
-    13: ["<strong>danial_hook ⭐⭐⭐⭐⭐</strong><br>'Day-to-day deployment calendar.'","<strong>chloe_my ⭐⭐⭐⭐⭐</strong><br>'Short-form hooks are absolute gold.'"]
+    3: ["<strong>shikin_r ⭐⭐⭐⭐⭐</strong><br>'Banyak rahsia organik yang saya baru tahu.'","<strong>dennish_l ⭐⭐⭐⭐⭐</strong><br>'Instant access received via email.'"],
+    4: ["<strong>user_vault1 ⭐⭐⭐⭐⭐</strong><br>'Excellent execution and premium design asset.'","<strong>amanda_lee ⭐⭐⭐⭐⭐</strong><br>'Verified purchase, very high quality guide.'"],
+    5: ["<strong>fauzi_99 ⭐⭐⭐⭐⭐</strong><br>'Sangat berbaloi.'","<strong>tan_sg ⭐⭐⭐⭐⭐</strong><br>'Fast sync.'"],
+    6: ["<strong>haziq_zen ⭐⭐⭐⭐⭐</strong><br>'Banyak ilmu baru.'"],
+    7: ["<strong>ain_ramli ⭐⭐⭐⭐⭐</strong><br>'Highly targeted.'"],
+    8: ["<strong>nisha_k ⭐⭐⭐⭐⭐</strong><br>'Recommended.'"],
+    9: ["<strong>zul_95 ⭐⭐⭐⭐⭐</strong><br>'Terbaik.'"],
+    10: ["<strong>khairul_a ⭐⭐⭐⭐⭐</strong><br>'Psikologi jualan mantap.'"],
+    11: ["<strong>vick_sg ⭐⭐⭐⭐⭐</strong><br>'High converting scripts.'"],
+    12: ["<strong>hafiz_matrix ⭐⭐⭐⭐⭐</strong><br>'Omnichannel branding framework.'"],
+    13: ["<strong>danial_hook ⭐⭐⭐⭐⭐</strong><br>'Day-to-day shortform action hooks.'"]
   };
 
   const petaBilanganUlasanPapar = { 1: 1, 2: 5, 3: 13, 4: 18, 5: 3, 6: 6, 7: 15, 8: 8, 9: 11, 10: 17, 11: 22, 12: 55, 13: 35 };
-
   function bukaPaparanBahagian2(idx) {
     if(document.body.classList.contains('admin-mode')) return;
     const p = products[idx];
@@ -458,21 +455,25 @@
     
     const imgArea = document.getElementById('detailsBigImageArea');
     const GambarWujud = p.bigImg ? p.bigImg : p.img;
-    imgArea.innerHTML = GambarWujud ? '<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="' + GambarWujud + '"></div></div>' : '<div style="padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; font-size:11px; color:#8fa0bc; margin-bottom:15px;">📸 No preview banner uploaded.</div>';
+    if (imgArea) {
+      imgArea.innerHTML = GambarWujud ? '<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="' + GambarWujud + '"></div></div>' : '<div style="padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; font-size:11px; color:#8fa0bc; margin-bottom:15px;">📸 No preview banner uploaded.</div>';
+    }
     
     const reviewsList = document.getElementById('detailsProductReviewsList');
-    reviewsList.innerHTML = "";
-    
-    const ulasanKhas = senaraiUlasanSistemKhas[p.id] || senaraiUlasanSistemKhas[1];
-    ulasanKhas.forEach(r => { reviewsList.innerHTML += '<div class="review-item-layout">' + r + '</div>'; });
-    
-    const totalReviewTarget = petaBilanganUlasanPapar[p.id] || 5;
-    const bakiPapar = totalReviewTarget - ulasanKhas.length;
-    if(bakiPapar > 0) {
-      reviewsList.innerHTML += '<div style="font-size:10px; text-align:center; color:#00cc99; padding-top:8px; font-weight:bold;">+ ' + bakiPapar + ' more verified premium reviews loaded (' + totalReviewTarget + ' total)</div>';
+    if (reviewsList) {
+      reviewsList.innerHTML = "";
+      const ulasanKhas = senaraiUlasanSistemKhas[p.id] || [];
+      ulasanKhas.forEach(r => { reviewsList.innerHTML += '<div class="review-item-layout">' + r + '</div>'; });
+      
+      const totalReviewTarget = petaBilanganUlasanPapar[p.id] || 5;
+      const bakiPapar = totalReviewTarget - ulasanKhas.length;
+      if(bakiPapar > 0) {
+        reviewsList.innerHTML += '<div style="font-size:10px; text-align:center; color:#00cc99; padding-top:8px; font-weight:bold;">+ ' + bakiPapar + ' more verified premium reviews loaded (' + totalReviewTarget + ' total)</div>';
+      } else if(totalReviewTarget == 1 && ulasanKhas.length == 0) {
+        reviewsList.innerHTML = '<div class="review-item-layout"><strong>alex_sg ⭐⭐⭐⭐⭐</strong><br>\'Highly targeted frameworks. Worth every single cent.\'</div>';
+      }
     }
-
-    const detModal = document.getElementById('productDetailsViewModal'); detModal.classList.add('active'); detModal.style.display = "flex";
+    const detModal = document.getElementById('productDetailsViewModal'); if(detModal) { detModal.classList.add('active'); detModal.style.display = "flex"; }
   }
 
   function updateTotalPrice() {
@@ -493,11 +494,11 @@
   function cetusBorangPengesahanTerma() {
     document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
     document.getElementById('popupFinalPaySubmitBtn').disabled = true; document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
-    const termsModal = document.getElementById('strictTermsVerificationModal'); termsModal.style.display = "flex"; termsModal.classList.add('active');
+    const termsModal = document.getElementById('strictTermsVerificationModal'); if(termsModal) { termsModal.style.display = "flex"; termsModal.classList.add('active'); }
   }
   function togglePopupFinalPayBtn() {
     const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked;
-    const btn = document.getElementById('popupFinalPaySubmitBtn'); btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4";
+    const btn = document.getElementById('popupFinalPaySubmitBtn'); if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; }
   }
   function teruskanKeGatewayPembayaranSah() { closeModal('strictTermsVerificationModal'); openPaymentModal(); }
 
@@ -518,16 +519,30 @@
   function openAddModal() {
     document.getElementById('editorTitle').innerText = "Add New E-Book"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
     document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "none"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
-    const edModal = document.getElementById('editorModal'); edModal.classList.add('active'); edModal.style.display = "flex";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
   }
   function openAddGatewayModal() {
-document.getElementById('editorTitle').innerText = "Add New Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
-document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
-const edModal = document.getElementById('editorModal'); edModal.classList.add('active'); edModal.style.display = "flex";
-}
-function openEditProductModal(index) {
-document.getElementById('editorTitle').innerText = "Edit E-Book Details"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = products[index].name; document.getElementById('itemPrice').value = products[index].price; document.getElementById('itemLink').value = products[index].link || "";
-document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "none"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
-const edModal = document.getElementById('editorModal'); edModal.classList.add('active'); edModal.style.display = "flex";
-}
-window.onload = renderProducts;
+    document.getElementById('editorTitle').innerText = "Add New Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+  }
+  function openEditProductModal(index) {
+    document.getElementById('editorTitle').innerText = "Edit E-Book Details"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = products[index].name; document.getElementById('itemPrice').value = products[index].price; document.getElementById('itemLink').value = products[index].link || "";
+    document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "none"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+  }
+  function openEditGatewayModal(index) {
+    document.getElementById('editorTitle').innerText = "Edit Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = gateways[index].name; document.getElementById('itemLink').value = gateways[index].link.startsWith("data:") ? "" : gateways[index].link;
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+  }
+  function openSetLinkModal(index) {
+    document.getElementById('editorTitle').innerText = "Set Digital Asset (YELLOW BOX)"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('labelName').innerText = "Product Name (Read-Only)"; document.getElementById('labelLink').innerText = "Paste Asset Destination Link (URL / Group Link)"; document.getElementById('itemName').value = products[index].name; document.getElementById('itemLink').value = products[index].link && !products[index].link.startsWith("data:") ? products[index].link : ""; document.getElementById('itemLink').placeholder = "Paste your download URL or group invite link here";
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "block"; document.getElementById('qrUploadGroup').style.display = "none"; base64AssetFile = products[index].link && products[index].link.startsWith("data:") ? products[index].link : ""; document.getElementById('itemAssetFile').value = "";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+  }
+
+  window.onload = renderProducts;
+</script>
+</body>
+</html>
