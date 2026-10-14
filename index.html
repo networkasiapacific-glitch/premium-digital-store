@@ -208,7 +208,7 @@
   const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
   const card = document.createElement('div');
   card.className = 'product-card';
-  card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ')');
+  card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ');
 
   card.innerHTML = 
     '<div class="product-info" style="display:flex; flex-direction:column;">' +
@@ -539,6 +539,15 @@ function bukaPaparanBahagian2(idx) {
             alert("💾 Saved Permanently! All items and payment settings have been saved to local database storage.");
             renderProducts();
         }
+        // FUNGSI TAMBAHAN: Membuka modal oren pengurusan media fail
+        function bukaModalMediaKhasStaf(idx) {
+        document.getElementById('mediaTargetProductIndex').value = idx;
+        document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
+        document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
+        document.getElementById('mediaFileFrontInput').value = "";
+        document.getElementById('mediaFileDescInput').value = "";
+        document.getElementById('staffMediaUploadModal').style.display = "flex";
+}
 
         function changeQty(index, change) {
             products[index].qty = Math.max(0, products[index].qty + change);
