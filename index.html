@@ -238,7 +238,7 @@
   let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
   let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
   
-  if (!localStorage.getItem('premium_store_products') || products.length < 13) {
+  if (localStorage.getItem('premium_store_products') || products.length < 13) {
     localStorage.setItem('premium_store_products', JSON.stringify(defaultProducts));
     products = defaultProducts;
   }
