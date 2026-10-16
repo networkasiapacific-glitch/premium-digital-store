@@ -26,7 +26,7 @@ body {
     user-select: none;
     -webkit-user-select: none;
 }
-.header { 
+    .header { 
     display: flex; 
     flex-direction: column;
     align-items: center; 
@@ -60,7 +60,7 @@ body {
 .admin-trigger-gear:hover {
     transform: rotate(45deg);
 }
-.brand-logo-box-new {
+    .brand-logo-box-new {
     position: relative;
     display: flex;
     align-items: center;
@@ -88,7 +88,7 @@ body {
     border-radius: 2px;
     opacity: 0.8;
 }
-.brand-title-new {
+    .brand-title-new {
     font-size: 20px;
     font-weight: 900;
     letter-spacing: 0.15em;
@@ -109,7 +109,7 @@ body {
     margin-top: -4px;
     margin-bottom: 0;
 }
-.currency-box { 
+    .currency-box { 
     background: var(--card-bg); 
     padding: 12px; 
     border-radius: 12px; 
@@ -155,7 +155,7 @@ body {
     transition: background 0.2s;
 }
 .product-card:hover { background: rgba(255,255,255,0.02); }
-.product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
+    .product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
 .product-name { font-weight: 600; font-size: 15px; color: #ffffff; }
 .product-stars { color: #ffc107; font-size: 12px; margin: 3px 0; }
 .product-price { color: #ffffff; font-size: 14px; font-weight: bold; margin-top: 2px; }
@@ -197,7 +197,7 @@ body {
     justify-content: center; 
 }
 .qty-val { font-weight: bold; min-width: 12px; text-align: center; font-size: 13px; }
-.admin-actions { display: none; gap: 5px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+    .admin-actions { display: none; gap: 5px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
 body.admin-mode .admin-actions { display: flex; }
 body.admin-mode .qty-controls { display: none; }
 
@@ -221,7 +221,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     flex-direction: column; 
     gap: 10px; 
 }
-.btn-main { 
+    .btn-main { 
     background: #00cc99; 
     color: #0b1426; 
     border: none; 
@@ -236,6 +236,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     text-transform: uppercase; 
 }
 .btn-main:disabled { background: #2c3a52 !important; color: #62728d !important; cursor: not-allowed; opacity: 0.5; }
+
 .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
 .modal.active { display: flex; }
 .modal-content { background: #111e35; border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(0, 136, 204, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.55); box-sizing: border-box; color: #ffffff; }
@@ -245,8 +246,7 @@ body.admin-mode .admin-top-controls { display: flex; }
 .form-group { margin-bottom: 12px; }
 .form-group label { display: block; font-size: 11px; color: #8fa0bc; margin-bottom: 4px; text-transform: uppercase; }
 .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(7,13,24,0.6); color: white; box-sizing: border-box; font-size: 12px; }
-
-#productDetailsViewModal .modal-content { max-width: 420px; width: 100%; background-color: #0b1426; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+    #productDetailsViewModal .modal-content { max-width: 420px; width: 100%; background-color: #0b1426; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .btn-back-custom { background: transparent; border: none; color: #ffffff; font-size: 16px; font-weight: bold; cursor: pointer; text-align: left; padding: 0; margin-bottom: 5px; display: flex; align-items: center; }
 .details-image-container-3d { width: 100%; background: #111e35; border: 1px solid rgba(0, 136, 204, 0.2); border-radius: 16px; padding: 30px 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .details-big-img-wrapper img { max-width: 150px; width: 100%; height: auto; object-fit: contain; }
@@ -261,7 +261,7 @@ body.admin-mode .admin-top-controls { display: flex; }
 </head>
 <body>
 
-<!-- KEPALA KATALOG PREMIUM DENGAN REKABENTUK MOCKUP TINGKAP ANDA -->
+<!-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
 <div class="header">
     <div class="admin-trigger-gear" onclick="checkAdmin()">⚙️</div>
     <div class="brand-logo-box-new" id="liveLogoFrame">
@@ -280,7 +280,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     </select>
 </div>
 
-<!-- PANEL UTAMA STAFF KONTROL (ADMIN PANEL) -->
+<!-- DUA BUTANG KUNING UTAMA STAFF DAN CUSTOM DESIGN -->
 <div class="admin-top-controls" id="staffTopPanel">
     <span style="font-size:11px; color:#ffc107; font-weight:bold; text-transform:uppercase;">🛠️ Admin Control Dashboard</span>
     <div style="display:flex; gap:8px; margin-top:6px;">
@@ -293,29 +293,22 @@ body.admin-mode .admin-top-controls { display: flex; }
 <div class="section-title">E-Book Catalogue</div>
 <div id="gatewayAdminBox"></div>
 <div class="product-list" id="productList"></div>
-
-<!-- KAWASAN STICKY FOOTER BAWAH -->
 <div class="footer-bar"></div>
-<!-- KOTAK MODAL CUSTOM DESIGN UI ENGINE BUILDER PERMANENT -->
+<!-- KOTAK MODAL CUSTOM DESIGN UI ENGINE BUILDER -->
 <div class="modal" id="customDesignModal">
     <div class="modal-content" style="max-width: 380px;">
         <div class="modal-title" style="color: #00cc99;">🎨 Custom Design UI Builder</div>
-        
         <div class="form-group">
-            <label>Main Title Text</label>
-            <input type="text" id="cfgMainTitle" oninput="previewLiveDesign()">
+            <label>Main Title Text</label><input type="text" id="cfgMainTitle" oninput="previewLiveDesign()">
         </div>
         <div class="form-group">
-            <label>Subtitle Text</label>
-            <input type="text" id="cfgSubTitle" oninput="previewLiveDesign()">
+            <label>Subtitle Text</label><input type="text" id="cfgSubTitle" oninput="previewLiveDesign()">
         </div>
         <div class="form-group">
-            <label>Crown Logo Emoji</label>
-            <input type="text" id="cfgCrownEmoji" oninput="previewLiveDesign()">
+            <label>Crown Logo Emoji</label><input type="text" id="cfgCrownEmoji" oninput="previewLiveDesign()">
         </div>
         <div class="form-group">
-            <label>Logo Frame Border Color (Hex)</label>
-            <input type="text" id="cfgBorderColor" oninput="previewLiveDesign()">
+            <label>Logo Frame Border Color (Hex)</label><input type="text" id="cfgBorderColor" oninput="previewLiveDesign()">
         </div>
         <div class="form-group">
             <label>Text Font Size (Title)</label>
@@ -333,7 +326,6 @@ body.admin-mode .admin-top-controls { display: flex; }
                 <option value="900">Black/Heavy</option>
             </select>
         </div>
-        
         <div style="display:flex; gap:8px; margin-top:15px;">
             <button class="btn-main" style="background-color: #00cc99 !important; color:#0b1426; flex:2;" onclick="saveCustomDesignPermanently()">💾 Save Design</button>
             <button class="btn-main" style="background-color: #e53935 !important; color:#fff; flex:1; font-size:11px; padding:0 4px;" onclick="resetUiDesignToDefault()">🔄 Reset</button>
@@ -341,7 +333,7 @@ body.admin-mode .admin-top-controls { display: flex; }
         <div class="modal-close" onclick="closeModal('customDesignModal')">[ Close Builder ]</div>
     </div>
 </div>
-<!-- MODAL QR DISPLAY -->
+<!-- MODAL DISPLAY INVOIS QR CODE -->
 <div class="modal" id="qrDisplayModal">
     <div class="modal-content" style="text-align: center; max-width: 320px;">
         <div class="modal-title" style="color: #4caf50; font-weight: bold;">AUTOMATIC QR PAYMENT</div>
@@ -352,6 +344,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     </div>
 </div>
 
+<!-- MODAL PILIHAN KAEDAH BANK KEPADA PELANGGAN -->
 <div class="modal" id="paymentModal">
     <div class="modal-content">
         <div class="modal-title">SELECT PAYMENT METHOD</div>
@@ -359,6 +352,7 @@ body.admin-mode .admin-top-controls { display: flex; }
         <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
     </div>
 </div>
+<!-- TETINGKAP DIALOG UTAMA EDIT DATA STAFF (PROSES KEKAL) -->
 <div class="modal" id="editorModal">
     <div class="modal-content">
         <div class="modal-title" id="editorTitle">Edit Item</div>
@@ -384,6 +378,7 @@ body.admin-mode .admin-top-controls { display: flex; }
         <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
     </div>
 </div>
+<!-- MODAL OREN STAFF: PEMUAT NAIK FAIL BERKEMBAR KOTAK HIJAU -->
 <div class="modal" id="staffMediaUploadModal">
     <div class="modal-content" style="border: 1px solid #ff7a00;">
         <div class="modal-title" style="color: #ff7a00; font-size: 14px;">Manage Product Media Vault</div>
@@ -402,10 +397,9 @@ body.admin-mode .admin-top-controls { display: flex; }
     </div>
 </div>
 
-<div class="modal" id="productDetailsViewModal">
-    <div class="modal-content"></div>
-</div>
+<div class="modal" id="productDetailsViewModal"><div class="modal-content"></div></div>
 
+<!-- POP-UP TINGKAP AMARAN VERIFIKASI ANTI-REFUND -->
 <div class="modal" id="strictTermsVerificationModal">
     <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; text-align: center; border: 1px solid rgba(229, 57, 53, 0.3);">
         <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
@@ -426,6 +420,7 @@ let currentCurrency = "SGD";
 const EXCHANGE_RATE = 3.30;
 let base64QrImage = "";
 let base64AssetFile = "";
+    // Database 12 Kotak Jualan Utama
 let defaultProducts = [
     { id: 1, name: "TikTok Automation Strategy", price: 105.80, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
     { id: 2, name: "Viral Traffic System", price: 75.00, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
@@ -454,9 +449,8 @@ if (!localStorage.getItem('premium_store_products') || products.length !== 12) {
     products = defaultProducts;
 }
 products.forEach(p => p.qty = 0);
-
 const list = document.getElementById('productList');
-let defaultDesign = {
+    let defaultDesign = {
     mainTitle: "Premium",
     subTitle: "Digital Store",
     crownEmoji: "👑",
@@ -484,20 +478,7 @@ function applySavedDesign() {
         titleEl.style.fontWeight = currentDesign.titleWeight;
     }
 }
-
-function openCustomDesignModal() {
-    document.getElementById('cfgMainTitle').value = currentDesign.mainTitle;
-    document.getElementById('cfgSubTitle').value = currentDesign.subTitle;
-    document.getElementById('cfgCrownEmoji').value = currentDesign.crownEmoji;
-    document.getElementById('cfgBorderColor').value = currentDesign.borderColor;
-    document.getElementById('cfgTitleSize').value = currentDesign.titleSize;
-    document.getElementById('cfgTitleWeight').value = currentDesign.titleWeight;
-    
-    const m = document.getElementById('customDesignModal');
-    if(m) { m.classList.add('active'); m.style.display = "flex"; }
-}
-
-function previewLiveDesign() {
+    function previewLiveDesign() {
     document.getElementById('liveMainTitle').innerText = document.getElementById('cfgMainTitle').value;
     document.getElementById('liveSubTitle').innerText = document.getElementById('cfgSubTitle').value;
     document.getElementById('liveCrownEmoji').innerText = document.getElementById('cfgCrownEmoji').value;
@@ -533,7 +514,7 @@ function resetUiDesignToDefault() {
         alert("Reka bentuk berjaya di-reset! 🔄");
     }
 }
-function renderProducts() {
+    function renderProducts() {
     if (!list) return;
     list.innerHTML = '';
     
@@ -639,7 +620,7 @@ function bukaPaparanBahagian2(idx) {
     } else {
         reviewsHTML = `
             <div class="review-item-layout">
-                <strong>alex_sg ★★★ems★★</strong><br>
+                <strong>alex_sg ★★★★★</strong><br>
                 <span style="color:#c5d1e6;">"Highly targeted frameworks. Worth every single cent."</span>
             </div>
         `;
@@ -647,20 +628,15 @@ function bukaPaparanBahagian2(idx) {
 
     modalContent.innerHTML = `
         <button class="btn-back-custom" onclick="closeModal('productDetailsViewModal')">← Back</button>
-        
         \${imageHTML}
-        
         <div class="details-title-price-box">
             <h2 class="details-main-title">\${p.name}</h2>
             <div class="details-main-price">\${currentCurrency} \${displayPrice.toFixed(2)}</div>
         </div>
-        
         <div class="details-section-header">📄 DESCRIPTION SPEC</div>
         <p class="details-description-text">\${p.desc || "Premium high-fidelity training courseware asset."}</p>
-        
         <div class="details-section-header">⭐ VERIFIED CUSTOMER RATINGS</div>
         <div id="detailsProductReviewsList">\${reviewsHTML}</div>
-        
         <button class="btn-main" style="background:#00cc99; color:#0b1426; margin-top:20px; font-weight:800;" 
                 onclick="closeModal('productDetailsViewModal'); changeQty(\${idx}, 1); openPaymentModal();">
             Proceed to Payment
@@ -668,12 +644,9 @@ function bukaPaparanBahagian2(idx) {
     `;
 
     const detModal = document.getElementById('productDetailsViewModal');
-    if(detModal) {
-        detModal.classList.add('active');
-        detModal.style.display = "flex";
-    }
+    if(detModal) { detModal.classList.add('active'); detModal.style.display = "flex"; }
 }
-function openPaymentModal() {
+    function openPaymentModal() {
     const container = document.getElementById('paymentGatewayList');
     if(!container) return; container.innerHTML = '';
     const purchasedItems = products.filter(p => p.qty > 0);
@@ -681,15 +654,7 @@ function openPaymentModal() {
     
     gateways.forEach(g => {
         const btn = document.createElement('button');
-        btn.className = 'btn-main';
-        btn.style.width = '100%';
-        btn.style.padding = '12px';
-        btn.style.borderRadius = '8px';
-        btn.style.color = 'white';
-        btn.style.fontWeight = 'bold';
-        btn.style.marginBottom = '10px';
-        btn.style.backgroundColor = g.color || '#0088cc';
-        btn.innerText = g.name;
+        btn.className = 'btn-main'; btn.style.width = '100%'; btn.style.padding = '12px'; btn.style.borderRadius = '8px'; btn.style.color = 'white'; btn.style.fontWeight = 'bold'; btn.style.marginBottom = '10px'; btn.style.backgroundColor = g.color || '#0088cc'; btn.innerText = g.name;
         
         btn.onclick = function() {
             closeModal('paymentModal');
@@ -704,8 +669,7 @@ function openPaymentModal() {
             } else if (g.link.startsWith('data:image')) {
                 document.getElementById('autoQrTargetImage').src = g.link;
                 document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
-                document.getElementById('qrDisplayModal').classList.add('active');
-                document.getElementById('qrDisplayModal').style.display = "flex";
+                document.getElementById('qrDisplayModal').classList.add('active'); document.getElementById('qrDisplayModal').style.display = "flex";
             } else {
                 alert("PAYMENT INVOICE GENERATED\n\nPlease transfer payment to " + g.name + " account:\n\nDetails: " + g.link);
             }
@@ -713,9 +677,7 @@ function openPaymentModal() {
         };
         container.appendChild(btn);
     });
-    
-    const payModal = document.getElementById('paymentModal');
-    payModal.classList.add('active'); payModal.style.display = "flex";
+    const payModal = document.getElementById('paymentModal'); payModal.classList.add('active'); payModal.style.display = "flex";
 }
 
 function handleAssetUpload(input) {
@@ -727,7 +689,7 @@ function handleQrUpload(input) {
     const files = input.files;
     if (files && files.length > 0) { const reader = new FileReader(); reader.onload = function(e) { base64QrImage = e.target.result; }; reader.readAsDataURL(files); }
 }
-function saveItemChanges() {
+    function saveItemChanges() {
     const index = parseInt(document.getElementById('editIndex').value);
     const name = document.getElementById('itemName').value;
     let link = document.getElementById('itemLink').value;
@@ -781,8 +743,7 @@ function updateTotalPrice() {
         `;
     }
 }
-
-function cetusBorangPengesahanTerma() {
+    function cetusBorangPengesahanTerma() {
     document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
     document.getElementById('popupFinalPaySubmitBtn').disabled = true;
     document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
@@ -856,34 +817,34 @@ function prosesGambarKhasStaf(input, jenis) {
         const reader = new FileReader();
         reader.onload = function(e) {
             if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result;
-if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
-};
-reader.readAsDataURL(input.files);
+            if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
+        };
+        reader.readAsDataURL(input.files);
+    }
 }
-}
+
 function simpanMediaKhasMuttamad() {
-const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
-products[idx].img = document.getElementById('dataHolderBase64Front').value;
-products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
-localStorage.setItem('premium_store_products', JSON.stringify(products));
-document.getElementById('staffMediaUploadModal').style.display = "none";
-renderProducts(); alert("Media uploaded and locked successfully!");
+    const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
+    products[idx].img = document.getElementById('dataHolderBase64Front').value;
+    products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
+    localStorage.setItem('premium_store_products', JSON.stringify(products));
+    document.getElementById('staffMediaUploadModal').style.display = "none";
+    renderProducts(); alert("Media uploaded and locked successfully!");
 }
+
 const senaraiUlasanSistemKhas = {
-1: ["alex_sg ★★★★★
-'Highly targeted frameworks. Worth every single cent.'"],
-2: ["faiz_99 ★★★★★
-'Sumpah berbaloi terutamanya bab automation setup.'"],
-3: ["marian_my ★★★★★
-'Very direct and easy to follow. Highly recommended!'"],
-4: ["jessica_tan ★★★★★
-'Highly recommend for those looking for side income.'"],
-5: ["karl_low ★★★★★
-'Clean strategies, zero fluff contents.'"],
-6: ["shawn_crypto ★★★★★
-'Superb traffic hacks. Absolute gold blueprint.'"]
+    1: ["<strong>alex_sg ★★★★★</strong><br>'Highly targeted frameworks. Worth every single cent.'"],
+    2: ["<strong>faiz_99 ★★★★★</strong><br>'Sumpah berbaloi terutamanya bab automation setup.'"],
+    3: ["<strong>marian_my ★★★★★</strong><br>'Very direct and easy to follow. Highly recommended!'"],
+    4: ["<strong>jessica_tan ★★★★★</strong><br>'Highly recommend for those looking for side income.'"],
+    5: ["<strong>karl_low ★★★★★</strong><br>'Clean strategies, zero fluff contents.'"],
+    6: ["<strong>shawn_crypto ★★★★★</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"]
 };
+
 window.onload = function() {
-applySavedDesign();
-renderProducts();
+    applySavedDesign();
+    renderProducts();
 };
+</script>
+</body>
+</html>
