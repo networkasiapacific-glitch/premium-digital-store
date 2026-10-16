@@ -257,13 +257,35 @@ body.admin-mode .admin-top-controls { display: flex; }
 .details-section-header { font-size: 13px; font-weight: 800; color: #0088cc; letter-spacing: 0.5px; margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase; }
 .details-description-text { font-size: 14px; color: #c5d1e6; line-height: 1.5; margin: 0; }
 .review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 13px; color: #ffffff; line-height: 1.4; }
+/* Butang Gear Rahsia Mengikut Gambar Rujukan 2 (Samar Halus) */
+.admin-trigger-gear {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 16px;
+    opacity: 0.15;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+.admin-trigger-gear:hover {
+    opacity: 0.6;
+}
 </style>
 </head>
 <body>
-
 <!-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
 <div class="header">
     <div class="admin-trigger-gear" onclick="checkAdmin()">⚙️</div>
+
     <div class="brand-logo-box-new" id="liveLogoFrame">
         <span class="crown-icon-new" id="liveCrownEmoji">👑</span>
         <div class="book-line-new" id="liveBookLine"></div>
