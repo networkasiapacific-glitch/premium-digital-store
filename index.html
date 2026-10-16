@@ -1,513 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Premium Digital Store</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg-color: #0b1426; 
-      --card-bg: #152238; 
-      --text-color: #ffffff; 
-      --accent-color: #0088cc;
-      --danger-color: #e53935;
-      --success-color: #4caf50;
-      --warning-color: #ffc107;
-    }
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-      background-color: var(--bg-color); 
-      color: var(--text-color); 
-      margin: 0; 
-      padding: 15px; 
-      padding-bottom: 180px;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 18px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-    .header h1 { margin: 0; font-size: 16px; font-weight: bold; color: #ffffff; }
-    .admin-trigger { background: transparent; border: none; color: #ffffff; opacity: 0.12; font-size: 15px; cursor: pointer; outline: none; padding: 5px; }
-    .currency-box { background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-    .currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
-    .currency-select { background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; }
-    .section-title { font-size: 11px; text-transform: uppercase; color: #8fa0bc; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
-    .product-list { display: flex; flex-direction: column; gap: 12px; }
-    .product-card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
-    .product-card:hover { background: rgba(255,255,255,0.02); }
-    .product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
-    .product-name { font-weight: 600; font-size: 14px; color: #ffffff; }
-    .product-price { color: #0088cc; font-size: 13px; font-weight: bold; margin-top: 2px; }
-    .badge-status { display: inline-block; background: rgba(76, 175, 80, 0.15); color: #4caf50; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; width: max-content; margin-top: 4px; }
-    .product-thumbnail-box { width: 50px; height: 50px; border-radius: 8px; background: rgba(0, 0, 0, 0.3); border: 1px dashed rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .product-thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb-placeholder { font-size: 8px; color: #8fa0bc; text-align: center; line-height: 1.1; }
-    .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; }
-    .btn-qty { background: var(--accent-color); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .qty-val { font-weight: bold; min-width: 12px; text-align: center; font-size: 13px; }
-    .admin-actions { display: none; gap: 5px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
-    body.admin-mode .admin-actions { display: flex; }
-    body.admin-mode .qty-controls { display: none; }
-    .btn-admin { border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-    .btn-inline-orange-media { background-color: #ff7a00 !important; color: #ffffff !important; }
-    .admin-top-controls { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
-    body.admin-mode .admin-top-controls { display: flex; }
-    .btn-add-list { padding: 12px; border-radius: 10px; border: none; color: #0b1426; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; text-transform: uppercase; margin-bottom: 0 !important; flex: 1; display: block !important; }
-    .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1426; padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; }
-    .btn-main { background: #00cc99; color: #0b1426; border: none; width: 100%; max-width: 420px; margin: 0 auto; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
-    .btn-main:disabled { background: #2c3a52 !important; color: #62728d !important; cursor: not-allowed; opacity: 0.5; }
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-    .modal.active { display: flex; }
-    .modal-content { background: #111e35; border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; border: 1px solid rgba(0, 136, 204, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.55); box-sizing: border-box; color: #ffffff; }
-    .modal-title { font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; }
-    .modal-close { text-align: center; color: #8fa0bc; font-size: 11px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 11px; color: #8fa0bc; margin-bottom: 4px; text-transform: uppercase; }
-    .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(7,13,24,0.6); color: white; box-sizing: border-box; font-size: 12px; }
-    .form-group input:focus { border-color: #0088cc; box-shadow: 0 0 8px rgba(0, 136, 204, 0.4); outline: none; }
-    .details-image-container-3d { position: relative; width: 100%; max-width: 260px; margin: 0 auto 15px auto; perspective: 1000px; }
-    .details-big-img-wrapper { width: 100%; height: 160px; border-radius: 12px; background: #070d18; border: 1px solid rgba(0, 136, 204, 0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; animation: apunganLampuBawah 3s infinite ease-in-out; }
-    .details-big-img-wrapper img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; }
-    .details-big-img-wrapper::after { content: ''; position: absolute; bottom: 0; left: 10%; width: 80%; height: 10px; background: radial-gradient(ellipse at bottom, #0088cc 0%, transparent 70%); opacity: 0.7; filter: blur(3px); }
-    @keyframes apunganLampuBawah {
-      0% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(0,136,204,0.1); }
-      50% { transform: translateY(-5px); box-shadow: 0 12px 22px rgba(0,136,204,0.25); }
-      100% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(0,136,204,0.1); }
-    }
-    .review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 11px; color: #c5d1e6; line-height: 1.4; }
-  /* ===== HEADER BARU ===== */
-.header-new { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  margin-bottom: 15px; 
-  padding-top: 10px;
-}
-.logo-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.shield-icon {
-  width: 42px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.shield-bg {
-  width: 40px;
-  height: 44px;
-  background: linear-gradient(180deg, #234080 0%, #182f5c 100%);
-  border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
-  border: 1px solid rgba(255, 215, 0, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.crown-icon { font-size: 20px; }
-.logo-text { text-align: right; }
-.logo-main { font-size: 18px; font-weight: bold; color: #ffd700; letter-spacing: 1px; }
-.logo-sub { font-size: 10px; color: #9fb8d8; text-transform: uppercase; }
-.header-circle-btn {
-  width: 36px;
-  height: 36px;
-  background: rgba(80, 160, 255, 0.12);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #73c2fb;
-  font-size: 18px;
-  cursor: pointer;
-  border: none;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Premium Digital Store</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+    --bg-color: #0b1426;
+    --card-bg: #152238;
+    --text-color: #ffffff;
+    --accent-color: #0088cc;
+    --danger-color: #e53935;
+    --success-color: #4caf50;
+    --warning-color: #ffc107;
 }
 
-/* ===== HALAMAN DETAIL PRODUK ===== */
-.detail-page {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, #0c2047 0%, #0a1835 100%);
-  z-index: 9999;
-  padding: 16px;
-  overflow-y: auto;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 15px;
+    padding-bottom: 180px;
+    user-select: none;
+    -webkit-user-select: none;
 }
-.detail-page.active { display: block; }
-.back-btn {
-  font-size: 16px;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.header { 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 24px; 
+    text-align: center;
+    position: relative;
 }
-.detail-image-wrapper {
-  width: 100%;
-  height: 200px;
-  background: rgba(25, 60, 130, 0.4);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  border: 1px solid rgba(100, 160, 255, 0.18);
+
+/* Bulatan Glowing Gear Admin Pojok Kanan Atas */
+.admin-trigger-gear {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid #22d3ee;
+    box-shadow: 0 0 10px #22d3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    z-index: 10;
 }
-.detail-image-wrapper img { max-width: 75%; max-height: 75%; object-fit: contain; }
-.detail-title { font-size: 24px; font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
-.detail-rating { font-size: 14px; color: #ffd700; margin-bottom: 12px; }
-.detail-short-desc { font-size: 13px; color: #90b8e0; margin-bottom: 20px; }
-.detail-desc-label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #0088cc;
-  margin: 24px 0 8px 0;
-  text-transform: uppercase;
+.admin-trigger-gear:hover {
+    transform: rotate(45deg);
 }
-.detail-desc-text { font-size: 14px; color: #b0c4de; line-height: 1.6; }
-.detail-total-line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 15px;
-  margin-top: 30px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(100, 160, 255, 0.12);
+.brand-logo-box-new {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+    border: 2px solid #fbbf24;
+    border-radius: 16px;
+    background: linear-gradient(to bottom, rgba(245, 158, 11, 0.2), transparent);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
 }
-.detail-total-price { font-size: 18px; font-weight: bold; color: #73c2fb; }
-.pay-btn {
-  width: 100%;
-  padding: 14px;
-  background: #00b894;
-  border: none;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 8px;
-  margin-top: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+
+.crown-icon-new {
+    font-size: 24px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
 }
-.powered-footer {
-  text-align: center;
-  font-size: 11px;
-  color: #6699cc;
-  margin-top: 12px;
+
+.book-line-new {
+    position: absolute;
+    bottom: 8px;
+    width: 32px;
+    height: 4px;
+    background-color: #fbbf24;
+    border-radius: 2px;
+    opacity: 0.8;
 }
-  </style>
+.brand-title-new {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    background: linear-gradient(to right, #fde68a, #fbbf24, #fde68a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.brand-subtitle-new {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: #22d3ee;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: -4px;
+    margin-bottom: 0;
+}
+.currency-box { 
+    background: var(--card-bg); 
+    padding: 12px; 
+    border-radius: 12px; 
+    margin-bottom: 20px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.currency-label { font-size: 13px; color: #8fa0bc; font-weight: 500; }
+.currency-select { 
+    background: rgba(0,0,0,0.3); 
+    color: white; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    padding: 6px 12px; 
+    border-radius: 8px; 
+    font-size: 13px; 
+    font-weight: bold; 
+    outline: none; 
+    cursor: pointer; 
+}
+
+.section-title { 
+    font-size: 12px; 
+    text-transform: uppercase; 
+    color: #8fa0bc; 
+    letter-spacing: 1px; 
+    margin-bottom: 12px; 
+    font-weight: bold;
+}
+
+.product-list { display: flex; flex-direction: column; gap: 12px; }
+
+.product-card { 
+    background-color: var(--card-bg); 
+    border-radius: 14px; 
+    padding: 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.product-card:hover { background: rgba(255,255,255,0.02); }
+.product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
+.product-name { font-weight: 600; font-size: 15px; color: #ffffff; }
+.product-stars { color: #ffc107; font-size: 12px; margin: 3px 0; }
+.product-price { color: #ffffff; font-size: 14px; font-weight: bold; margin-top: 2px; }
+
+.product-thumbnail-box { 
+    width: 55px; 
+    height: 55px; 
+    border-radius: 10px; 
+    background: rgba(0, 0, 0, 0.3); 
+    border: 1px dashed rgba(255,255,255,0.15); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+}
+.product-thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-placeholder { font-size: 9px; color: #8fa0bc; text-align: center; line-height: 1.1; }
+
+.qty-controls { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    background: rgba(0,0,0,0.3); 
+    padding: 4px 8px; 
+    border-radius: 20px; 
+    margin-top: 5px;
+}
+.btn-qty { 
+    background: var(--accent-color); 
+    border: none; 
+    color: white; 
+    width: 22px; 
+    height: 22px; 
+    border-radius: 50%; 
+    font-weight: bold; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.qty-val { font-weight: bold; min-width: 12px; text-align: center; font-size: 13px; }
+.admin-actions { display: none; gap: 5px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+body.admin-mode .admin-actions { display: flex; }
+body.admin-mode .qty-controls { display: none; }
+
+.btn-admin { border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+.btn-inline-orange-media { background-color: #ff7a00 !important; color: #ffffff !important; }
+.admin-top-controls { display: none; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; background: rgba(255,193,7,0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,193,7,0.2); }
+body.admin-mode .admin-top-controls { display: flex; }
+.btn-add-list { padding: 10px; border-radius: 8px; border: none; color: #0b1426; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; }
+
+.footer-bar { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    background: #0b1426; 
+    padding: 15px 20px; 
+    border-top: 1px solid rgba(255,255,255,0.08); 
+    z-index: 100; 
+    box-sizing: border-box; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+.btn-main { 
+    background: #00cc99; 
+    color: #0b1426; 
+    border: none; 
+    width: 100%; 
+    max-width: 420px; 
+    margin: 0 auto; 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-size: 14px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+}
+.btn-main:disabled { background: #2c3a52 !important; color: #62728d !important; cursor: not-allowed; opacity: 0.5; }
+.modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+.modal.active { display: flex; }
+.modal-content { background: #111e35; border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(0, 136, 204, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.55); box-sizing: border-box; color: #ffffff; }
+.modal-title { font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; }
+.modal-close { text-align: center; color: #8fa0bc; font-size: 11px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 11px; color: #8fa0bc; margin-bottom: 4px; text-transform: uppercase; }
+.form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(7,13,24,0.6); color: white; box-sizing: border-box; font-size: 12px; }
+
+#productDetailsViewModal .modal-content { max-width: 420px; width: 100%; background-color: #0b1426; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+.btn-back-custom { background: transparent; border: none; color: #ffffff; font-size: 16px; font-weight: bold; cursor: pointer; text-align: left; padding: 0; margin-bottom: 5px; display: flex; align-items: center; }
+.details-image-container-3d { width: 100%; background: #111e35; border: 1px solid rgba(0, 136, 204, 0.2); border-radius: 16px; padding: 30px 15px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.details-big-img-wrapper img { max-width: 150px; width: 100%; height: auto; object-fit: contain; }
+.text-pusing-3d { font-size: 12px; color: #8fa0bc; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+.details-title-price-box { margin-top: 5px; }
+.details-main-title { font-size: 24px; font-weight: 800; margin: 0 0 5px 0; color: #ffffff; }
+.details-main-price { font-size: 20px; font-weight: bold; color: #0088cc; }
+.details-section-header { font-size: 13px; font-weight: 800; color: #0088cc; letter-spacing: 0.5px; margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase; }
+.details-description-text { font-size: 14px; color: #c5d1e6; line-height: 1.5; margin: 0; }
+.review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 13px; color: #ffffff; line-height: 1.4; }
+</style>
 </head>
 <body>
-  <!-- ✅ HEADER BARU & HALAMAN DETAIL PRODUK -->
-<div class="header-new">
-  <div class="logo-wrap">
-    <div class="shield-icon">
-      <div class="shield-bg">
-        <span class="3D crown-icon">👑</span>
-      </div>
+
+<!-- KEPALA KATALOG PREMIUM DENGAN REKABENTUK MOCKUP TINGKAP ANDA -->
+<div class="header">
+    <div class="admin-trigger-gear" onclick="checkAdmin()">⚙️</div>
+    <div class="brand-logo-box-new" id="liveLogoFrame">
+        <span class="crown-icon-new" id="liveCrownEmoji">👑</span>
+        <div class="book-line-new" id="liveBookLine"></div>
     </div>
-    <div class="logo-text">
-      <div class="logo-main">PREMIUM</div>
-      <div class="logo-sub">E-Book Catalogue</div>
-    </div>
-  </div>
-  <button class="header-circle-btn" onclick="checkAdmin()">⚙</button>
+    <h1 class="brand-title-new" id="liveMainTitle">Premium</h1>
+    <p class="brand-subtitle-new" id="liveSubTitle">Digital Store</p>
 </div>
 
-<!-- HALAMAN DETAIL PRODUK -->
-<div class="detail-page" id="detailPage">
-  <button class="back-btn" onclick="tutupPaparan()">← Kembali</button>
-  <div class="detail-image-wrapper" id="detailGambar"></div>
-  <h2 class="detail-title" id="detailNama"></h2>
-  <div class="detail-rating" id="detailRating"></div>
-  <p class="detail-short-desc" id="detailRingkas"></p>
-  <div class="detail-desc-label">Penerangan Penuh</div>
-  <p class="detail-desc-text" id="detailDeskripsi"></p>
-  <div class="detail-total-line">
-    <span>Harga</span>
-    <span class="detail-total-price" id="detailHarga"></span>
-  </div>
-  <button class="pay-btn">💳 Beli Sekarang</button>
-  <div class="powered-footer">Powered by Premium Catalogue</div>
-</div>
-  <body>
-
-<!-- ✅ TAMPAL DUA-DUA KOD DI SINI -->
- <-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
-  <div class="header">
-    <div style="display: flex; flex-direction: column; gap: 2px;">
-      <span style="font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff 30%, #8fa0bc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PREMIUM DIGITAL STORE</span>
-      <span style="font-size: 9px; color: #0088cc; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">Official Catalogue Vault</span>
-    </div>
-    <button class="admin-trigger" id="staffModeTriggerBtn" onclick="checkAdmin()">⚙</button>
-  </div>
-
-  <div class="currency-box">
+<div class="currency-box">
     <span class="currency-label">Select Currency:</span>
     <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
-      <option value="SGD">Singapore Dollar (SGD)</option>
-      <option value="MYR">Malaysian Ringgit (MYR)</option>
+        <option value="SGD">Singapore Dollar (SGD)</option>
+        <option value="MYR">Malaysian Ringgit (MYR)</option>
     </select>
-  </div>
+</div>
 
-  <!-- DUA BUTANG KUNING UTAMA STAFF -->
-  <div class="admin-top-controls" id="staffTopPanel">
-    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddModal()">⚡ + ADD NEW E-BOOK</button>
-    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddGatewayModal()"> + ADD PAYMENT METHOD</button>
-  </div>
+<!-- PANEL UTAMA STAFF KONTROL (ADMIN PANEL) -->
+<div class="admin-top-controls" id="staffTopPanel">
+    <span style="font-size:11px; color:#ffc107; font-weight:bold; text-transform:uppercase;">🛠️ Admin Control Dashboard</span>
+    <div style="display:flex; gap:8px; margin-top:6px;">
+        <button class="btn-add-list" style="background-color: #ffc107; flex:1;" onclick="openAddModal()">+ New E-Book</button>
+        <button class="btn-add-list" style="background-color: #ffc107; flex:1;" onclick="openAddGatewayModal()">+ Payment</button>
+        <button class="btn-add-list" style="background-color: #00cc99; color:#0b1426; flex:1;" onclick="openCustomDesignModal()">🎨 Design UI</button>
+    </div>
+</div>
 
-  <div class="section-title">E-Book Catalogue</div>
-  <div id="gatewayAdminBox"></div>
-  <div class="product-list" id="productList"></div>
+<div class="section-title">E-Book Catalogue</div>
+<div id="gatewayAdminBox"></div>
+<div class="product-list" id="productList"></div>
 
-  <!-- KAWASAN STICKY FOOTER BAWAH -->
-  <div class="footer-bar"></div>
-  <!-- MODAL DISPLAY INVOIS QR CODE -->
-  <div class="modal" id="qrDisplayModal">
+<!-- KAWASAN STICKY FOOTER BAWAH -->
+<div class="footer-bar"></div>
+<!-- KOTAK MODAL CUSTOM DESIGN UI ENGINE BUILDER PERMANENT -->
+<div class="modal" id="customDesignModal">
+    <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-title" style="color: #00cc99;">🎨 Custom Design UI Builder</div>
+        
+        <div class="form-group">
+            <label>Main Title Text</label>
+            <input type="text" id="cfgMainTitle" oninput="previewLiveDesign()">
+        </div>
+        <div class="form-group">
+            <label>Subtitle Text</label>
+            <input type="text" id="cfgSubTitle" oninput="previewLiveDesign()">
+        </div>
+        <div class="form-group">
+            <label>Crown Logo Emoji</label>
+            <input type="text" id="cfgCrownEmoji" oninput="previewLiveDesign()">
+        </div>
+        <div class="form-group">
+            <label>Logo Frame Border Color (Hex)</label>
+            <input type="text" id="cfgBorderColor" oninput="previewLiveDesign()">
+        </div>
+        <div class="form-group">
+            <label>Text Font Size (Title)</label>
+            <select id="cfgTitleSize" onchange="previewLiveDesign()">
+                <option value="20px">Small (20px)</option>
+                <option value="24px">Normal (24px)</option>
+                <option value="28px">Large (28px)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Title Text Weight</label>
+            <select id="cfgTitleWeight" onchange="previewLiveDesign()">
+                <option value="400">Normal</option>
+                <option value="700">Bold</option>
+                <option value="900">Black/Heavy</option>
+            </select>
+        </div>
+        
+        <div style="display:flex; gap:8px; margin-top:15px;">
+            <button class="btn-main" style="background-color: #00cc99 !important; color:#0b1426; flex:2;" onclick="saveCustomDesignPermanently()">💾 Save Design</button>
+            <button class="btn-main" style="background-color: #e53935 !important; color:#fff; flex:1; font-size:11px; padding:0 4px;" onclick="resetUiDesignToDefault()">🔄 Reset</button>
+        </div>
+        <div class="modal-close" onclick="closeModal('customDesignModal')">[ Close Builder ]</div>
+    </div>
+</div>
+<!-- MODAL QR DISPLAY -->
+<div class="modal" id="qrDisplayModal">
     <div class="modal-content" style="text-align: center; max-width: 320px;">
-      <div class="modal-title" style="color: #4caf50; font-weight: bold;">AUTOMATIC QR PAYMENT</div>
-      <p style="font-size: 12px; color: #8fa0bc; margin-bottom: 15px;">Please screenshot or scan this QR Code to complete your professional secure payment.</p>
-      <img id="autoQrTargetImage" src="" alt="Payment QR Code" style="width: 100%; max-width: 220px; border-radius: 12px; border: 4px solid #ffffff; margin-bottom: 15px;">
-      <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-bottom: 15px;" id="autoQrGatewayName"></div>
-      <button class="btn-main" style="background-color: #e53935 !important; color:#fff;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
+        <div class="modal-title" style="color: #4caf50; font-weight: bold;">AUTOMATIC QR PAYMENT</div>
+        <p style="font-size: 12px; color: #8fa0bc; margin-bottom: 15px;">Please screenshot or scan this QR Code to complete your professional secure payment.</p>
+        <img id="autoQrTargetImage" src="" alt="Payment QR Code" style="width: 100%; max-width: 220px; border-radius: 12px; border: 4px solid #ffffff; margin-bottom: 15px;">
+        <div style="font-size: 13px; font-weight: bold; color: #ffffff; margin-bottom: 15px;" id="autoQrGatewayName"></div>
+        <button class="btn-main" style="background-color: #e53935 !important; color:#fff;" onclick="closeModal('qrDisplayModal')">CLOSE [ X ]</button>
     </div>
-  </div>
+</div>
 
-  <!-- MODAL PILIHAN KAEDAH BANK KEPADA PELANGGAN -->
-  <div class="modal" id="paymentModal">
+<div class="modal" id="paymentModal">
     <div class="modal-content">
-      <div class="modal-title">SELECT PAYMENT METHOD</div>
-      <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
-      <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
+        <div class="modal-title">SELECT PAYMENT METHOD</div>
+        <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
+        <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
     </div>
-  </div>
-
-  <!-- TETINGKAP DIALOG UTAMA EDIT DATA STAFF (PROSES KEKAL) -->
-  <div class="modal" id="editorModal">
+</div>
+<div class="modal" id="editorModal">
     <div class="modal-content">
-      <div class="modal-title" id="editorTitle">Edit Item</div>
-      <input type="hidden" id="editType"><input type="hidden" id="editIndex">
-      <div class="form-group">
-        <label id="labelName">Name / Title</label><input type="text" id="itemName">
-      </div>
-      <div class="form-group" id="priceGroup">
-        <label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice">
-      </div>
-      <div class="form-group" id="linkGroup">
-        <label id="labelLink">Destination Link / Link Fail</label><input type="text" id="itemLink">
-      </div>
-      <div class="form-group" id="productAssetUploadGroup" style="display: none;">
-        <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
-        <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
-      </div>
-      <div class="form-group" id="qrUploadGroup" style="display: none;">
-        <label>Upload QR Scan Picture</label>
-        <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
-      </div>
-      <button class="btn-main" style="background-color: #4caf50 !important; color:#fff;" onclick="saveItemChanges()">Save Changes</button>
-      <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
+        <div class="modal-title" id="editorTitle">Edit Item</div>
+        <input type="hidden" id="editType"><input type="hidden" id="editIndex">
+        <div class="form-group">
+            <label id="labelName">Name / Title</label><input type="text" id="itemName">
+        </div>
+        <div class="form-group" id="priceGroup">
+            <label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice">
+        </div>
+        <div class="form-group" id="linkGroup">
+            <label id="labelLink">Destination Link / Link Fail</label><input type="text" id="itemLink">
+        </div>
+        <div class="form-group" id="productAssetUploadGroup" style="display: none;">
+            <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
+            <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
+        </div>
+        <div class="form-group" id="qrUploadGroup" style="display: none;">
+            <label>Upload QR Scan Picture</label>
+            <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
+        </div>
+        <button class="btn-main" style="background-color: #4caf50 !important; color:#fff;" onclick="saveItemChanges()">Save Changes</button>
+        <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
     </div>
-  </div>
-  <!-- MODAL OREN STAFF: PEMUAT NAIK FAIL BERKEMBAR KOTAK HIJAU -->
-  <div class="modal" id="staffMediaUploadModal">
+</div>
+<div class="modal" id="staffMediaUploadModal">
     <div class="modal-content" style="border: 1px solid #ff7a00;">
-      <div class="modal-title" style="color: #ff7a00; font-size: 14px;">🖼️ Manage Product Media Vault</div>
-      <input type="hidden" id="mediaTargetProductIndex">
-      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.3);">
-        <label style="color: #4caf50; font-weight: 700; font-size: 11px;">📂 Choose File 1: Dashboard Front Picture</label>
-        <input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')" style="font-size: 12px; color: #8fa0bc;">
-      </div>
-      <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76, 175, 80, 0.3);">
-        <label style="color: #4caf50; font-weight: 700; font-size: 11px;">📂 Choose File 2: Description Inner Banner</label>
-        <input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')" style="font-size: 12px; color: #8fa0bc;">
-      </div>
-      <input type="hidden" id="dataHolderBase64Front"><input type="hidden" id="dataHolderBase64Desc">
-      <button class="btn-main" style="background-color: #ff7a00 !important; color: #ffffff !important;" onclick="simpanMediaKhasMuttamad()">SAVE & LOCK MEDIA</button>
-      <div class="modal-close" onclick="closeModal('staffMediaUploadModal')">[ Close ]</div>
+        <div class="modal-title" style="color: #ff7a00; font-size: 14px;">Manage Product Media Vault</div>
+        <input type="hidden" id="mediaTargetProductIndex">
+        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.3);">
+            <label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 1: Dashboard Front Pic</label>
+            <input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')" style="font-size: 12px; color: #8fa0bc;">
+        </div>
+        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76, 175, 80, 0.3);">
+            <label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 2: Description Inner Banner</label>
+            <input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')" style="font-size: 12px; color: #8fa0bc;">
+        </div>
+        <input type="hidden" id="dataHolderBase64Front"><input type="hidden" id="dataHolderBase64Desc">
+        <button class="btn-main" style="background-color: #ff7a00 !important; color: #ffffff !important;" onclick="simpanMediaKhasMuttamad()">SAVE & LOCK MEDIA</button>
+        <div class="modal-close" onclick="closeModal('staffMediaUploadModal')">[ Close ]</div>
     </div>
-  </div>
+</div>
 
-  <!-- BAHAGIAN 2: PAPARAN FULL SCREEN OVERLAY DETAILS PELANGGAN VIEW -->
-  <div class="modal" id="productDetailsViewModal">
-    <div class="modal-content" style="max-width: 360px; max-height: 80vh; overflow-y: auto;">
-      <div id="detailsBigImageArea"></div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-        <h2 id="detailsProductName" style="margin: 0; font-size: 15px; font-weight: bold;"></h2>
-        <span id="detailsProductPrice" style="color: #0088cc; font-weight: bold; font-size: 14px;"></span>
-      </div>
-      <div style="font-size: 11px; font-weight: bold; color: #0088cc; margin: 15px 0 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase;">📋 Description Spec</div>
-      <p id="detailsProductDesc" style="font-size: 12px; color: #8fa0bc; margin: 0; line-height: 1.5;"></p>
-      <div style="font-size: 11px; font-weight: bold; color: #0088cc; margin: 15px 0 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase;">⭐ Verified Customer Ratings</div>
-      <div id="detailsProductReviewsList"></div>
-      <button class="btn-main" style="background: #2c3a52 !important; color:#fff; margin-top: 20px;" onclick="closeModal('productDetailsViewModal')">Back to Catalogue</button>
-    </div>
-  </div>
+<div class="modal" id="productDetailsViewModal">
+    <div class="modal-content"></div>
+</div>
 
-  <!-- POP-UP TINGKAP AMARAN VERIFIKASI ANTI-REFUND -->
-  <div class="modal" id="strictTermsVerificationModal">
+<div class="modal" id="strictTermsVerificationModal">
     <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; text-align: center; border: 1px solid rgba(229, 57, 53, 0.3);">
-      <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
-      <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
-      <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
-        <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
-        <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.</label>
-      </div>
-      <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
-      <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
+        <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+        <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
+            <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
+            <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.</label>
+        </div>
+        <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
+        <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
     </div>
-  </div>
-</body>
+</div>
 <script>
-  const tg = window.Telegram.WebApp;
-  if(tg && typeof tg.expand === 'function') tg.expand();
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if(tg && typeof tg.expand === 'function') tg.expand();
 
-  let currentCurrency = "SGD";
-  const EXCHANGE_RATE = 3.30;
-  let base64QrImage = "";
-  let base64AssetFile = "";
+let currentCurrency = "SGD";
+const EXCHANGE_RATE = 3.30;
+let base64QrImage = "";
+let base64AssetFile = "";
+let defaultProducts = [
+    { id: 1, name: "TikTok Automation Strategy", price: 105.80, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
+    { id: 2, name: "Viral Traffic System", price: 75.00, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
+    { id: 3, name: "30-Day Video Action Plan", price: 49.99, qty: 0, link: "", img: "", bigImg: "", desc: "Day-to-day tactical deployment calendar for short-form content execution hooks." },
+    { id: 4, name: "Join Group VVIP", price: 19.99, qty: 0, link: "", img: "", bigImg: "", desc: "Gain exclusive access to our inner circle networking and immediate alpha distributing setup." },
+    { id: 5, name: "Global Marketplace Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Exact cross-border conversion optimization scaling mechanisms for modern digital stores." },
+    { id: 6, name: "Digital Marketing 2027", price: 25.90, qty: 0, link: "", img: "", bigImg: "", desc: "Future-proof frameworks for modern digital product distribution and organic scaling models." },
+    { id: 7, name: "Advanced Automation Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Operational workflow automations to sync databases and tools seamlessly." },
+    { id: 8, name: "Financial Freedom Roadmap", price: 59.90, qty: 0, link: "", img: "", bigImg: "", desc: "Strategic blueprint detailing tactical digital wealth-building frameworks." },
+    { id: 9, name: "AI Content Formula", price: 15.00, qty: 0, link: "", img: "", bigImg: "", desc: "Secret artificial intelligence prompts to generate premium automated articles and copy." },
+    { id: 10, name: "Mastery Telegram", price: 12.00, qty: 0, link: "", img: "", bigImg: "", desc: "Complete guide to deploying automated premium monetization channels inside Telegram." },
+    { id: 11, name: "Premium Strategy Guide", price: 18.00, qty: 0, link: "", img: "", bigImg: "", desc: "High-ticket enterprise positioning blueprints for global digital store owners." },
+    { id: 12, name: "Seni Jualan Senyap", price: 35.00, qty: 0, link: "", img: "", bigImg: "", desc: "Kombinasi psikologi jualan senyap untuk menukar prospek dingin kepada pembeli tegar." }
+];
 
-  // PENYELARASAN DATABASE LENGKAP 13 LIST UTAMA (SINKRONISASI PANGKALAN DATA SEGERA)
-  let defaultProducts = [
-    { id: 1, name: "TikTok Automation Strategy", price: 35.90, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
-    { id: 2, name: "Viral Traffic System", price: 55.90, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
-    { id: 3, name: "Digital Marketing 2027", price: 25.90, qty: 0, link: "", img: "", bigImg: "", desc: "Future-proof frameworks for modern digital product distribution and organic scaling models." },
-    { id: 4, name: "E-Commerce Success Keys", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Exact cross-border conversion optimization scaling mechanisms for modern digital stores." },
-    { id: 5, name: "Advanced Automation Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Operational workflow automations to sync databases and tools seamlessly." },
-    { id: 6, name: "Financial Freedom Roadmap", price: 59.90, qty: 0, link: "", img: "", bigImg: "", desc: "Strategic blueprint detailing tactical digital wealth-building frameworks." },
-    { id: 7, name: "AI Content Formula", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Secret artificial intelligence prompts to generate premium automated articles and copy." },
-    { id: 8, name: "Mastery Telegram", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Complete guide to deploying automated premium monetization channels inside Telegram." },
-    { id: 9, name: "Premium Strategy Guide", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "High-ticket enterprise positioning blueprints for global digital store owners." },
-    { id: 10, name: "Seni Jualan Senyap", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Kombinasi psikologi jualan senyap untuk menukar prospek dingin kepada pembeli tegar." },
-    { id: 11, name: "High Conversion Copywriting", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Tested premium persuasive conversion scripts engineered for landing page structures." },
-    { id: 12, name: "Organic Branding Matrix", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Omnichannel brand deployment framework to dominate social media feeds without paid ads." },
-    { id: 13, name: "30-Day Video Action Plan", price: 5.00, qty: 0, link: "", img: "", bigImg: "", desc: "Day-to-day tactical deployment calendar for short-form content execution hooks." }
-  ];
-
-  let defaultGateways = [
+let defaultGateways = [
     { id: "tng", name: "Touch 'n Go eWallet", link: "161390792973", color: "#005bc4" },
     { id: "stripe", name: "Credit Card / FPX (Stripe)", link: "https://stripe.com", color: "#635bff" }
-  ];
+];
 
-  // Mengunci pemanduan pelayan lokal 'premium_store_products'
-  let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
-  let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
-  
-  if (localStorage.getItem('premium_store_products') || products.length < 13) {
+let products = JSON.parse(localStorage.getItem('premium_store_products')) || defaultProducts;
+let gateways = JSON.parse(localStorage.getItem('premium_store_gateways')) || defaultGateways;
+
+if (!localStorage.getItem('premium_store_products') || products.length !== 12) {
     localStorage.setItem('premium_store_products', JSON.stringify(defaultProducts));
     products = defaultProducts;
-  }
-  products.forEach(p => p.qty = 0);
+}
+products.forEach(p => p.qty = 0);
 
-  const list = document.getElementById('productList');
-  function renderProducts() {
+const list = document.getElementById('productList');
+let defaultDesign = {
+    mainTitle: "Premium",
+    subTitle: "Digital Store",
+    crownEmoji: "👑",
+    borderColor: "#fbbf24",
+    titleSize: "24px",
+    titleWeight: "900"
+};
+
+let currentDesign = JSON.parse(localStorage.getItem('premium_store_ui_design')) || defaultDesign;
+
+function applySavedDesign() {
+    document.getElementById('liveMainTitle').innerText = currentDesign.mainTitle;
+    document.getElementById('liveSubTitle').innerText = currentDesign.subTitle;
+    document.getElementById('liveCrownEmoji').innerText = currentDesign.crownEmoji;
+    
+    const frame = document.getElementById('liveLogoFrame');
+    if(frame) frame.style.borderColor = currentDesign.borderColor;
+    
+    const line = document.getElementById('liveBookLine');
+    if(line) line.style.backgroundColor = currentDesign.borderColor;
+    
+    const titleEl = document.getElementById('liveMainTitle');
+    if(titleEl) {
+        titleEl.style.fontSize = currentDesign.titleSize;
+        titleEl.style.fontWeight = currentDesign.titleWeight;
+    }
+}
+
+function openCustomDesignModal() {
+    document.getElementById('cfgMainTitle').value = currentDesign.mainTitle;
+    document.getElementById('cfgSubTitle').value = currentDesign.subTitle;
+    document.getElementById('cfgCrownEmoji').value = currentDesign.crownEmoji;
+    document.getElementById('cfgBorderColor').value = currentDesign.borderColor;
+    document.getElementById('cfgTitleSize').value = currentDesign.titleSize;
+    document.getElementById('cfgTitleWeight').value = currentDesign.titleWeight;
+    
+    const m = document.getElementById('customDesignModal');
+    if(m) { m.classList.add('active'); m.style.display = "flex"; }
+}
+
+function previewLiveDesign() {
+    document.getElementById('liveMainTitle').innerText = document.getElementById('cfgMainTitle').value;
+    document.getElementById('liveSubTitle').innerText = document.getElementById('cfgSubTitle').value;
+    document.getElementById('liveCrownEmoji').innerText = document.getElementById('cfgCrownEmoji').value;
+    
+    const bColor = document.getElementById('cfgBorderColor').value;
+    document.getElementById('liveLogoFrame').style.borderColor = bColor;
+    document.getElementById('liveBookLine').style.backgroundColor = bColor;
+    
+    const tEl = document.getElementById('liveMainTitle');
+    tEl.style.fontSize = document.getElementById('cfgTitleSize').value;
+    tEl.style.fontWeight = document.getElementById('cfgTitleWeight').value;
+}
+
+function saveCustomDesignPermanently() {
+    currentDesign.mainTitle = document.getElementById('cfgMainTitle').value;
+    currentDesign.subTitle = document.getElementById('cfgSubTitle').value;
+    currentDesign.crownEmoji = document.getElementById('cfgCrownEmoji').value;
+    currentDesign.borderColor = document.getElementById('cfgBorderColor').value;
+    currentDesign.titleSize = document.getElementById('cfgTitleSize').value;
+    currentDesign.titleWeight = document.getElementById('cfgTitleWeight').value;
+    
+    localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign));
+    closeModal('customDesignModal');
+    alert("UI Design Layout Saved Permanently! ✅");
+}
+
+function resetUiDesignToDefault() {
+    if(confirm("Adakah anda mahu kembalikan reka bentuk pengenalan kedai kepada asal?")) {
+        currentDesign = JSON.parse(JSON.stringify(defaultDesign));
+        localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign));
+        applySavedDesign();
+        closeModal('customDesignModal');
+        alert("Reka bentuk berjaya di-reset! 🔄");
+    }
+}
+function renderProducts() {
     if (!list) return;
     list.innerHTML = '';
-
+    
     if(document.body.classList.contains('admin-mode')) {
-      document.getElementById('staffTopPanel').style.display = "flex";
-      let gatewayAdminHTML = '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
-                             '<div id="adminGatewayList" style="display: flex; flex-direction: column; gap: 6px; "></div>';
-      const box = document.getElementById('gatewayAdminBox');
-      if(box) { box.innerHTML = gatewayAdminHTML; box.style.background = "rgba(255,255,255,0.05)"; box.style.padding = "12px"; box.style.borderRadius = "12px"; box.style.marginBottom = "15px"; }
-      renderAdminGateways();
+        document.getElementById('staffTopPanel').style.display = "flex";
+        let gatewayAdminHTML = '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
+                               '<div id="adminGatewayList" style="display: flex; flex-direction: column; gap: 6px;"></div>';
+        const box = document.getElementById('gatewayAdminBox');
+        if(box) { box.innerHTML = gatewayAdminHTML; box.style.background = "rgba(255,255,255,0.05)"; box.style.padding = "12px"; box.style.borderRadius = "12px"; box.style.marginBottom = "15px"; }
+        renderAdminGateways();
     } else {
-      document.getElementById('staffTopPanel').style.display = "none";
-      const box = document.getElementById('gatewayAdminBox');
-      if(box) { box.innerHTML = ""; box.style.padding = "0"; box.style.marginBottom = "0"; box.style.background = "transparent"; }
+        document.getElementById('staffTopPanel').style.display = "none";
+        const box = document.getElementById('gatewayAdminBox');
+        if(box) { box.innerHTML = ""; box.style.padding = "0"; box.style.marginBottom = "0"; box.style.background = "transparent"; }
     }
-
+    
     products.forEach((p, index) => {
-      const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ')');
-
-      card.innerHTML = 
-        '<div class="product-info">' +
-          <div class="product-name" onclick="bukaHalamanDetail(${index})">${p.name}</div>
-          '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
-          '<span class="badge-status">Available</span>' +
-          '<div class="admin-actions" onclick="event.stopPropagation();" style="margin-top:10px; display:none; gap: 5px; flex-wrap:wrap;">' +
-            '<button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(' + index + ')">Edit</button>' +
-            '<button class="btn-admin" style="background-color: #e53935;" onclick="deleteProduct(' + index + ')">Delete</button>' +
-            '<button class="btn-admin" style="background-color: #ffc107; color: #000; font-weight:bold;" onclick="openSetLinkModal(' + index + ')">Set Link</button>' +
-            '<button class="btn-admin btn-inline-orange-media" onclick="bukaModalMediaKhasStaf(' + index + ')">📸 Media</button>' +
-            '<button class="btn-admin" style="background-color: #4caf50;" onclick="savePermanently()">Save</button>' +
-          '</div>' +
-        '</div>' +
-        '<div style="display: flex; flex-direction:column; align-items: flex-end;" onclick="event.stopPropagation();">' +
-          '<div class="product-thumbnail-box">' + (p.img ? '<img src="' + p.img + '">' : '<span class="thumb-placeholder">No Img</span>') + '</div>' +
-          '<div class="qty-controls" style="margin-top: 6px;">' +
-            '<button class="btn-qty" onclick="changeQty(' + index + ', -1)">-</button>' +
-            '<span class="qty-val">' + p.qty + '</span>' +
-            '<button class="btn-qty" onclick="changeQty(' + index + ', 1)">+</button>' +
-          '</div>' +
-        '</div>';
+        const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('onclick', 'bukaPaparanBahagian2(' + index + ')');
         
-      list.appendChild(card);
+        const soldSim = 100 + (p.id * 14);
+        
+        card.innerHTML = `
+            <div class="product-info">
+                <span class="product-name">\${p.name}</span>
+                <div class="product-stars">★★★★★ <span style="color:#8fa0bc; font-size:11px;">(\${soldSim}+ sold)</span></div>
+                <span class="product-price">\${currentCurrency} \${displayPrice.toFixed(2)}</span>
+                <div class="admin-actions" onclick="event.stopPropagation();">
+                    <button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(\${index})">Edit</button>
+                    <button class="btn-admin" style="background-color: #e53935;" onclick="deleteProduct(\${index})">Delete</button>
+                    <button class="btn-admin btn-inline-orange-media" onclick="bukaModalMediaKhasStaf(\${index})">Media</button>
+                    <button class="btn-admin" style="background-color: #ffc107; color:#000;" onclick="openSetLinkModal(\${index})">Set Link</button>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;" onclick="event.stopPropagation();">
+                <div class="product-thumbnail-box">
+                    \${p.img ? `<img src="\${p.img}">` : `<span class="thumb-placeholder">No Img</span>`}
+                </div>
+                <div class="qty-controls">
+                    <button class="btn-qty" onclick="changeQty(\${index}, -1)">-</button>
+                    <span class="qty-val">\${p.qty}</span>
+                    <button class="btn-qty" onclick="changeQty(\${index}, 1)">+</button>
+                </div>
+            </div>
+        `;
+        list.appendChild(card);
     });
     updateTotalPrice();
-  }
-  function renderAdminGateways() {
+}
+
+function renderAdminGateways() {
     const gatewayContainer = document.getElementById('adminGatewayList');
     if(!gatewayContainer) return; gatewayContainer.innerHTML = '';
     gateways.forEach((g, index) => {
-      const div = document.createElement('div');
-      div.style.display = 'flex'; div.style.justify = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'rgba(0,0,0,0.2)'; div.style.padding = '8px'; div.style.borderRadius = '8px'; div.style.fontSize = '12px'; div.style.marginBottom = '4px';
-      div.innerHTML = '<span>' + g.name + '</span>' +
-        '<div style="display: flex; gap:4px;">' +
-        '<button class="btn-admin btn-edit" style="padding: 4px 10px; font-size:10px;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
-        '<button class="btn-admin btn-delete" style="padding: 4px 10px; font-size: 10px;" onclick="deleteGateway(' + index + ')">Delete</button>' +
-        '</div>';
-      gatewayContainer.appendChild(div);
+        const div = document.createElement('div');
+        div.style.display = 'flex'; div.style.justify = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'rgba(0,0,0,0.2)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
+        div.innerHTML = '<span>' + g.name + '</span>' +
+                        '<div style="display: flex; gap:4px;">' +
+                        '<button class="btn-admin btn-edit" style="padding: 4px 10px; font-size: 10px; background:#0088cc;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
+                        '<button class="btn-admin btn-delete" style="padding: 4px 10px; font-size: 10px; background:#e53935;" onclick="deleteGateway(' + index + ')">Delete</button>' +
+                        '</div>';
+        gatewayContainer.appendChild(div);
     });
-  }
+}
+function bukaPaparanBahagian2(idx) {
+    if(document.body.classList.contains('admin-mode')) return;
+    
+    const p = products[idx];
+    const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+    
+    const modalContent = document.querySelector('#productDetailsViewModal .modal-content');
+    if (!modalContent) return;
 
-  function openPaymentModal() {
+    const gambarWujud = p.bigImg ? p.bigImg : p.img;
+    let imageHTML = '';
+    
+    if (gambarWujud) {
+        imageHTML = `
+            <div class="details-image-container-3d">
+                <div class="details-big-img-wrapper">
+                    <img src="\${gambarWujud}" alt="Product Image">
+                </div>
+                <div class="text-pusing-3d">👇 Auto pusing 360°</div>
+            </div>
+        `;
+    } else {
+        imageHTML = `
+            <div class="details-image-container-3d" style="padding:40px 20px; text-align:center; background:rgba(0,0,0,0.2);">
+                <span style="color:#8fa0bc; font-size:13px;">📸 No preview banner uploaded.</span>
+            </div>
+        `;
+    }
+
+    let reviewsHTML = '';
+    const ulasankhas = senaraiUlasanSistemKhas[p.id] || [];
+    
+    if(ulasankhas.length > 0) {
+        ulasankhas.forEach(r => {
+            reviewsHTML += `<div class="review-item-layout">\${r}</div>`;
+        });
+    } else {
+        reviewsHTML = `
+            <div class="review-item-layout">
+                <strong>alex_sg ★★★ems★★</strong><br>
+                <span style="color:#c5d1e6;">"Highly targeted frameworks. Worth every single cent."</span>
+            </div>
+        `;
+    }
+
+    modalContent.innerHTML = `
+        <button class="btn-back-custom" onclick="closeModal('productDetailsViewModal')">← Back</button>
+        
+        \${imageHTML}
+        
+        <div class="details-title-price-box">
+            <h2 class="details-main-title">\${p.name}</h2>
+            <div class="details-main-price">\${currentCurrency} \${displayPrice.toFixed(2)}</div>
+        </div>
+        
+        <div class="details-section-header">📄 DESCRIPTION SPEC</div>
+        <p class="details-description-text">\${p.desc || "Premium high-fidelity training courseware asset."}</p>
+        
+        <div class="details-section-header">⭐ VERIFIED CUSTOMER RATINGS</div>
+        <div id="detailsProductReviewsList">\${reviewsHTML}</div>
+        
+        <button class="btn-main" style="background:#00cc99; color:#0b1426; margin-top:20px; font-weight:800;" 
+                onclick="closeModal('productDetailsViewModal'); changeQty(\${idx}, 1); openPaymentModal();">
+            Proceed to Payment
+        </button>
+    `;
+
+    const detModal = document.getElementById('productDetailsViewModal');
+    if(detModal) {
+        detModal.classList.add('active');
+        detModal.style.display = "flex";
+    }
+}
+function openPaymentModal() {
     const container = document.getElementById('paymentGatewayList');
     if(!container) return; container.innerHTML = '';
     const purchasedItems = products.filter(p => p.qty > 0);
-    if(purchasedItems.length === 0) return;
+    if (purchasedItems.length === 0) return;
+    
     gateways.forEach(g => {
-      const btn = document.createElement('button');
-      btn.className = 'btn-gate'; btn.style.width = '100%'; btn.style.padding = '12px'; btn.style.borderRadius = '8px'; btn.style.border = 'none'; btn.style.color = 'white'; btn.style.fontWeight = 'bold'; btn.style.marginBottom = '10px'; btn.style.backgroundColor = g.color || '#0088cc'; btn.innerText = g.name;
-      btn.onclick = function() {
-        closeModal('paymentModal');
-        const orderData = {
-          action: "PROCESS_AUTOMATIC_INVOICE", status: "AWAITING_PAYMENT_TRACE", gateway_name: g.name, currency: currentCurrency, gateway_details: g.link,
-          items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link }))
+        const btn = document.createElement('button');
+        btn.className = 'btn-main';
+        btn.style.width = '100%';
+        btn.style.padding = '12px';
+        btn.style.borderRadius = '8px';
+        btn.style.color = 'white';
+        btn.style.fontWeight = 'bold';
+        btn.style.marginBottom = '10px';
+        btn.style.backgroundColor = g.color || '#0088cc';
+        btn.innerText = g.name;
+        
+        btn.onclick = function() {
+            closeModal('paymentModal');
+            const orderData = {
+                action: "PROCESS_AUTOMATIC_INVOICE", status: "AWAITING_PAYMENT_TRACE", gateway_name: g.name, currency: currentCurrency,
+                items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link }))
+            };
+            if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
+                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+                    window.Telegram.WebApp.openLink(g.link);
+                } else { window.open(g.link, '_blank'); }
+            } else if (g.link.startsWith('data:image')) {
+                document.getElementById('autoQrTargetImage').src = g.link;
+                document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
+                document.getElementById('qrDisplayModal').classList.add('active');
+                document.getElementById('qrDisplayModal').style.display = "flex";
+            } else {
+                alert("PAYMENT INVOICE GENERATED\n\nPlease transfer payment to " + g.name + " account:\n\nDetails: " + g.link);
+            }
+            try { if(tg && typeof tg.sendData === 'function') { tg.sendData(JSON.stringify(orderData)); } } catch(e){ console.error(e); }
         };
-        if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
-          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') { window.Telegram.WebApp.openLink(g.link); } else { window.open(g.link, '_blank'); }
-        } else if (g.link.startsWith('data:image')) {
-          document.getElementById('autoQrTargetImage').src = g.link; document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name; document.getElementById('qrDisplayModal').classList.add('active'); document.getElementById('qrDisplayModal').style.display = "flex";
-        } else {
-          alert("PAYMENT INVOICE GENERATED\n\nPlease transfer your payment to the following " + g.name + " account:\n\nDetails: " + g.link);
-        }
-        try { if(tg && typeof tg.sendData === 'function') { tg.sendData(JSON.stringify(orderData)); } } catch(e){ console.error(e); }
-      };
-      container.appendChild(btn);
+        container.appendChild(btn);
     });
-    const payModal = document.getElementById('paymentModal'); payModal.classList.add('active'); payModal.style.display = "flex";
-  }
+    
+    const payModal = document.getElementById('paymentModal');
+    payModal.classList.add('active'); payModal.style.display = "flex";
+}
 
-  function handleAssetUpload(input) {
+function handleAssetUpload(input) {
     const files = input.files;
-    if (files && files) { const reader = new FileReader(); reader.onload = function(e) { base64AssetFile = e.target.result; }; reader.readAsDataURL(files); }
-  }
-  function handleQrUpload(input) {
-    const files = input.files;
-    if (files && files) { const reader = new FileReader(); reader.onload = function(e) { base64QrImage = e.target.result; }; reader.readAsDataURL(files); }
-  }
+    if (files && files.length > 0) { const reader = new FileReader(); reader.onload = function(e) { base64AssetFile = e.target.result; }; reader.readAsDataURL(files); }
+}
 
-  function saveItemChanges() {
+function handleQrUpload(input) {
+    const files = input.files;
+    if (files && files.length > 0) { const reader = new FileReader(); reader.onload = function(e) { base64QrImage = e.target.result; }; reader.readAsDataURL(files); }
+}
+function saveItemChanges() {
     const index = parseInt(document.getElementById('editIndex').value);
     const name = document.getElementById('itemName').value;
     let link = document.getElementById('itemLink').value;
@@ -516,217 +736,154 @@
 
     if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") { link = base64AssetFile; }
     else if(type === "gateway" && base64QrImage !== "") { link = base64QrImage; }
-
+    
     if(type === "product") {
-      if(!name) return alert("Please fill in the required name field correctly.");
-      const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-      if(index === -1) {
-        const newId = products.length > 0 ? Math.max(...products.map(p => p.id))+1 : 1;
-        products.push({ id: newId, name: name, price: price, link: link, qty: 0, img: "", bigImg: "", desc: "" });
-      } else {
-        if(titleText.includes("YELLOW BOX")) { products[index].link = link; } 
-        else { products[index].name = name; products[index].price = price; }
-      }
+        if(!name) return alert("Please fill in the required name field correctly.");
+        const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+        if(index === -1) {
+            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            products.push({ id: newId, name: name, price: price, link: link, qty: 0, img: "", bigImg: "", desc: "" });
+        } else {
+            if(titleText.includes("YELLOW BOX")) { products[index].link = link; }
+            else { products[index].name = name; products[index].price = price; }
+        }
     } else if(type === "gateway") {
-      if(!link) return alert("Please provide payment details or upload QR picture file.");
-      if(index === -1) { gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" }); } 
-      else { gateways[index].name = name; gateways[index].link = link; }
+        if(!link) return alert("Please provide payment details or upload QR picture file.");
+        if(index === -1) { gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" }); }
+        else { gateways[index].name = name; gateways[index].link = link; }
     }
     localStorage.setItem('premium_store_products', JSON.stringify(products));
     localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
     closeModal('editorModal'); renderProducts(); alert("Saved changes successfully!");
-  }
+}
 
-  function deleteProduct(index) { if(confirm("Delete e-book: " + products[index].name + "?")) { products.splice(index, 1); savePermanently(); } }
-  function deleteGateway(index) { if(confirm("Delete payment: " + gateways[index].name + "?")) { gateways.splice(index, 1); localStorage.setItem('premium_store_gateways', JSON.stringify(gateways)); renderProducts(); } }
-  function changeQty(idx, val) { products[idx].qty = Math.max(0, products[idx].qty + val); renderProducts(); }
-  function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
+function deleteProduct(index) { if(confirm("Delete e-book: " + products[index].name + "?")) { products.splice(index, 1); localStorage.setItem('premium_store_products', JSON.stringify(products)); renderProducts(); } }
+function deleteGateway(index) { if(confirm("Delete payment: " + gateways[index].name + "?")) { gateways.splice(index, 1); localStorage.setItem('premium_store_gateways', JSON.stringify(gateways)); renderProducts(); } }
 
-  function savePermanently() {
-    localStorage.setItem('premium_store_products', JSON.stringify(products));
-    localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-    document.body.classList.remove('admin-mode');
-    alert("Saved Permanently to Local Storage Database."); renderProducts();
-  }
-  function closeModal(id) {
-    const m = document.getElementById(id);
-    if(m) { m.classList.remove('active'); m.style.display = "none"; }
-  }
+function changeQty(idx, val) { products[idx].qty = Math.max(0, products[idx].qty + val); renderProducts(); }
+function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
 
-  function bukaModalMediaKhasStaf(idx) {
+function updateTotalPrice() {
+    let total = 0; let totalQty = 0;
+    products.forEach(p => { totalQty += p.qty; const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += price * p.qty; });
+    
+    const footerBar = document.querySelector('.footer-bar');
+    if (footerBar) {
+        footerBar.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 420px; margin: 0 auto; font-size: 13px; color: #8fa0bc; font-weight: 500;">
+                <span>Items Selected: <strong style="color:#fff; font-size: 14px;">\${totalQty} items</strong></span>
+                <span>Net Total: <strong style="color:#00cc99; font-size: 15px;">\${currentCurrency} \${total.toFixed(2)}</strong></span>
+            </div>
+            <button id="payButton" class="btn-main" \${totalQty === 0 ? 'disabled' : ''} onclick="cetusBorangPengesahanTerma()">PROCEED TO PAYMENT</button>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: #4caf50; font-weight: 600; margin-top: 2px;">
+                <span>🔒 Powered by Best Network Asia</span>
+            </div>
+        `;
+    }
+}
+
+function cetusBorangPengesahanTerma() {
+    document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
+    document.getElementById('popupFinalPaySubmitBtn').disabled = true;
+    document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
+    const termsModal = document.getElementById('strictTermsVerificationModal');
+    if(termsModal) { termsModal.style.display = "flex"; termsModal.classList.add('active'); }
+}
+
+function togglePopupFinalPayBtn() {
+    const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked;
+    const btn = document.getElementById('popupFinalPaySubmitBtn');
+    if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; }
+}
+
+function teruskanKeGatewayPembayaranSah() { closeModal('strictTermsVerificationModal'); openPaymentModal(); }
+
+function checkAdmin() {
+    if(document.body.classList.contains('admin-mode')) {
+        document.body.classList.remove('admin-mode');
+        renderProducts(); return;
+    }
+    let code = prompt("Enter Admin Security Code:");
+    if(code === "333555") {
+        document.body.classList.add('admin-mode');
+        renderProducts();
+    } else if (code !== null) { alert("Access Denied."); }
+}
+
+function closeModal(id) { const m = document.getElementById(id); if(m) { m.classList.remove('active'); m.style.display = "none"; } }
+
+function openAddModal() {
+    document.getElementById('editorTitle').innerText = "Add New E-Book"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
+    document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+}
+
+function openAddGatewayModal() {
+    document.getElementById('editorTitle').innerText = "Add New Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemLink').value = "";
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+}
+
+function openEditProductModal(index) {
+    document.getElementById('editorTitle').innerText = "Edit E-Book Details"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = products[index].name; document.getElementById('itemPrice').value = products[index].price; document.getElementById('itemLink').value = products[index].link || "";
+    document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+}
+
+function openEditGatewayModal(index) {
+    document.getElementById('editorTitle').innerText = "Edit Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = gateways[index].name; document.getElementById('itemLink').value = gateways[index].link;
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+}
+
+function openSetLinkModal(index) {
+    document.getElementById('editorTitle').innerText = "Set Digital Asset (YELLOW BOX)"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('labelName').innerText = "Product Name (Read-Only)"; document.getElementById('itemName').value = products[index].name; document.getElementById('labelLink').innerText = "Paste Asset Destination Link (URL)"; document.getElementById('itemLink').value = products[index].link || "";
+    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "block"; document.getElementById('qrUploadGroup').style.display = "none";
+    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
+}
+
+function bukaModalMediaKhasStaf(idx) {
     document.getElementById('mediaTargetProductIndex').value = idx;
     document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
     document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
     document.getElementById('mediaFileFrontInput').value = "";
     document.getElementById('mediaFileDescInput').value = "";
     document.getElementById('staffMediaUploadModal').style.display = "flex";
-  }
-
-  function prosesGambarKhasStaf(input, jenis) {
-    if (input.files && input.files) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result;
-        if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
-      };
-      reader.readAsDataURL(input.files);
-    }
-  }
-
-  function simpanMediaKhasMuttamad() {
-    const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
-    products[idx].img = document.getElementById('dataHolderBase64Front').value;
-    products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
-    localStorage.setItem('premium_store_products', JSON.stringify(products));
-    document.getElementById('staffMediaUploadModal').style.display = "none";
-    renderProducts(); alert("Media uploaded and locked successfully!");
-    <script>
-    // ✅ TAMPAL SEMUA KOD DI ATAS — DI SINI
-function bukaPaparanBahagian2(index) {
-  const produk = products[index];
-  document.getElementById('detailNama').textContent = produk.name;
-  document.getElementById('detailHarga').textContent = currentCurrency + ' ' + formatHarga(produk.price);
-  document.getElementById('detailRingkas').textContent = produk.shortDesc || 'Buku berkualiti tinggi';
-  document.getElementById('detailDeskripsi').textContent = produk.description || 'Tiada penerangan tersedia';
-  document.getElementById('detailRating').textContent = '⭐⭐⭐⭐⭐ 5.0';
-  document.getElementById('detailGambar').innerHTML = produk.image ? `<img src="${produk.image}" alt="${produk.name}">` : `<span style="font-size:48px">📖</span>`;
-  document.getElementById('detailPage').classList.add('active');
-  window.scrollTo(0, 0);
 }
 
-function tutupPaparan() {
-  document.getElementById('detailPage').classList.remove('active');
+function prosesGambarKhasStaf(input, jenis) {
+    if (input.files && input.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result;
+if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
+};
+reader.readAsDataURL(input.files);
 }
-
-function formatHarga(harga) {
-  return harga.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
-
-renderProducts();  // ← baris ini DI BAWAH, jangan alihkan!
-</script>
-
-  // ALOKASI JUMLAH REVIEWS BERBEZA SETIAP LIST MENU (1, 5, 13, 18, 3, 6, 15, 8, 11, 17, 22, 55, 35)
-  const senaraiUlasanSistemKhas = {
-    1: ["<strong>alex_sg ⭐⭐⭐⭐⭐</strong><br>'Highly targeted frameworks. Worth every single cent.'"],
-    2: [
-      "<strong>faiz_99 ⭐⭐⭐⭐⭐</strong><br>'Sumpah berbaloi terutamanya bab automation setup.'",
-      "<strong>marian_my ⭐⭐⭐⭐⭐</strong><br>'Very direct and easy to follow. Highly recommended!'",
-      "<strong>jessica_tan ⭐⭐⭐⭐⭐</strong><br>'Highly recommend for those looking for side income.'",
-      "<strong>karl_low ⭐⭐⭐⭐⭐</strong><br>'Clean strategies, zero fluff contents.'",
-      "<strong>shawn_crypto ⭐⭐⭐⭐⭐</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"
-    ],
-    3: ["<strong>shikin_r ⭐⭐⭐⭐⭐</strong><br>'Banyak rahsia organik yang saya baru tahu.'","<strong>dennish_l ⭐⭐⭐⭐⭐</strong><br>'Instant access received via email.'"],
-    4: ["<strong>user_vault1 ⭐⭐⭐⭐⭐</strong><br>'Excellent execution and premium design asset.'","<strong>amanda_lee ⭐⭐⭐⭐⭐</strong><br>'Verified purchase, very high quality guide.'"],
-    5: ["<strong>fauzi_99 ⭐⭐⭐⭐⭐</strong><br>'Sangat berbaloi.'","<strong>tan_sg ⭐⭐⭐⭐⭐</strong><br>'Fast sync.'"],
-    6: ["<strong>haziq_zen ⭐⭐⭐⭐⭐</strong><br>'Banyak ilmu baru.'"],
-    7: ["<strong>ain_ramli ⭐⭐⭐⭐⭐</strong><br>'Highly targeted.'"],
-    8: ["<strong>nisha_k ⭐⭐⭐⭐⭐</strong><br>'Recommended.'"],
-    9: ["<strong>zul_95 ⭐⭐⭐⭐⭐</strong><br>'Terbaik.'"],
-    10: ["<strong>khairul_a ⭐⭐⭐⭐⭐</strong><br>'Psikologi jualan mantap.'"],
-    11: ["<strong>vick_sg ⭐⭐⭐⭐⭐</strong><br>'High converting scripts.'"],
-    12: ["<strong>hafiz_matrix ⭐⭐⭐⭐⭐</strong><br>'Omnichannel branding framework.'"],
-    13: ["<strong>danial_hook ⭐⭐⭐⭐⭐</strong><br>'Day-to-day shortform action hooks.'"]
-  };
-
-  const petaBilanganUlasanPapar = { 1: 1, 2: 5, 3: 13, 4: 18, 5: 3, 6: 6, 7: 15, 8: 8, 9: 11, 10: 17, 11: 22, 12: 55, 13: 35 };
-  function bukaPaparanBahagian2(idx) {
-    if(document.body.classList.contains('admin-mode')) return;
-    const p = products[idx];
-    const displayPrice = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-    document.getElementById('detailsProductName').innerText = p.name;
-    document.getElementById('detailsProductPrice').innerText = currentCurrency + " " + displayPrice.toFixed(2);
-    document.getElementById('detailsProductDesc').innerText = p.desc || "Premium high-fidelity training courseware asset.";
-    
-    const imgArea = document.getElementById('detailsBigImageArea');
-    const GambarWujud = p.bigImg ? p.bigImg : p.img;
-    if (imgArea) {
-      imgArea.innerHTML = GambarWujud ? '<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="' + GambarWujud + '"></div></div>' : '<div style="padding:30px; text-align:center; background:rgba(0,0,0,0.2); border-radius:10px; font-size:11px; color:#8fa0bc; margin-bottom:15px;">📸 No preview banner uploaded.</div>';
-    }
-    
-    const reviewsList = document.getElementById('detailsProductReviewsList');
-    if (reviewsList) {
-      reviewsList.innerHTML = "";
-      const ulasanKhas = senaraiUlasanSistemKhas[p.id] || [];
-      ulasanKhas.forEach(r => { reviewsList.innerHTML += '<div class="review-item-layout">' + r + '</div>'; });
-      
-      const totalReviewTarget = petaBilanganUlasanPapar[p.id] || 5;
-      const bakiPapar = totalReviewTarget - ulasanKhas.length;
-      if(bakiPapar > 0) {
-        reviewsList.innerHTML += '<div style="font-size:10px; text-align:center; color:#00cc99; padding-top:8px; font-weight:bold;">+ ' + bakiPapar + ' more verified premium reviews loaded (' + totalReviewTarget + ' total)</div>';
-      } else if(totalReviewTarget == 1 && ulasanKhas.length == 0) {
-        reviewsList.innerHTML = '<div class="review-item-layout"><strong>alex_sg ⭐⭐⭐⭐⭐</strong><br>\'Highly targeted frameworks. Worth every single cent.\'</div>';
-      }
-    }
-    const detModal = document.getElementById('productDetailsViewModal'); if(detModal) { detModal.classList.add('active'); detModal.style.display = "flex"; }
-  }
-
-  function updateTotalPrice() {
-    let total = 0; let totalQty = 0;
-    products.forEach(p => { totalQty += p.qty; const price = currentCurrency == "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += price * p.qty; });
-    const footerBar = document.querySelector('.footer-bar');
-    if (footerBar) {
-      footerBar.innerHTML = 
-        '<div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin:0 auto; font-size:13px; color:#8fa0bc; font-weight:500;">' +
-          '<span>Items Selected: <strong style="color:#fff; font-size:14px;">' + totalQty + ' items</strong></span>' +
-          '<span>Net Total: <strong style="color:#00cc99; font-size:15px;">' + currentCurrency + ' ' + total.toFixed(2) + '</strong></span>' +
-        '</div>' +
-        '<button id="payButton" class="btn-main" onclick="cetusBorangPengesahanTerma()" ' + (totalQty === 0 ? 'disabled' : '') + '>PROCEED TO PAYMENT (' + totalQty + ')</button>' +
-        '<div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:11px; color:#4caf50; font-weight:600; margin-top:2px;"><span>🔒</span><span>Powered by Best Network Asia</span></div>';
-    }
-  }
-
-  function cetusBorangPengesahanTerma() {
-    document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
-    document.getElementById('popupFinalPaySubmitBtn').disabled = true; document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
-    const termsModal = document.getElementById('strictTermsVerificationModal'); if(termsModal) { termsModal.style.display = "flex"; termsModal.classList.add('active'); }
-  }
-  function togglePopupFinalPayBtn() {
-    const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked;
-    const btn = document.getElementById('popupFinalPaySubmitBtn'); if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; }
-  }
-  function teruskanKeGatewayPembayaranSah() { closeModal('strictTermsVerificationModal'); openPaymentModal(); }
-
-  function checkAdmin() {
-    if(document.body.classList.contains('admin-mode')) {
-      document.body.classList.remove('admin-mode');
-      const b = document.getElementById('staffModeTriggerBtn'); if(b) { b.innerText = "⚙️"; b.style.opacity = "0.12"; b.style.color = "#ffffff"; }
-      renderProducts(); return;
-    }
-    let code = prompt("Enter Admin Security Code:");
-    if(code === "333555") {
-      document.body.classList.add('admin-mode');
-      const b = document.getElementById('staffModeTriggerBtn'); if(b) { b.innerText = "🔒"; b.style.opacity = "1"; b.style.color = "#ffc107"; }
-      renderProducts();
-    } else if (code !== null) { alert("Access Denied."); }
-  }
-
-  function openAddModal() {
-    document.getElementById('editorTitle').innerText = "Add New E-Book"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
-    document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "none"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
-    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
-  }
-  function openAddGatewayModal() {
-    document.getElementById('editorTitle').innerText = "Add New Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = "-1"; document.getElementById('itemName').value = ""; document.getElementById('itemPrice').value = ""; document.getElementById('itemLink').value = "";
-    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
-    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
-  }
-  function openEditProductModal(index) {
-    document.getElementById('editorTitle').innerText = "Edit E-Book Details"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = products[index].name; document.getElementById('itemPrice').value = products[index].price; document.getElementById('itemLink').value = products[index].link || "";
-    document.getElementById('priceGroup').style.display = "block"; document.getElementById('linkGroup').style.display = "none"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "none";
-    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
-  }
-  function openEditGatewayModal(index) {
-    document.getElementById('editorTitle').innerText = "Edit Payment Method"; document.getElementById('editType').value = "gateway"; document.getElementById('editIndex').value = index; document.getElementById('itemName').value = gateways[index].name; document.getElementById('itemLink').value = gateways[index].link.startsWith("data:") ? "" : gateways[index].link;
-    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "none"; document.getElementById('qrUploadGroup').style.display = "block";
-    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
-  }
-  function openSetLinkModal(index) {
-    document.getElementById('editorTitle').innerText = "Set Digital Asset (YELLOW BOX)"; document.getElementById('editType').value = "product"; document.getElementById('editIndex').value = index; document.getElementById('labelName').innerText = "Product Name (Read-Only)"; document.getElementById('labelLink').innerText = "Paste Asset Destination Link (URL / Group Link)"; document.getElementById('itemName').value = products[index].name; document.getElementById('itemLink').value = products[index].link && !products[index].link.startsWith("data:") ? products[index].link : ""; document.getElementById('itemLink').placeholder = "Paste your download URL or group invite link here";
-    document.getElementById('priceGroup').style.display = "none"; document.getElementById('linkGroup').style.display = "block"; document.getElementById('productAssetUploadGroup').style.display = "block"; document.getElementById('qrUploadGroup').style.display = "none"; base64AssetFile = products[index].link && products[index].link.startsWith("data:") ? products[index].link : ""; document.getElementById('itemAssetFile').value = "";
-    const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
-  }
-
-  window.onload = renderProducts;
-</script>
-</body>
-</html>
+function simpanMediaKhasMuttamad() {
+const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
+products[idx].img = document.getElementById('dataHolderBase64Front').value;
+products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
+localStorage.setItem('premium_store_products', JSON.stringify(products));
+document.getElementById('staffMediaUploadModal').style.display = "none";
+renderProducts(); alert("Media uploaded and locked successfully!");
+}
+const senaraiUlasanSistemKhas = {
+1: ["alex_sg ★★★★★
+'Highly targeted frameworks. Worth every single cent.'"],
+2: ["faiz_99 ★★★★★
+'Sumpah berbaloi terutamanya bab automation setup.'"],
+3: ["marian_my ★★★★★
+'Very direct and easy to follow. Highly recommended!'"],
+4: ["jessica_tan ★★★★★
+'Highly recommend for those looking for side income.'"],
+5: ["karl_low ★★★★★
+'Clean strategies, zero fluff contents.'"],
+6: ["shawn_crypto ★★★★★
+'Superb traffic hacks. Absolute gold blueprint.'"]
+};
+window.onload = function() {
+applySavedDesign();
+renderProducts();
+};
