@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Premium Digital Store</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org"></script>
 <style>
 :root {
     --bg-color: #0b1426;
@@ -12,7 +12,7 @@
     --text-color: #ffffff;
     --accent-color: #0088cc;
     --danger-color: #e53935;
-    --success-color: #4caf50;
+    --success-color: #00cc99;
     --warning-color: #ffc107;
 }
 
@@ -22,7 +22,7 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 15px;
-    padding-bottom: 180px;
+    padding-bottom: 240px;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -37,28 +37,27 @@ body {
     position: relative;
 }
 
-/* Bulatan Glowing Gear Admin Pojok Kanan Atas */
+/* Butang Gear Rahsia Mengikut Gambar Rujukan 2 (Samar Halus Tanpa Glow Terlampau Terang) */
 .admin-trigger-gear {
     position: absolute;
     top: -10px;
     right: 10px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
     background: transparent;
-    border: 2px solid #22d3ee;
-    box-shadow: 0 0 10px #22d3ee;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: #ffffff;
     font-size: 16px;
-    transition: all 0.3s ease;
+    opacity: 0.15;
+    transition: opacity 0.3s ease;
     z-index: 10;
 }
 .admin-trigger-gear:hover {
-    transform: rotate(45deg);
+    opacity: 0.6;
 }
     .brand-logo-box-new {
     position: relative;
@@ -158,7 +157,7 @@ body {
     .product-info { flex: 1; margin-right: 10px; display: flex; flex-direction: column; }
 .product-name { font-weight: 600; font-size: 15px; color: #ffffff; }
 .product-stars { color: #ffc107; font-size: 12px; margin: 3px 0; }
-.product-price { color: #ffffff; font-size: 14px; font-weight: bold; margin-top: 2px; }
+.product-price { color: #0088cc; font-size: 16px; font-weight: bold; margin-top: 2px; }
 
 .product-thumbnail-box { 
     width: 55px; 
@@ -184,8 +183,8 @@ body {
     margin-top: 5px;
 }
 .btn-qty { 
-    background: var(--accent-color); 
-    border: none; 
+    background: var(--card-bg); 
+    border: 1px solid rgba(255,255,255,0.1); 
     color: white; 
     width: 22px; 
     height: 22px; 
@@ -207,7 +206,31 @@ body.admin-mode .qty-controls { display: none; }
 body.admin-mode .admin-top-controls { display: flex; }
 .btn-add-list { padding: 10px; border-radius: 8px; border: none; color: #0b1426; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; }
 
-.footer-bar { 
+/* Gaya Khusus Kotak Chatbot Automatik */
+.chatbot-container {
+    background: var(--card-bg);
+    border: 1px solid rgba(0, 136, 204, 0.2);
+    border-radius: 14px;
+    padding: 12px;
+    margin-top: 20px;
+}
+.chatbot-logs {
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 12px;
+    color: #c5d1e6;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.chatbot-msg { padding: 6px 10px; border-radius: 8px; max-width: 85%; }
+.chatbot-msg.user { background: rgba(0, 136, 204, 0.2); align-self: flex-end; color: #ffffff; }
+.chatbot-msg.bot { background: rgba(0, 204, 153, 0.15); align-self: flex-start; color: #00cc99; border-left: 3px solid #00cc99; }
+.chatbot-input-row { display: flex; gap: 8px; }
+.chatbot-input-row input { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-size: 12px; outline: none; }
+.chatbot-btn { background: #0088cc; border: none; color: white; padding: 0 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .footer-bar { 
     position: fixed; 
     bottom: 0; 
     left: 0; 
@@ -221,7 +244,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     flex-direction: column; 
     gap: 10px; 
 }
-    .btn-main { 
+.btn-main { 
     background: #00cc99; 
     color: #0b1426; 
     border: none; 
@@ -257,35 +280,12 @@ body.admin-mode .admin-top-controls { display: flex; }
 .details-section-header { font-size: 13px; font-weight: 800; color: #0088cc; letter-spacing: 0.5px; margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; text-transform: uppercase; }
 .details-description-text { font-size: 14px; color: #c5d1e6; line-height: 1.5; margin: 0; }
 .review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 13px; color: #ffffff; line-height: 1.4; }
-/* Butang Gear Rahsia Mengikut Gambar Rujukan 2 (Samar Halus) */
-.admin-trigger-gear {
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #ffffff;
-    font-size: 16px;
-    opacity: 0.15;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-}
-.admin-trigger-gear:hover {
-    opacity: 0.6;
-}
 </style>
 </head>
 <body>
-<!-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
+
 <div class="header">
     <div class="admin-trigger-gear" onclick="checkAdmin()">⚙️</div>
-
     <div class="brand-logo-box-new" id="liveLogoFrame">
         <span class="crown-icon-new" id="liveCrownEmoji">👑</span>
         <div class="book-line-new" id="liveBookLine"></div>
@@ -302,7 +302,7 @@ body.admin-mode .admin-top-controls { display: flex; }
     </select>
 </div>
 
-<!-- DUA BUTANG KUNING UTAMA STAFF DAN CUSTOM DESIGN -->
+<!-- PANEL UTAMA STAFF KONTROL (MOD STAFF) -->
 <div class="admin-top-controls" id="staffTopPanel">
     <span style="font-size:11px; color:#ffc107; font-weight:bold; text-transform:uppercase;">🛠️ Admin Control Dashboard</span>
     <div style="display:flex; gap:8px; margin-top:6px;">
@@ -314,40 +314,32 @@ body.admin-mode .admin-top-controls { display: flex; }
 
 <div class="section-title">E-Book Catalogue</div>
 <div id="gatewayAdminBox"></div>
+
+<!-- KONTENA UTAMA SENARAI KATALOG MENGIKUT GAMBAR 3 -->
 <div class="product-list" id="productList"></div>
+<!-- STRUKTUR KOTAK CHATBOT AUTOMATIK UNTUK PENGGUNA -->
+<div class="chatbot-container">
+    <span style="font-size:12px; color:#0088cc; font-weight:bold; display:block; margin-bottom:6px;">💬 AI Assistant (Katalog Trace)</span>
+    <div class="chatbot-logs" id="chatbotLogs">
+        <div class="chatbot-msg bot">Hai! Sila taip nama produk atau topik (cth: "tiktok", "viral", "vvip") untuk semak maklumat harga pantas.</div>
+    </div>
+    <div class="chatbot-input-row">
+        <input type="text" id="chatbotInput" placeholder="Taip mesej pertanyaan anda di sini..." onkeypress="if(event.key==='Enter') hantarMesejChatbot()">
+        <button class="chatbot-btn" onclick="hantarMesejChatbot()">Send</button>
+    </div>
+</div>
+
 <div class="footer-bar"></div>
-<!-- KOTAK MODAL CUSTOM DESIGN UI ENGINE BUILDER -->
+<!-- KOTAK MODAL CUSTOM DESIGN UI ENGINE BUILDER DENGAN FUNGSI RESET -->
 <div class="modal" id="customDesignModal">
     <div class="modal-content" style="max-width: 380px;">
         <div class="modal-title" style="color: #00cc99;">🎨 Custom Design UI Builder</div>
-        <div class="form-group">
-            <label>Main Title Text</label><input type="text" id="cfgMainTitle" oninput="previewLiveDesign()">
-        </div>
-        <div class="form-group">
-            <label>Subtitle Text</label><input type="text" id="cfgSubTitle" oninput="previewLiveDesign()">
-        </div>
-        <div class="form-group">
-            <label>Crown Logo Emoji</label><input type="text" id="cfgCrownEmoji" oninput="previewLiveDesign()">
-        </div>
-        <div class="form-group">
-            <label>Logo Frame Border Color (Hex)</label><input type="text" id="cfgBorderColor" oninput="previewLiveDesign()">
-        </div>
-        <div class="form-group">
-            <label>Text Font Size (Title)</label>
-            <select id="cfgTitleSize" onchange="previewLiveDesign()">
-                <option value="20px">Small (20px)</option>
-                <option value="24px">Normal (24px)</option>
-                <option value="28px">Large (28px)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Title Text Weight</label>
-            <select id="cfgTitleWeight" onchange="previewLiveDesign()">
-                <option value="400">Normal</option>
-                <option value="700">Bold</option>
-                <option value="900">Black/Heavy</option>
-            </select>
-        </div>
+        <div class="form-group"><label>Main Title Text</label><input type="text" id="cfgMainTitle" oninput="previewLiveDesign()"></div>
+        <div class="form-group"><label>Subtitle Text</label><input type="text" id="cfgSubTitle" oninput="previewLiveDesign()"></div>
+        <div class="form-group"><label>Crown Logo Emoji</label><input type="text" id="cfgCrownEmoji" oninput="previewLiveDesign()"></div>
+        <div class="form-group"><label>Logo Frame Border Color (Hex)</label><input type="text" id="cfgBorderColor" oninput="previewLiveDesign()"></div>
+        <div class="form-group"><label>Text Font Size</label><select id="cfgTitleSize" onchange="previewLiveDesign()"><option value="20px">Small (20px)</option><option value="24px">Normal (24px)</option><option value="28px">Large (28px)</option></select></div>
+        <div class="form-group"><label>Title Text Weight</label><select id="cfgTitleWeight" onchange="previewLiveDesign()"><option value="400">Normal</option><option value="700">Bold</option><option value="900">Black/Heavy</option></select></div>
         <div style="display:flex; gap:8px; margin-top:15px;">
             <button class="btn-main" style="background-color: #00cc99 !important; color:#0b1426; flex:2;" onclick="saveCustomDesignPermanently()">💾 Save Design</button>
             <button class="btn-main" style="background-color: #e53935 !important; color:#fff; flex:1; font-size:11px; padding:0 4px;" onclick="resetUiDesignToDefault()">🔄 Reset</button>
@@ -366,70 +358,38 @@ body.admin-mode .admin-top-controls { display: flex; }
     </div>
 </div>
 
-<!-- MODAL PILIHAN KAEDAH BANK KEPADA PELANGGAN -->
 <div class="modal" id="paymentModal">
-    <div class="modal-content">
-        <div class="modal-title">SELECT PAYMENT METHOD</div>
-        <div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>
-        <div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div>
-    </div>
+    <div class="modal-content"><div class="modal-title">SELECT PAYMENT METHOD</div><div id="paymentGatewayList" style="display: flex; flex-direction: column; gap: 10px; width: 100%;"></div><div class="modal-close" onclick="closeModal('paymentModal')">[ Cancel ]</div></div>
 </div>
-<!-- TETINGKAP DIALOG UTAMA EDIT DATA STAFF (PROSES KEKAL) -->
 <div class="modal" id="editorModal">
     <div class="modal-content">
-        <div class="modal-title" id="editorTitle">Edit Item</div>
-        <input type="hidden" id="editType"><input type="hidden" id="editIndex">
-        <div class="form-group">
-            <label id="labelName">Name / Title</label><input type="text" id="itemName">
-        </div>
-        <div class="form-group" id="priceGroup">
-            <label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice">
-        </div>
-        <div class="form-group" id="linkGroup">
-            <label id="labelLink">Destination Link / Link Fail</label><input type="text" id="itemLink">
-        </div>
-        <div class="form-group" id="productAssetUploadGroup" style="display: none;">
-            <label>Upload Digital Asset (PDF, MP3, MP4, or Image)</label>
-            <input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)">
-        </div>
-        <div class="form-group" id="qrUploadGroup" style="display: none;">
-            <label>Upload QR Scan Picture</label>
-            <input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)">
-        </div>
+        <div class="modal-title" id="editorTitle">Edit Item</div><input type="hidden" id="editType"><input type="hidden" id="editIndex">
+        <div class="form-group"><label id="labelName">Name / Title</label><input type="text" id="itemName"></div>
+        <div class="form-group" id="priceGroup"><label>Base Price (SGD)</label><input type="number" step="0.01" id="itemPrice"></div>
+        <div class="form-group" id="linkGroup"><label id="labelLink">Destination Link / Link Fail</label><input type="text" id="itemLink"></div>
+        <div class="form-group" id="productAssetUploadGroup" style="display: none;"><label>Upload Digital Asset</label><input type="file" id="itemAssetFile" accept=".pdf,.mp3,.mp4,image/*" onchange="handleAssetUpload(this)"></div>
+        <div class="form-group" id="qrUploadGroup" style="display: none;"><label>Upload QR Scan Picture</label><input type="file" id="itemQrFile" accept="image/*" onchange="handleQrUpload(this)"></div>
         <button class="btn-main" style="background-color: #4caf50 !important; color:#fff;" onclick="saveItemChanges()">Save Changes</button>
         <div class="modal-close" onclick="closeModal('editorModal')">[ Close ]</div>
     </div>
 </div>
-<!-- MODAL OREN STAFF: PEMUAT NAIK FAIL BERKEMBAR KOTAK HIJAU -->
+
 <div class="modal" id="staffMediaUploadModal">
     <div class="modal-content" style="border: 1px solid #ff7a00;">
-        <div class="modal-title" style="color: #ff7a00; font-size: 14px;">Manage Product Media Vault</div>
-        <input type="hidden" id="mediaTargetProductIndex">
-        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.3);">
-            <label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 1: Dashboard Front Pic</label>
-            <input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')" style="font-size: 12px; color: #8fa0bc;">
-        </div>
-        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76, 175, 80, 0.3);">
-            <label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 2: Description Inner Banner</label>
-            <input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')" style="font-size: 12px; color: #8fa0bc;">
-        </div>
-        <input type="hidden" id="dataHolderBase64Front"><input type="hidden" id="dataHolderBase64Desc">
-        <button class="btn-main" style="background-color: #ff7a00 !important; color: #ffffff !important;" onclick="simpanMediaKhasMuttamad()">SAVE & LOCK MEDIA</button>
+        <div class="modal-title" style="color: #ff7a00; font-size: 14px;">Manage Product Media Vault</div><input type="hidden" id="mediaTargetProductIndex">
+        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.3);"><label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 1: Front Pic</label><input type="file" id="mediaFileFrontInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'front')"></div>
+        <div class="form-group" style="background: rgba(7,13,24,0.5); padding: 12px; border-radius: 10px; margin-bottom: 18px; border: 1px solid rgba(76, 175, 80, 0.3);"><label style="color: #4caf50; font-weight: 700; font-size: 11px;">Choose File 2: Inner Banner</label><input type="file" id="mediaFileDescInput" accept="image/*" onchange="prosesGambarKhasStaf(this, 'desc')"></div>
+        <input type="hidden" id="dataHolderBase64Front"><input type="hidden" id="dataHolderBase64Desc"><button class="btn-main" style="background-color: #ff7a00 !important; color: #ffffff !important;" onclick="simpanMediaKhasMuttamad()">SAVE & LOCK MEDIA</button>
         <div class="modal-close" onclick="closeModal('staffMediaUploadModal')">[ Close ]</div>
     </div>
 </div>
 
 <div class="modal" id="productDetailsViewModal"><div class="modal-content"></div></div>
 
-<!-- POP-UP TINGKAP AMARAN VERIFIKASI ANTI-REFUND -->
 <div class="modal" id="strictTermsVerificationModal">
     <div class="modal-content" style="background: #152238; border-radius: 16px; padding: 22px; width: 100%; max-width: 340px; text-align: center; border: 1px solid rgba(229, 57, 53, 0.3);">
-        <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
-        <div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
-        <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
-            <input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;">
-            <label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.</label>
-        </div>
+        <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div><div style="font-weight: bold; font-size: 15px; color: #e53935; margin-bottom: 12px; text-transform: uppercase;">Purchase Verification</div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;"><input type="checkbox" id="popupStrictAntiRefundCheckbox" onchange="togglePopupFinalPayBtn()" style="margin-top: 3px; width: 18px; height: 18px; accent-color: #00cc99; cursor: pointer;"><label for="popupStrictAntiRefundCheckbox" style="font-size: 11px; color: #c5d1e6; line-height: 1.4; cursor: pointer;">I explicitly agree that all approved digital content purchases are final. No refunds, returns, or cancellations will be entertained.</label></div>
         <button id="popupFinalPaySubmitBtn" onclick="teruskanKeGatewayPembayaranSah()" disabled style="width: 100%; background: #00cc99; color: #0b1426; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; opacity: 0.4;">CONFIRM & PAY NOW</button>
         <div style="margin-top: 14px; font-size: 11px; color: #8fa0bc; cursor: pointer;" onclick="closeModal('strictTermsVerificationModal')">[ Cancel ]</div>
     </div>
@@ -442,12 +402,11 @@ let currentCurrency = "SGD";
 const EXCHANGE_RATE = 3.30;
 let base64QrImage = "";
 let base64AssetFile = "";
-    // Database 12 Kotak Jualan Utama
-let defaultProducts = [
+    let defaultProducts = [
     { id: 1, name: "TikTok Automation Strategy", price: 105.80, qty: 0, link: "", img: "", bigImg: "", desc: "Master secrets of AI video generator tools, faceless organic traffic formulas, and high-ticket shop monetization." },
     { id: 2, name: "Viral Traffic System", price: 75.00, qty: 0, link: "", img: "", bigImg: "", desc: "Advanced massive blueprint for programmatic organic customer generation across international target markets." },
     { id: 3, name: "30-Day Video Action Plan", price: 49.99, qty: 0, link: "", img: "", bigImg: "", desc: "Day-to-day tactical deployment calendar for short-form content execution hooks." },
-    { id: 4, name: "Join Group VVIP", price: 19.99, qty: 0, link: "", img: "", bigImg: "", desc: "Gain exclusive access to our inner circle networking and immediate alpha distributing setup." },
+    { id: 4, name: "Join Group Community", price: 19.99, qty: 0, link: "", img: "", bigImg: "", desc: "Gain exclusive access to our inner circle networking and immediate alpha distributing setup." },
     { id: 5, name: "Global Marketplace Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Exact cross-border conversion optimization scaling mechanisms for modern digital stores." },
     { id: 6, name: "Digital Marketing 2027", price: 25.90, qty: 0, link: "", img: "", bigImg: "", desc: "Future-proof frameworks for modern digital product distribution and organic scaling models." },
     { id: 7, name: "Advanced Automation Hub", price: 39.90, qty: 0, link: "", img: "", bigImg: "", desc: "Operational workflow automations to sync databases and tools seamlessly." },
@@ -472,68 +431,46 @@ if (!localStorage.getItem('premium_store_products') || products.length !== 12) {
 }
 products.forEach(p => p.qty = 0);
 const list = document.getElementById('productList');
-    let defaultDesign = {
-    mainTitle: "Premium",
-    subTitle: "Digital Store",
-    crownEmoji: "👑",
-    borderColor: "#fbbf24",
-    titleSize: "24px",
-    titleWeight: "900"
-};
-
+    let defaultDesign = { mainTitle: "Premium", subTitle: "Digital Store", crownEmoji: "👑", borderColor: "#fbbf24", titleSize: "24px", titleWeight: "900" };
 let currentDesign = JSON.parse(localStorage.getItem('premium_store_ui_design')) || defaultDesign;
 
 function applySavedDesign() {
-    document.getElementById('liveMainTitle').innerText = currentDesign.mainTitle;
-    document.getElementById('liveSubTitle').innerText = currentDesign.subTitle;
-    document.getElementById('liveCrownEmoji').innerText = currentDesign.crownEmoji;
+    const mainTitleEl = document.getElementById('liveMainTitle');
+    if (mainTitleEl) {
+        mainTitleEl.innerText = currentDesign.mainTitle;
+        mainTitleEl.style.fontSize = currentDesign.titleSize;
+        mainTitleEl.style.fontWeight = currentDesign.titleWeight;
+    }
+    const subTitleEl = document.getElementById('liveSubTitle');
+    if (subTitleEl) subTitleEl.innerText = currentDesign.subTitle;
+    
+    const crownEmojiEl = document.getElementById('liveCrownEmoji');
+    if (crownEmojiEl) crownEmojiEl.innerText = currentDesign.crownEmoji;
     
     const frame = document.getElementById('liveLogoFrame');
-    if(frame) frame.style.borderColor = currentDesign.borderColor;
+    if (frame) frame.style.borderColor = currentDesign.borderColor;
     
     const line = document.getElementById('liveBookLine');
-    if(line) line.style.backgroundColor = currentDesign.borderColor;
-    
-    const titleEl = document.getElementById('liveMainTitle');
-    if(titleEl) {
-        titleEl.style.fontSize = currentDesign.titleSize;
-        titleEl.style.fontWeight = currentDesign.titleWeight;
-    }
+    if (line) line.style.backgroundColor = currentDesign.borderColor;
 }
-    function previewLiveDesign() {
+
+function previewLiveDesign() {
     document.getElementById('liveMainTitle').innerText = document.getElementById('cfgMainTitle').value;
     document.getElementById('liveSubTitle').innerText = document.getElementById('cfgSubTitle').value;
     document.getElementById('liveCrownEmoji').innerText = document.getElementById('cfgCrownEmoji').value;
-    
     const bColor = document.getElementById('cfgBorderColor').value;
-    document.getElementById('liveLogoFrame').style.borderColor = bColor;
-    document.getElementById('liveBookLine').style.backgroundColor = bColor;
-    
-    const tEl = document.getElementById('liveMainTitle');
-    tEl.style.fontSize = document.getElementById('cfgTitleSize').value;
-    tEl.style.fontWeight = document.getElementById('cfgTitleWeight').value;
+    document.getElementById('liveLogoFrame').style.borderColor = bColor; document.getElementById('liveBookLine').style.backgroundColor = bColor;
+    const tEl = document.getElementById('liveMainTitle'); tEl.style.fontSize = document.getElementById('cfgTitleSize').value; tEl.style.fontWeight = document.getElementById('cfgTitleWeight').value;
 }
 
 function saveCustomDesignPermanently() {
-    currentDesign.mainTitle = document.getElementById('cfgMainTitle').value;
-    currentDesign.subTitle = document.getElementById('cfgSubTitle').value;
-    currentDesign.crownEmoji = document.getElementById('cfgCrownEmoji').value;
-    currentDesign.borderColor = document.getElementById('cfgBorderColor').value;
-    currentDesign.titleSize = document.getElementById('cfgTitleSize').value;
-    currentDesign.titleWeight = document.getElementById('cfgTitleWeight').value;
-    
-    localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign));
-    closeModal('customDesignModal');
-    alert("UI Design Layout Saved Permanently! ✅");
+    currentDesign.mainTitle = document.getElementById('cfgMainTitle').value; currentDesign.subTitle = document.getElementById('cfgSubTitle').value; currentDesign.crownEmoji = document.getElementById('cfgCrownEmoji').value; currentDesign.borderColor = document.getElementById('cfgBorderColor').value; currentDesign.titleSize = document.getElementById('cfgTitleSize').value; currentDesign.titleWeight = document.getElementById('cfgTitleWeight').value;
+    localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign)); closeModal('customDesignModal'); alert("UI Design Layout Saved Permanently! ✅");
 }
 
 function resetUiDesignToDefault() {
     if(confirm("Adakah anda mahu kembalikan reka bentuk pengenalan kedai kepada asal?")) {
-        currentDesign = JSON.parse(JSON.stringify(defaultDesign));
-        localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign));
-        applySavedDesign();
-        closeModal('customDesignModal');
-        alert("Reka bentuk berjaya di-reset! 🔄");
+        currentDesign = JSON.parse(JSON.stringify(defaultDesign)); localStorage.setItem('premium_store_ui_design', JSON.stringify(currentDesign)); applySavedDesign(); closeModal('customDesignModal'); alert("Reka bentuk berjaya di-reset! 🔄");
     }
 }
     function renderProducts() {
@@ -604,114 +541,57 @@ function resetUiDesignToDefault() {
 }
 
 function renderAdminGateways() {
-    const gatewayContainer = document.getElementById('adminGatewayList');
-    if(!gatewayContainer) return; gatewayContainer.innerHTML = '';
+    const gatewayContainer = document.getElementById('adminGatewayList'); if(!gatewayContainer) return; gatewayContainer.innerHTML = '';
     gateways.forEach((g, index) => {
-        const div = document.createElement('div');
-        div.style.display = 'flex'; div.style.justify = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'rgba(0,0,0,0.2)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
-        div.innerHTML = '<span>' + g.name + '</span>' +
-                        '<div style="display: flex; gap:4px;">' +
-                        '<button class="btn-admin btn-edit" style="padding: 4px 10px; font-size: 10px; background:#0088cc;" onclick="openEditGatewayModal(' + index + ')">Edit</button>' +
-                        '<button class="btn-admin btn-delete" style="padding: 4px 10px; font-size: 10px; background:#e53935;" onclick="deleteGateway(' + index + ')">Delete</button>' +
-                        '</div>';
+        const div = document.createElement('div'); div.style.display = 'flex'; div.style.justify = 'space-between'; div.style.alignItems = 'center'; div.style.background = 'rgba(0,0,0,0.2)'; div.style.padding = '8px'; div.style.borderRadius = '8px';
+        div.innerHTML = '<span>' + g.name + '</span><div style="display: flex; gap:4px;"><button class="btn-admin btn-edit" style="padding: 4px 10px; font-size: 10px; background:#0088cc;" onclick="openEditGatewayModal(' + index + ')">Edit</button><button class="btn-admin btn-delete" style="padding: 4px 10px; font-size: 10px; background:#e53935;" onclick="deleteGateway(' + index + ')">Delete</button></div>';
         gatewayContainer.appendChild(div);
     });
 }
-function bukaPaparanBahagian2(idx) {
-    if(document.body.classList.contains('admin-mode')) return;
-    
-    const p = products[idx];
-    const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-    
-    const modalContent = document.querySelector('#productDetailsViewModal .modal-content');
-    if (!modalContent) return;
-
-    const gambarWujud = p.bigImg ? p.bigImg : p.img;
-    let imageHTML = '';
-    
-    if (gambarWujud) {
-        imageHTML = `
-            <div class="details-image-container-3d">
-                <div class="details-big-img-wrapper">
-                    <img src="\${gambarWujud}" alt="Product Image">
-                </div>
-                <div class="text-pusing-3d">👇 Auto pusing 360°</div>
-            </div>
-        `;
-    } else {
-        imageHTML = `
-            <div class="details-image-container-3d" style="padding:40px 20px; text-align:center; background:rgba(0,0,0,0.2);">
-                <span style="color:#8fa0bc; font-size:13px;">📸 No preview banner uploaded.</span>
-            </div>
-        `;
+    function hantarMesejChatbot() {
+    const inputEl = document.getElementById('chatbotInput'); if (!inputEl) return;
+    const userText = inputEl.value.trim(); if (userText === '') return;
+    const logsContainer = document.getElementById('chatbotLogs');
+    const userDiv = document.createElement('div'); userDiv.className = 'chatbot-msg user'; userDiv.innerText = userText; logsContainer.appendChild(userDiv);
+    inputEl.value = '';
+    const query = userText.toLowerCase();
+    let botResponse = "Maaf, saya tidak menjumpai produk dengan kata kunci tersebut. Sila taip nama produk seperti 'tiktok', 'viral', atau 'community'.";
+    for (let i = 0; i < products.length; i++) {
+        const p = products[i];
+        if (p.name.toLowerCase().includes(query) || (p.desc && p.desc.toLowerCase().includes(query))) {
+            const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+            botResponse = `🔍 Hasil Carian Katalog Automatik:\\n\\n📦 **\${p.name}**\\n💵 Harga: \${currentCurrency} \${displayPrice.toFixed(2)}\\n⭐️ Ratings: ★★★★★\\n\\nSila klik terus pada menu list di atas untuk menempah fail digital anda!`;
+            break;
+        }
     }
-
-    let reviewsHTML = '';
-    const ulasankhas = senaraiUlasanSistemKhas[p.id] || [];
-    
-    if(ulasankhas.length > 0) {
-        ulasankhas.forEach(r => {
-            reviewsHTML += `<div class="review-item-layout">\${r}</div>`;
-        });
-    } else {
-        reviewsHTML = `
-            <div class="review-item-layout">
-                <strong>alex_sg ★★★★★</strong><br>
-                <span style="color:#c5d1e6;">"Highly targeted frameworks. Worth every single cent."</span>
-            </div>
-        `;
-    }
-
-    modalContent.innerHTML = `
-        <button class="btn-back-custom" onclick="closeModal('productDetailsViewModal')">← Back</button>
-        \${imageHTML}
-        <div class="details-title-price-box">
-            <h2 class="details-main-title">\${p.name}</h2>
-            <div class="details-main-price">\${currentCurrency} \${displayPrice.toFixed(2)}</div>
-        </div>
-        <div class="details-section-header">📄 DESCRIPTION SPEC</div>
-        <p class="details-description-text">\${p.desc || "Premium high-fidelity training courseware asset."}</p>
-        <div class="details-section-header">⭐ VERIFIED CUSTOMER RATINGS</div>
-        <div id="detailsProductReviewsList">\${reviewsHTML}</div>
-        <button class="btn-main" style="background:#00cc99; color:#0b1426; margin-top:20px; font-weight:800;" 
-                onclick="closeModal('productDetailsViewModal'); changeQty(\${idx}, 1); openPaymentModal();">
-            Proceed to Payment
-        </button>
-    `;
-
-    const detModal = document.getElementById('productDetailsViewModal');
-    if(detModal) { detModal.classList.add('active'); detModal.style.display = "flex"; }
+    setTimeout(() => { const botDiv = document.createElement('div'); botDiv.className = 'chatbot-msg bot'; botDiv.innerHTML = botResponse.replace(/\\n/g, '<br>'); logsContainer.appendChild(botDiv); logsContainer.scrollTop = logsContainer.scrollHeight; }, 250);
 }
-    function openPaymentModal() {
-    const container = document.getElementById('paymentGatewayList');
-    if(!container) return; container.innerHTML = '';
-    const purchasedItems = products.filter(p => p.qty > 0);
-    if (purchasedItems.length === 0) return;
-    
+    function bukaPaparanBahagian2(idx) {
+    if(document.body.classList.contains('admin-mode')) return;
+    const p = products[idx]; const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+    const modalContent = document.querySelector('#productDetailsViewModal .modal-content'); if (!modalContent) return;
+    const gambarWujud = p.bigImg ? p.bigImg : p.img; let imageHTML = '';
+    if (gambarWujud) { imageHTML = `<div class="details-image-container-3d"><div class="details-big-img-wrapper"><img src="\${gambarWujud}" alt="Product Image"></div><div class="text-pusing-3d">👇 Auto pusing 360°</div></div>`; }
+    else { imageHTML = `<div class="details-image-container-3d" style="padding:40px 20px; text-align:center; background:rgba(0,0,0,0.2);"><span style="color:#8fa0bc; font-size:13px;">📸 No preview banner uploaded.</span></div>`; }
+    let reviewsHTML = ''; const ulasankhas = senaraiUlasanSistemKhas[p.id] || [];
+    if(ulasankhas.length > 0) { ulasankhas.forEach(r => { reviewsHTML += `<div class="review-item-layout">\${r}</div>`; }); }
+    else { reviewsHTML = `<div class="review-item-layout"><strong>alex_sg ★★★★★</strong><br><span style="color:#c5d1e6;">"Highly targeted frameworks. Worth every single cent."</span></div>`; }
+    modalContent.innerHTML = `<button class="btn-back-custom" onclick="closeModal('productDetailsViewModal')">← Back</button>\${imageHTML}<div class="details-title-price-box"><h2 class="details-main-title">\${p.name}</h2><div class="details-main-price">\${currentCurrency} \${displayPrice.toFixed(2)}</div></div><div class="details-section-header">📄 DESCRIPTION SPEC</div><p class="details-description-text">\${p.desc || "Premium high-fidelity training courseware asset."}</p><div class="details-section-header">⭐ VERIFIED CUSTOMER RATINGS</div><div id="detailsProductReviewsList">\${reviewsHTML}</div><button class="btn-main" style="background:#00cc99; color:#0b1426; margin-top:20px; font-weight:800;" onclick="closeModal('productDetailsViewModal'); changeQty(\${idx}, 1); openPaymentModal();">Proceed to Payment</button>`;
+    const detModal = document.getElementById('productDetailsViewModal'); if(detModal) { detModal.classList.add('active'); detModal.style.display = "flex"; }
+}
+
+function openPaymentModal() {
+    const container = document.getElementById('paymentGatewayList'); if(!container) return; container.innerHTML = '';
+    const purchasedItems = products.filter(p => p.qty > 0); if (purchasedItems.length === 0) return;
     gateways.forEach(g => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-main'; btn.style.width = '100%'; btn.style.padding = '12px'; btn.style.borderRadius = '8px'; btn.style.color = 'white'; btn.style.fontWeight = 'bold'; btn.style.marginBottom = '10px'; btn.style.backgroundColor = g.color || '#0088cc'; btn.innerText = g.name;
-        
+        const btn = document.createElement('button'); btn.className = 'btn-main'; btn.style.width = '100%'; btn.style.padding = '12px'; btn.style.borderRadius = '8px'; btn.style.color = 'white'; btn.style.fontWeight = 'bold'; btn.style.marginBottom = '10px'; btn.style.backgroundColor = g.color || '#0088cc'; btn.innerText = g.name;
         btn.onclick = function() {
-            closeModal('paymentModal');
-            const orderData = {
-                action: "PROCESS_AUTOMATIC_INVOICE", status: "AWAITING_PAYMENT_TRACE", gateway_name: g.name, currency: currentCurrency,
-                items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link }))
-            };
-            if (g.link.startsWith('http://') || g.link.startsWith('https://')) {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                    window.Telegram.WebApp.openLink(g.link);
-                } else { window.open(g.link, '_blank'); }
-            } else if (g.link.startsWith('data:image')) {
-                document.getElementById('autoQrTargetImage').src = g.link;
-                document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name;
-                document.getElementById('qrDisplayModal').classList.add('active'); document.getElementById('qrDisplayModal').style.display = "flex";
-            } else {
-                alert("PAYMENT INVOICE GENERATED\n\nPlease transfer payment to " + g.name + " account:\n\nDetails: " + g.link);
-            }
+            closeModal('paymentModal'); const orderData = { action: "PROCESS_AUTOMATIC_INVOICE", status: "AWAITING_PAYMENT_TRACE", gateway_name: g.name, currency: currentCurrency, items: purchasedItems.map(p => ({ id: p.id, name: p.name, qty: p.qty, secured_asset_data: p.link })) };
+            if (g.link.startsWith('http://') || g.link.startsWith('https://')) { if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') { window.Telegram.WebApp.openLink(g.link); } else { window.open(g.link, '_blank'); } }
+            else if (g.link.startsWith('data:image')) { document.getElementById('autoQrTargetImage').src = g.link; document.getElementById('autoQrGatewayName').innerText = "Gateway: " + g.name; document.getElementById('qrDisplayModal').classList.add('active'); document.getElementById('qrDisplayModal').style.display = "flex"; }
+            else { alert("PAYMENT INVOICE GENERATED\\n\\nPlease transfer payment to " + g.name + " account:\\n\\nDetails: " + g.link); }
             try { if(tg && typeof tg.sendData === 'function') { tg.sendData(JSON.stringify(orderData)); } } catch(e){ console.error(e); }
-        };
-        container.appendChild(btn);
+        }; container.appendChild(btn);
     });
     const payModal = document.getElementById('paymentModal'); payModal.classList.add('active'); payModal.style.display = "flex";
 }
@@ -725,43 +605,26 @@ function handleQrUpload(input) {
     const files = input.files;
     if (files && files.length > 0) { const reader = new FileReader(); reader.onload = function(e) { base64QrImage = e.target.result; }; reader.readAsDataURL(files); }
 }
-    function saveItemChanges() {
-    const index = parseInt(document.getElementById('editIndex').value);
-    const name = document.getElementById('itemName').value;
-    let link = document.getElementById('itemLink').value;
-    const type = document.getElementById('editType').value;
-    const titleText = document.getElementById('editorTitle').innerText;
 
-    if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") { link = base64AssetFile; }
-    else if(type === "gateway" && base64QrImage !== "") { link = base64QrImage; }
-    
+function saveItemChanges() {
+    const index = parseInt(document.getElementById('editIndex').value); const name = document.getElementById('itemName').value; let link = document.getElementById('itemLink').value; const type = document.getElementById('editType').value; const titleText = document.getElementById('editorTitle').innerText;
+    if (titleText.includes("YELLOW BOX") && base64AssetFile !== "") { link = base64AssetFile; } else if(type === "gateway" && base64QrImage !== "") { link = base64QrImage; }
     if(type === "product") {
-        if(!name) return alert("Please fill in the required name field correctly.");
-        const price = parseFloat(document.getElementById('itemPrice').value) || 0;
-        if(index === -1) {
-            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-            products.push({ id: newId, name: name, price: price, link: link, qty: 0, img: "", bigImg: "", desc: "" });
-        } else {
-            if(titleText.includes("YELLOW BOX")) { products[index].link = link; }
-            else { products[index].name = name; products[index].price = price; }
-        }
+        if(!name) return alert("Please fill in the required name field correctly."); const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+        if(index === -1) { const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1; products.push({ id: newId, name: name, price: price, link: link, qty: 0, img: "", bigImg: "", desc: "" }); }
+        else { if(titleText.includes("YELLOW BOX")) { products[index].link = link; } else { products[index].name = name; products[index].price = price; } }
     } else if(type === "gateway") {
         if(!link) return alert("Please provide payment details or upload QR picture file.");
-        if(index === -1) { gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" }); }
-        else { gateways[index].name = name; gateways[index].link = link; }
+        if(index === -1) { gateways.push({ id: "gate_" + Date.now(), name: name, link: link, color: "#152238" }); } else { gateways[index].name = name; gateways[index].link = link; }
     }
-    localStorage.setItem('premium_store_products', JSON.stringify(products));
-    localStorage.setItem('premium_store_gateways', JSON.stringify(gateways));
-    closeModal('editorModal'); renderProducts(); alert("Saved changes successfully!");
+    localStorage.setItem('premium_store_products', JSON.stringify(products)); localStorage.setItem('premium_store_gateways', JSON.stringify(gateways)); closeModal('editorModal'); renderProducts(); alert("Saved changes successfully!");
 }
 
 function deleteProduct(index) { if(confirm("Delete e-book: " + products[index].name + "?")) { products.splice(index, 1); localStorage.setItem('premium_store_products', JSON.stringify(products)); renderProducts(); } }
 function deleteGateway(index) { if(confirm("Delete payment: " + gateways[index].name + "?")) { gateways.splice(index, 1); localStorage.setItem('premium_store_gateways', JSON.stringify(gateways)); renderProducts(); } }
-
 function changeQty(idx, val) { products[idx].qty = Math.max(0, products[idx].qty + val); renderProducts(); }
 function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
-
-function updateTotalPrice() {
+    function updateTotalPrice() {
     let total = 0; 
     let totalQty = 0; 
     products.forEach(p => { 
@@ -784,32 +647,14 @@ function updateTotalPrice() {
         `; 
     }
 }
-    function cetusBorangPengesahanTerma() {
-    document.getElementById('popupStrictAntiRefundCheckbox').checked = false;
-    document.getElementById('popupFinalPaySubmitBtn').disabled = true;
-    document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4";
-    const termsModal = document.getElementById('strictTermsVerificationModal');
-    if(termsModal) { termsModal.style.display = "flex"; termsModal.classList.add('active'); }
-}
-
-function togglePopupFinalPayBtn() {
-    const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked;
-    const btn = document.getElementById('popupFinalPaySubmitBtn');
-    if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; }
-}
-
+    function cetusBorangPengesahanTerma() { document.getElementById('popupStrictAntiRefundCheckbox').checked = false; document.getElementById('popupFinalPaySubmitBtn').disabled = true; document.getElementById('popupFinalPaySubmitBtn').style.opacity = "0.4"; const termsModal = document.getElementById('strictTermsVerificationModal'); if(termsModal) { termsModal.style.display = "flex"; termsModal.classList.add('active'); } }
+ RiedVerifPopupBtn = function() { const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked; const btn = document.getElementById('popupFinalPaySubmitBtn'); if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; } }
+function togglePopupFinalPayBtn() { const chk = document.getElementById('popupStrictAntiRefundCheckbox').checked; const btn = document.getElementById('popupFinalPaySubmitBtn'); if(btn) { btn.disabled = !chk; btn.style.opacity = chk ? "1" : "0.4"; } }
 function teruskanKeGatewayPembayaranSah() { closeModal('strictTermsVerificationModal'); openPaymentModal(); }
 
 function checkAdmin() {
-    if(document.body.classList.contains('admin-mode')) {
-        document.body.classList.remove('admin-mode');
-        renderProducts(); return;
-    }
-    let code = prompt("Enter Admin Security Code:");
-    if(code === "333555") {
-        document.body.classList.add('admin-mode');
-        renderProducts();
-    } else if (code !== null) { alert("Access Denied."); }
+    if(document.body.classList.contains('admin-mode')) { document.body.classList.remove('admin-mode'); renderProducts(); return; }
+    let code = prompt("Enter Admin Security Code:"); if(code === "333555") { document.body.classList.add('admin-mode'); renderProducts(); } else if (code !== null) { alert("Access Denied."); }
 }
 
 function closeModal(id) { const m = document.getElementById(id); if(m) { m.classList.remove('active'); m.style.display = "none"; } }
@@ -844,83 +689,21 @@ function openSetLinkModal(index) {
     const edModal = document.getElementById('editorModal'); if(edModal) { edModal.classList.add('active'); edModal.style.display = "flex"; }
 }
 
-function bukaModalMediaKhasStaf(idx) {
-    document.getElementById('mediaTargetProductIndex').value = idx;
-    document.getElementById('dataHolderBase64Front').value = products[idx].img || "";
-    document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || "";
-    document.getElementById('mediaFileFrontInput').value = "";
-    document.getElementById('mediaFileDescInput').value = "";
-    document.getElementById('staffMediaUploadModal').style.display = "flex";
-}
+function bukaModalMediaKhasStaf(idx) { document.getElementById('mediaTargetProductIndex').value = idx; document.getElementById('dataHolderBase64Front').value = products[idx].img || ""; document.getElementById('dataHolderBase64Desc').value = products[idx].bigImg || ""; document.getElementById('mediaFileFrontInput').value = ""; document.getElementById('mediaFileDescInput').value = ""; document.getElementById('staffMediaUploadModal').style.display = "flex"; }
+function prosesGambarKhasStaf(input, jenis) { if (input.files && input.files.length > 0) { const reader = new FileReader(); reader.onload = function(e) { if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result; if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result; }; reader.readAsDataURL(input.files); } }
+function simpanMediaKhasMuttamad() { const idx = parseInt(document.getElementById('mediaTargetProductIndex').value); products[idx].img = document.getElementById('dataHolderBase64Front').value; products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value; localStorage.setItem('premium_store_products', JSON.stringify(products)); document.getElementById('staffMediaUploadModal').style.display = "none"; renderProducts(); alert("Media uploaded and locked successfully!"); }
+    const senaraiUlasanSistemKhas = { 
+    1: ["<strong>alex_sg ★★★★★</strong><br>'Highly targeted frameworks. Worth every single cent.'"], 
+    2: ["<strong>faiz_99 ★★★★★</strong><br>'Sumpah berbaloi terutamanya bab automation setup.'"], 
+    3: ["<strong>marian_my ★★★★★</strong><br>'Very direct and easy to follow. Highly recommended!'"], 
+    4: ["<strong>jessica_tan ★★★★★</strong><br>'Highly recommend for those looking for side income.'"], 
+    5: ["<strong>karl_low ★★★★★</strong><br>'Clean strategies, zero fluff contents.'"], 
+    6: ["<strong>shawn_crypto ★★★★★</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"] 
+};
 
-function prosesGambarKhasStaf(input, jenis) {
-    if (input.files && input.files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            if (jenis === 'front') document.getElementById('dataHolderBase64Front').value = e.target.result;
-            if (jenis === 'desc') document.getElementById('dataHolderBase64Desc').value = e.target.result;
-        };
-        reader.readAsDataURL(input.files);
-    }
-}
-
-function simpanMediaKhasMuttamad() {
-    const idx = parseInt(document.getElementById('mediaTargetProductIndex').value);
-    products[idx].img = document.getElementById('dataHolderBase64Front').value;
-    products[idx].bigImg = document.getElementById('dataHolderBase64Desc').value;
-    localStorage.setItem('premium_store_products', JSON.stringify(products));
-    document.getElementById('staffMediaUploadModal').style.display = "none";
-    renderProducts(); alert("Media uploaded and locked successfully!");
-}
-
-const senaraiUlasanSistemKhas = {
-    1: ["<strong>alex_sg ★★★★★</strong><br>'Highly targeted frameworks. Worth every single cent.'"],
-    2: ["<strong>faiz_99 ★★★★★</strong><br>'Sumpah berbaloi terutamanya bab automation setup.'"],
-    3: ["<strong>marian_my ★★★★★</strong><br>'Very direct and easy to follow. Highly recommended!'"],
-    4: ["<strong>jessica_tan ★★★★★</strong><br>'Highly recommend for those looking for side income.'"],
-    5: ["<strong>karl_low ★★★★★</strong><br>'Clean strategies, zero fluff contents.'"],
-    6: ["<strong>shawn_crypto ★★★★★</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"]
- };
- 
- // TAMBAH KOD KOTAK 3 (CHATBOT) ANDA DI SINI BERMULA BARIS 883:
- function hantarMesejChatbot() {
-     const inputEl = document.getElementById('chatbotInput'); 
-     if (!inputEl) return;
-     const userText = inputEl.value.trim(); 
-     if (userText === '') return;
-    
-     const logsContainer = document.getElementById('chatbotLogs');
-     const userDiv = document.createElement('div'); 
-     userDiv.className = 'chatbot-msg user'; 
-     userDiv.innerText = userText; 
-     logsContainer.appendChild(userDiv);
-     
-     inputEl.value = '';
-     const query = userText.toLowerCase();
-     let botResponse = "Maaf, saya tidak menjumpai produk dengan kata kunci tersebut. Sila taip nama ebook seperti 'tiktok', 'automation', atau 'jualan'.";
-     
-     for (let i = 0; i < products.length; i++) {
-         const p = products[i];
-         if (p.name.toLowerCase().includes(query) || (p.desc && p.desc.toLowerCase().includes(query))) {
-             const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
-             botResponse = `🔍 Hasil Carian Katalog Automatik:\n\n📦 **${p.name}**\n💵 Harga Semasa: ${currentCurrency} ${displayPrice.toFixed(2)}\n⭐️ Ratings: ★★★★★\n\nSila klik terus pada kad senarai katalog di atas untuk melihat butiran lanjut!`;
-             break; 
-        }
-    }
-    
-    setTimeout(() => { 
-        const botDiv = document.createElement('div'); 
-        botDiv.className = 'chatbot-msg bot'; 
-        botDiv.innerHTML = botResponse.replace(/\n/g, '<br>'); 
-        logsContainer.appendChild(botDiv); 
-        logsContainer.scrollTop = logsContainer.scrollHeight; 
-    }, 250);
-}
-
-// BARISAN ASAL WINDOW.ONLOAD ANDA AKAN TERANJAK KE BAWAH SEPERTI INI:
-window.onload = function() {
-    applySavedDesign();
-    renderProducts();
+window.onload = function() { 
+    applySavedDesign(); 
+    renderProducts(); 
 };
 </script>
 </body>
