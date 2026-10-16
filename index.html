@@ -75,11 +75,172 @@
       100% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(0,136,204,0.1); }
     }
     .review-item-layout { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 11px; color: #c5d1e6; line-height: 1.4; }
+  /* ===== HEADER BARU ===== */
+.header-new { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 15px; 
+  padding-top: 10px;
+}
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.shield-icon {
+  width: 42px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shield-bg {
+  width: 40px;
+  height: 44px;
+  background: linear-gradient(180deg, #234080 0%, #182f5c 100%);
+  border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crown-icon { font-size: 20px; }
+.logo-text { text-align: right; }
+.logo-main { font-size: 18px; font-weight: bold; color: #ffd700; letter-spacing: 1px; }
+.logo-sub { font-size: 10px; color: #9fb8d8; text-transform: uppercase; }
+.header-circle-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(80, 160, 255, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #73c2fb;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+}
+
+/* ===== HALAMAN DETAIL PRODUK ===== */
+.detail-page {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #0c2047 0%, #0a1835 100%);
+  z-index: 9999;
+  padding: 16px;
+  overflow-y: auto;
+}
+.detail-page.active { display: block; }
+.back-btn {
+  font-size: 16px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.detail-image-wrapper {
+  width: 100%;
+  height: 200px;
+  background: rgba(25, 60, 130, 0.4);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border: 1px solid rgba(100, 160, 255, 0.18);
+}
+.detail-image-wrapper img { max-width: 75%; max-height: 75%; object-fit: contain; }
+.detail-title { font-size: 24px; font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
+.detail-rating { font-size: 14px; color: #ffd700; margin-bottom: 12px; }
+.detail-short-desc { font-size: 13px; color: #90b8e0; margin-bottom: 20px; }
+.detail-desc-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #0088cc;
+  margin: 24px 0 8px 0;
+  text-transform: uppercase;
+}
+.detail-desc-text { font-size: 14px; color: #b0c4de; line-height: 1.6; }
+.detail-total-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(100, 160, 255, 0.12);
+}
+.detail-total-price { font-size: 18px; font-weight: bold; color: #73c2fb; }
+.pay-btn {
+  width: 100%;
+  padding: 14px;
+  background: #00b894;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  margin-top: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.powered-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #6699cc;
+  margin-top: 12px;
+}
   </style>
 </head>
 <body>
+  <!-- ✅ HEADER BARU & HALAMAN DETAIL PRODUK -->
+<div class="header-new">
+  <div class="logo-wrap">
+    <div class="shield-icon">
+      <div class="shield-bg">
+        <span class="3D real crown-icon">👑</span>
+      </div>
+    </div>
+    <div class="logo-text">
+      <div class="logo-main">PREMIUM</div>
+      <div class="logo-sub">E-Book Catalogue</div>
+    </div>
+  </div>
+  <button class="header-circle-btn" onclick="checkAdmin()">⚙</button>
+</div>
 
-  <-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
+<!-- HALAMAN DETAIL PRODUK -->
+<div class="detail-page" id="detailPage">
+  <button class="back-btn" onclick="tutupPaparan()">← Kembali</button>
+  <div class="detail-image-wrapper" id="detailGambar"></div>
+  <h2 class="detail-title" id="detailNama"></h2>
+  <div class="detail-rating" id="detailRating"></div>
+  <p class="detail-short-desc" id="detailRingkas"></p>
+  <div class="detail-desc-label">Penerangan Penuh</div>
+  <p class="detail-desc-text" id="detailDeskripsi"></p>
+  <div class="detail-total-line">
+    <span>Harga</span>
+    <span class="detail-total-price" id="detailHarga"></span>
+  </div>
+  <button class="pay-btn">💳 Beli Sekarang</button>
+  <div class="powered-footer">Powered by Premium Catalogue</div>
+</div>
+  <body>
+
+<!-- ✅ TAMPAL DUA-DUA KOD DI SINI -->
+ <!-- KEPALA KATALOG PREMIUM DENGAN MOD RAHSIA STAFF -->
   <div class="header">
     <div style="display: flex; flex-direction: column; gap: 2px;">
       <span style="font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff 30%, #8fa0bc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PREMIUM DIGITAL STORE</span>
@@ -99,7 +260,7 @@
   <!-- DUA BUTANG KUNING UTAMA STAFF -->
   <div class="admin-top-controls" id="staffTopPanel">
     <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddModal()">⚡ + ADD NEW E-BOOK</button>
-    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddGatewayModal()">🟢 + ADD PAYMENT METHOD</button>
+    <button class="btn-add-list" style="background-color: #ffc107 !important;" onclick="openAddGatewayModal()"> + ADD PAYMENT METHOD</button>
   </div>
 
   <div class="section-title">E-Book Catalogue</div>
@@ -270,7 +431,7 @@
 
       card.innerHTML = 
         '<div class="product-info">' +
-          '<span class="product-name">' + p.name + '</span>' +
+          <div class="product-name" onclick="bukaHalamanDetail(${index})">${p.name}</div>
           '<span class="product-price">' + currentCurrency + ' ' + displayPrice.toFixed(2) + '</span>' +
           '<span class="badge-status">Available</span>' +
           '<div class="admin-actions" onclick="event.stopPropagation();" style="margin-top:10px; display:none; gap: 5px; flex-wrap:wrap;">' +
@@ -419,7 +580,30 @@
     localStorage.setItem('premium_store_products', JSON.stringify(products));
     document.getElementById('staffMediaUploadModal').style.display = "none";
     renderProducts(); alert("Media uploaded and locked successfully!");
-  }
+    <script>
+    // ✅ TAMPAL SEMUA KOD DI ATAS — DI SINI
+function bukaPaparanBahagian2(index) {
+  const produk = products[index];
+  document.getElementById('detailNama').textContent = produk.name;
+  document.getElementById('detailHarga').textContent = currentCurrency + ' ' + formatHarga(produk.price);
+  document.getElementById('detailRingkas').textContent = produk.shortDesc || 'Buku berkualiti tinggi';
+  document.getElementById('detailDeskripsi').textContent = produk.description || 'Tiada penerangan tersedia';
+  document.getElementById('detailRating').textContent = '⭐⭐⭐⭐⭐ 5.0';
+  document.getElementById('detailGambar').innerHTML = produk.image ? `<img src="${produk.image}" alt="${produk.name}">` : `<span style="font-size:48px">📖</span>`;
+  document.getElementById('detailPage').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function tutupPaparan() {
+  document.getElementById('detailPage').classList.remove('active');
+}
+
+function formatHarga(harga) {
+  return harga.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}
+
+renderProducts();  // ← baris ini DI BAWAH, jangan alihkan!
+</script>
 
   // ALOKASI JUMLAH REVIEWS BERBEZA SETIAP LIST MENU (1, 5, 13, 18, 3, 6, 15, 8, 11, 17, 22, 55, 35)
   const senaraiUlasanSistemKhas = {
