@@ -537,20 +537,34 @@ function resetUiDesignToDefault() {
     }
 }
     function renderProducts() {
-    if (!list) return;
-    list.innerHTML = '';
+    const mainListContainer = document.getElementById('productList');
+    if (!mainListContainer) return;
+    mainListContainer.innerHTML = '';
     
-    if(document.body.classList.contains('admin-mode')) {
-        document.getElementById('staffTopPanel').style.display = "flex";
-        let gatewayAdminHTML = '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">PAYMENT METHOD MANAGEMENT (PERMANENT)</span>' +
-                               '<div id="adminGatewayList" style="display: flex; flex-direction: column; gap: 6px;"></div>';
+    if (document.body.classList.contains('admin-mode')) {
+        const staffPanel = document.getElementById('staffTopPanel');
+        if (staffPanel) staffPanel.style.display = "flex";
+        
+        let gatewayAdminHTML = '<span style="font-size:12px; color: #ffc107; font-weight:bold; display:block; margin-bottom:8px;">PAYMENT METHOD MANAGEMENT (PERMANENT)</span><div id="adminGatewayList" style="display: flex; flex-direction: column; gap: 6px;"></div>';
         const box = document.getElementById('gatewayAdminBox');
-        if(box) { box.innerHTML = gatewayAdminHTML; box.style.background = "rgba(255,255,255,0.05)"; box.style.padding = "12px"; box.style.borderRadius = "12px"; box.style.marginBottom = "15px"; }
+        if (box) {
+            box.innerHTML = gatewayAdminHTML;
+            box.style.background = "rgba(255,255,255,0.05)";
+            box.style.padding = "12px";
+            box.style.borderRadius = "12px";
+            box.style.marginBottom = "15px";
+        }
         renderAdminGateways();
     } else {
-        document.getElementById('staffTopPanel').style.display = "none";
+        const staffPanel = document.getElementById('staffTopPanel');
+        if (staffPanel) staffPanel.style.display = "none";
         const box = document.getElementById('gatewayAdminBox');
-        if(box) { box.innerHTML = ""; box.style.padding = "0"; box.style.marginBottom = "0"; box.style.background = "transparent"; }
+        if (box) {
+            box.innerHTML = "";
+            box.style.padding = "0";
+            box.style.marginBottom = "0";
+            box.style.background = "transparent";
+        }
     }
     
     products.forEach((p, index) => {
@@ -563,28 +577,28 @@ function resetUiDesignToDefault() {
         
         card.innerHTML = `
             <div class="product-info">
-                <span class="product-name">\${p.name}</span>
-                <div class="product-stars">★★★★★ <span style="color:#8fa0bc; font-size:11px;">(\${soldSim}+ sold)</span></div>
-                <span class="product-price">\${currentCurrency} \${displayPrice.toFixed(2)}</span>
+                <span class="product-name">${p.name}</span>
+                <div class="product-stars">★★★★★ <span style="color:#8fa0bc; font-size:11px;">(${soldSim}+ sold)</span></div>
+                <span class="product-price">${currentCurrency} ${displayPrice.toFixed(2)}</span>
                 <div class="admin-actions" onclick="event.stopPropagation();">
-                    <button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(\${index})">Edit</button>
-                    <button class="btn-admin" style="background-color: #e53935;" onclick="deleteProduct(\${index})">Delete</button>
-                    <button class="btn-admin btn-inline-orange-media" onclick="bukaModalMediaKhasStaf(\${index})">Media</button>
-                    <button class="btn-admin" style="background-color: #ffc107; color:#000;" onclick="openSetLinkModal(\${index})">Set Link</button>
+                    <button class="btn-admin" style="background-color:#ffa000;" onclick="openEditProductModal(${index})">Edit</button>
+                    <button class="btn-admin" style="background-color: #e53935;" onclick="deleteProduct(${index})">Delete</button>
+                    <button class="btn-admin btn-inline-orange-media" onclick="bukaModalMediaKhasStaf(${index})">Media</button>
+                    <button class="btn-admin" style="background-color: #ffc107; color:#000;" onclick="openSetLinkModal(${index})">Set Link</button>
                 </div>
             </div>
             <div style="display: flex; flex-direction: column; align-items: flex-end;" onclick="event.stopPropagation();">
                 <div class="product-thumbnail-box">
-                    \${p.img ? `<img src="\${p.img}">` : `<span class="thumb-placeholder">No Img</span>`}
+                    ${p.img ? `<img src="\${p.img}">` : `<span class="thumb-placeholder">No Img</span>`}
                 </div>
                 <div class="qty-controls">
-                    <button class="btn-qty" onclick="changeQty(\${index}, -1)">-</button>
-                    <span class="qty-val">\${p.qty}</span>
-                    <button class="btn-qty" onclick="changeQty(\${index}, 1)">+</button>
+                    <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                    <span class="qty-val">${p.qty}</span>
+                    <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
                 </div>
             </div>
         `;
-        list.appendChild(card);
+        mainListContainer.appendChild(card);
     });
     updateTotalPrice();
 }
@@ -748,21 +762,26 @@ function changeQty(idx, val) { products[idx].qty = Math.max(0, products[idx].qty
 function updateCurrency() { currentCurrency = document.getElementById('currencySelect').value; renderProducts(); }
 
 function updateTotalPrice() {
-    let total = 0; let totalQty = 0;
-    products.forEach(p => { totalQty += p.qty; const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); total += price * p.qty; });
+    let total = 0; 
+    let totalQty = 0; 
+    products.forEach(p => { 
+        totalQty += p.qty; 
+        const price = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE); 
+        total += price * p.qty; 
+    });
     
     const footerBar = document.querySelector('.footer-bar');
-    if (footerBar) {
+    if (footerBar) { 
         footerBar.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 420px; margin: 0 auto; font-size: 13px; color: #8fa0bc; font-weight: 500;">
-                <span>Items Selected: <strong style="color:#fff; font-size: 14px;">\${totalQty} items</strong></span>
-                <span>Net Total: <strong style="color:#00cc99; font-size: 15px;">\${currentCurrency} \${total.toFixed(2)}</strong></span>
+                <span>Items Selected: <strong style="color:#fff; font-size: 14px;">${totalQty} items</strong></span>
+                <span>Net Total: <strong style="color:#00cc99; font-size: 15px;">${currentCurrency} ${total.toFixed(2)}</strong></span>
             </div>
-            <button id="payButton" class="btn-main" \${totalQty === 0 ? 'disabled' : ''} onclick="cetusBorangPengesahanTerma()">PROCEED TO PAYMENT</button>
+            <button id="payButton" class="btn-main" ${totalQty === 0 ? 'disabled' : ''} onclick="cetusBorangPengesahanTerma()">PROCEED TO PAYMENT</button>
             <div style="display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: #4caf50; font-weight: 600; margin-top: 2px;">
                 <span>🔒 Powered by Best Network Asia</span>
             </div>
-        `;
+        `; 
     }
 }
     function cetusBorangPengesahanTerma() {
@@ -861,8 +880,44 @@ const senaraiUlasanSistemKhas = {
     4: ["<strong>jessica_tan ★★★★★</strong><br>'Highly recommend for those looking for side income.'"],
     5: ["<strong>karl_low ★★★★★</strong><br>'Clean strategies, zero fluff contents.'"],
     6: ["<strong>shawn_crypto ★★★★★</strong><br>'Superb traffic hacks. Absolute gold blueprint.'"]
-};
+ };
+ 
+ // TAMBAH KOD KOTAK 3 (CHATBOT) ANDA DI SINI BERMULA BARIS 883:
+ function hantarMesejChatbot() {
+     const inputEl = document.getElementById('chatbotInput'); 
+     if (!inputEl) return;
+     const userText = inputEl.value.trim(); 
+     if (userText === '') return;
+    
+     const logsContainer = document.getElementById('chatbotLogs');
+     const userDiv = document.createElement('div'); 
+     userDiv.className = 'chatbot-msg user'; 
+     userDiv.innerText = userText; 
+     logsContainer.appendChild(userDiv);
+     
+     inputEl.value = '';
+     const query = userText.toLowerCase();
+     let botResponse = "Maaf, saya tidak menjumpai produk dengan kata kunci tersebut. Sila taip nama ebook seperti 'tiktok', 'automation', atau 'jualan'.";
+     
+     for (let i = 0; i < products.length; i++) {
+         const p = products[i];
+         if (p.name.toLowerCase().includes(query) || (p.desc && p.desc.toLowerCase().includes(query))) {
+             const displayPrice = currentCurrency === "SGD" ? p.price : (p.price * EXCHANGE_RATE);
+             botResponse = `🔍 Hasil Carian Katalog Automatik:\n\n📦 **${p.name}**\n💵 Harga Semasa: ${currentCurrency} ${displayPrice.toFixed(2)}\n⭐️ Ratings: ★★★★★\n\nSila klik terus pada kad senarai katalog di atas untuk melihat butiran lanjut!`;
+             break; 
+        }
+    }
+    
+    setTimeout(() => { 
+        const botDiv = document.createElement('div'); 
+        botDiv.className = 'chatbot-msg bot'; 
+        botDiv.innerHTML = botResponse.replace(/\n/g, '<br>'); 
+        logsContainer.appendChild(botDiv); 
+        logsContainer.scrollTop = logsContainer.scrollHeight; 
+    }, 250);
+}
 
+// BARISAN ASAL WINDOW.ONLOAD ANDA AKAN TERANJAK KE BAWAH SEPERTI INI:
 window.onload = function() {
     applySavedDesign();
     renderProducts();
